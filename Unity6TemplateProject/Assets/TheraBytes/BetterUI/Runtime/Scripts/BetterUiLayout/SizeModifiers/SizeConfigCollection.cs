@@ -1,120 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace TheraBytes.BetterUi
 {
-    public interface ISizeConfigCollection
-    {
-        string GetCurrentConfigName();
-        void MarkDirty();
-        bool IsDirty { get; }
-        void Sort();
-    }
+	public interface ISizeConfigCollection
+	{
+		bool IsDirty { get; }
+		string GetCurrentConfigName();
+		void MarkDirty();
+		void Sort();
+	}
 
-    [Serializable]
-    public class SizeConfigCollection<T> : ISizeConfigCollection
-        where T : class, IScreenConfigConnection
-    {
-        [SerializeField]
-        List<T> items = new List<T>();
-        
-        public IReadOnlyList<T> Items { get { return items; } }
+	[Serializable]
+	public class SizeConfigCollection<T> : ISizeConfigCollection
+		where T : class, IScreenConfigConnection
+	{
+		[SerializeField] private List<T> items = new();
 
-        bool isDirty = true;
-        public bool IsDirty { get { return isDirty; } }
+		public IReadOnlyList<T> Items => items;
+		public bool IsDirty { get; private set; } = true;
 
-        public void AddItem(T item)
-        {
-            items.Add(item);
-            MarkDirty();
-        }
+		public void Sort()
+		{
+			if (!IsDirty)
+				return;
 
-        public void Sort()
-        {
-            if (!isDirty)
-                return;
+			var order = ResolutionMonitor.Instance.OptimizedScreens.Select(o => o.Name).ToList();
+			items.Sort((a, b) => order.IndexOf(a.ScreenConfigName).CompareTo(order.IndexOf(b.ScreenConfigName)));
 
-            List<string> order = ResolutionMonitor.Instance.OptimizedScreens.Select(o => o.Name).ToList();
-            items.Sort((a, b) => order.IndexOf(a.ScreenConfigName).CompareTo(order.IndexOf(b.ScreenConfigName)));
+			IsDirty = false;
+		}
 
-            isDirty = false;
-        }
+		public string GetCurrentConfigName()
+		{
+			var result = GetCurrentItem(null);
 
-        public string GetCurrentConfigName()
-        {
-            T result = GetCurrentItem(null);
+			if (result != null)
+				return result.ScreenConfigName;
 
-            if (result != null)
-                return result.ScreenConfigName;
+			return null;
+		}
 
-            return null;
-        }
+		public void MarkDirty()
+		{
+			IsDirty = true;
+		}
 
-        public T GetItemForConfig(string configName, T fallback)
-        {
-            foreach(var itm in items)
-            {
-                if (itm.ScreenConfigName == configName)
-                    return itm;
-            }
+		public void AddItem(T item)
+		{
+			items.Add(item);
+			MarkDirty();
+		}
 
-            return fallback;
-        }
+		public T GetItemForConfig(string configName, T fallback)
+		{
+			foreach (var itm in items)
+				if (itm.ScreenConfigName == configName)
+					return itm;
 
-        public T GetCurrentItem(T fallback)
-        {
-            // if there is no config matching the screen
-            if (ResolutionMonitor.CurrentScreenConfiguration == null)
-                return fallback;
+			return fallback;
+		}
 
-            Sort();
+		public T GetCurrentItem(T fallback)
+		{
+			// if there is no config matching the screen
+			if (ResolutionMonitor.CurrentScreenConfiguration == null)
+				return fallback;
+
+			Sort();
 #if UNITY_EDITOR
-            
-            // simulation
-            var config = ResolutionMonitor.SimulatedScreenConfig;
-            if (config != null)
-            {
-                if (Items.Any(o => o.ScreenConfigName == config.Name))
-                {
-                    return Items.First(o => o.ScreenConfigName == config.Name);
-                }
-            }
+
+			// simulation
+			var config = ResolutionMonitor.SimulatedScreenConfig;
+			if (config != null)
+				if (Items.Any(o => o.ScreenConfigName == config.Name))
+					return Items.First(o => o.ScreenConfigName == config.Name);
 #endif
 
-            // search for screen config
-            foreach (T item in items)
-            {
-                if (string.IsNullOrEmpty(item.ScreenConfigName))
-                    return fallback;
+			// search for screen config
+			foreach (var item in items)
+			{
+				if (string.IsNullOrEmpty(item.ScreenConfigName))
+					return fallback;
 
-                var c = ResolutionMonitor.GetConfig(item.ScreenConfigName);
-                if(c != null && c.IsActive)
-                {
-                    return item;
-                }
-            }
-            
-            // fallback logic
-            foreach (var conf in ResolutionMonitor.GetCurrentScreenConfigurations())
-            {
-                foreach (var c in conf.Fallbacks)
-                {
-                    var matchingItem = items.FirstOrDefault(o => o.ScreenConfigName == c);
-                    if (matchingItem != null)
-                        return matchingItem;
-                }
-            }
+				var c = ResolutionMonitor.GetConfig(item.ScreenConfigName);
+				if (c != null && c.IsActive) return item;
+			}
 
-            // final fallback
-            return fallback;
-        }
+			// fallback logic
+			foreach (var conf in ResolutionMonitor.GetCurrentScreenConfigurations())
+			{
+				foreach (var c in conf.Fallbacks)
+				{
+					var matchingItem = items.FirstOrDefault(o => o.ScreenConfigName == c);
+					if (matchingItem != null)
+						return matchingItem;
+				}
+			}
 
-        public void MarkDirty()
-        {
-            isDirty = true;
-        }
-    }
+			// final fallback
+			return fallback;
+		}
+	}
 }

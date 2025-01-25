@@ -1,36 +1,40 @@
+using P3T.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// The main menu when starting the game
-/// The simple entry point after the game loads and return point if exiting gameplay
-/// </summary>
-public class MainMenu : MenuBase
+namespace P3T.Scripts.UI
 {
-    [SerializeField] private Button StartButton;
-    
-    public override GameMenus MenuType()
-    {
-        return GameMenus.MainMenu;
-    }
+    /// <summary>
+    ///     The main menu when starting the game
+    ///     The simple entry point after the game loads and return point if exiting gameplay
+    /// </summary>
+    public class MainMenu : MenuBase
+	{
+		[SerializeField] private Button StartButton;
 
-    private void OnEnable()
-    {
-        StartButton.Select();
-    }
+		private void OnEnable()
+		{
+			StartButton.Select();
+		}
 
-    public void ButtonStart()
-    {
-        SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI);
-    }
+		public override GameMenus MenuType()
+		{
+			return GameMenus.MainMenu;
+		}
 
-    public void ButtonSettings()
-    {
-        UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu);
-    }
+		public void ButtonStart()
+		{
+			SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI);
+		}
 
-    public void ButtonQuit()
-    {
-        Application.Quit();
-    }
+		public void ButtonSettings()
+		{
+			UiMgr.Instance.ShowMenu(GameMenus.SettingsMenu);
+		}
+
+		public void ButtonQuit()
+		{
+			Application.Quit();
+		}
+	}
 }

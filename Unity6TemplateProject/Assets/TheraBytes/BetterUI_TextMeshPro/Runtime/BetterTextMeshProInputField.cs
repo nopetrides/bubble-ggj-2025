@@ -1,140 +1,122 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace TheraBytes.BetterUi
 {
 #if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
+	[ExecuteAlways]
 #else
     [ExecuteInEditMode]
 #endif
-    [HelpURL("https://documentation.therabytes.de/better-ui/BetterTextMeshPro-InputField.html")]
-    [AddComponentMenu("Better UI/TextMeshPro/Better TextMeshPro - Input Field", 30)]
-    public class BetterTextMeshProInputField : TMP_InputField, IBetterTransitionUiElement, IResolutionDependency
-    {
-        public List<Transitions> BetterTransitions { get { return betterTransitions; } }
-        public List<Graphic> AdditionalPlaceholders { get { return additionalPlaceholders; } }
-        public FloatSizeModifier PointSizeScaler { get { return pointSizeScaler; } }
-        public bool OverridePointSizeSettings
-        {
-            get { return overridePointSize; }
-            set { overridePointSize = value; }
-        }
+	[HelpURL("https://documentation.therabytes.de/better-ui/BetterTextMeshPro-InputField.html")]
+	[AddComponentMenu("Better UI/TextMeshPro/Better TextMeshPro - Input Field", 30)]
+	public class BetterTextMeshProInputField : TMP_InputField, IBetterTransitionUiElement, IResolutionDependency
+	{
+		public List<Transitions> BetterTransitions => betterTransitions;
+		public List<Graphic> AdditionalPlaceholders => additionalPlaceholders;
+		public FloatSizeModifier PointSizeScaler => pointSizeScaler;
 
-        [SerializeField, DefaultTransitionStates]
-        List<Transitions> betterTransitions = new List<Transitions>();
+		public bool OverridePointSizeSettings
+		{
+			get => overridePointSize;
+			set => overridePointSize = value;
+		}
 
-        [SerializeField]
-        List<Graphic> additionalPlaceholders = new List<Graphic>();
+		[SerializeField] [DefaultTransitionStates]
+		private List<Transitions> betterTransitions = new();
 
-        [SerializeField]
-        FloatSizeModifier pointSizeScaler = new FloatSizeModifier(36, 10, 500);
+		[SerializeField] private List<Graphic> additionalPlaceholders = new();
 
-        [SerializeField]
-        bool overridePointSize;
+		[SerializeField] private FloatSizeModifier pointSizeScaler = new(36, 10, 500);
 
-        public new float pointSize
-        {
-            get { return base.pointSize; }
-            set { Config.Set(value, (o) => base.pointSize = o, (o) => PointSizeScaler.SetSize(this, o)); }
-        }
+		[SerializeField] private bool overridePointSize;
 
-        protected override void DoStateTransition(SelectionState state, bool instant)
-        {
-            base.DoStateTransition(state, instant);
+		public new float pointSize
+		{
+			get => base.pointSize;
+			set { Config.Set(value, o => base.pointSize = o, o => PointSizeScaler.SetSize(this, o)); }
+		}
 
-            if (!(base.gameObject.activeInHierarchy))
-                return;
+		protected override void DoStateTransition(SelectionState state, bool instant)
+		{
+			base.DoStateTransition(state, instant);
 
-            foreach (var info in betterTransitions)
-            {
-                info.SetState(state.ToString(), instant);
-            }
-        }
-        
-        public override void OnUpdateSelected(BaseEventData eventData)
-        {
-            base.OnUpdateSelected(eventData);
-            DisplayPlaceholders(this.text);
-        }
+			if (!gameObject.activeInHierarchy)
+				return;
 
-        void DisplayPlaceholders(string input)
-        {
-            bool show = string.IsNullOrEmpty(input);
+			foreach (var info in betterTransitions) info.SetState(state.ToString(), instant);
+		}
 
-            if (Application.isPlaying)
-            {
-                foreach (var ph in additionalPlaceholders)
-                {
-                    ph.enabled = show;
-                }
-            }
-        }
+		public override void OnUpdateSelected(BaseEventData eventData)
+		{
+			base.OnUpdateSelected(eventData);
+			DisplayPlaceholders(text);
+		}
 
-        protected override void OnEnable()
-        {
-            CalculateSize();
-            base.OnEnable();
-        }
+		private void DisplayPlaceholders(string input)
+		{
+			var show = string.IsNullOrEmpty(input);
 
-        protected override void OnRectTransformDimensionsChange()
-        {
-            base.OnRectTransformDimensionsChange();
-            CalculateSize();
-        }
+			if (Application.isPlaying)
+				foreach (var ph in additionalPlaceholders)
+					ph.enabled = show;
+		}
 
-        public void OnResolutionChanged()
-        {
-            CalculateSize();
-        }
+		protected override void OnEnable()
+		{
+			CalculateSize();
+			base.OnEnable();
+		}
 
-        public void CalculateSize()
-        {
-            if (overridePointSize)
-                base.pointSize = pointSizeScaler.CalculateSize(this);
+		protected override void OnRectTransformDimensionsChange()
+		{
+			base.OnRectTransformDimensionsChange();
+			CalculateSize();
+		}
 
-            OverrideBetterTextMeshSize(base.m_Placeholder as BetterTextMeshProUGUI, pointSize);
-            OverrideBetterTextMeshSize(base.m_TextComponent as BetterTextMeshProUGUI, pointSize);
+		public void OnResolutionChanged()
+		{
+			CalculateSize();
+		}
 
-            foreach(var p in additionalPlaceholders)
-            {
-                OverrideBetterTextMeshSize(p as BetterTextMeshProUGUI, pointSize);
-            }
-        }
+		public void CalculateSize()
+		{
+			if (overridePointSize)
+				base.pointSize = pointSizeScaler.CalculateSize(this);
 
-        void OverrideBetterTextMeshSize(BetterTextMeshProUGUI better, float size)
-        {
-            if (better == null)
-                return;
+			OverrideBetterTextMeshSize(m_Placeholder as BetterTextMeshProUGUI, pointSize);
+			OverrideBetterTextMeshSize(m_TextComponent as BetterTextMeshProUGUI, pointSize);
 
-            better.IgnoreFontSizerOptions = overridePointSize;
+			foreach (var p in additionalPlaceholders) OverrideBetterTextMeshSize(p as BetterTextMeshProUGUI, pointSize);
+		}
 
-            if (overridePointSize)
-            {
-                better.FontSizer.OverrideLastCalculatedSize(size);
-                better.fontSize = size;
-            }
-            else
-            {
-                better.FontSizer.CalculateSize(this);
-            }
+		private void OverrideBetterTextMeshSize(BetterTextMeshProUGUI better, float size)
+		{
+			if (better == null)
+				return;
 
-        }
+			better.IgnoreFontSizerOptions = overridePointSize;
+
+			if (overridePointSize)
+			{
+				better.FontSizer.OverrideLastCalculatedSize(size);
+				better.fontSize = size;
+			}
+			else
+			{
+				better.FontSizer.CalculateSize(this);
+			}
+		}
 
 #if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            CalculateSize();
-            base.OnValidate();
-        }
+		protected override void OnValidate()
+		{
+			CalculateSize();
+			base.OnValidate();
+		}
 #endif
-
-    }
+	}
 }

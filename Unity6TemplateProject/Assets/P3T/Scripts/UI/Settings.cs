@@ -1,27 +1,31 @@
+using P3T.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Settings menu
-/// Should include sliders and toggles for player preferences
-/// Such as audio settings or accessibility settings
-/// </summary>
-public class Settings : MenuBase
+namespace P3T.Scripts.UI
 {
-    [SerializeField] private Button BackButton;
+    /// <summary>
+    /// Settings menu
+    /// Should include sliders and toggles for player preferences
+    /// Such as audio settings or accessibility settings
+    /// </summary>
+    public class Settings : MenuBase
+	{
+		[SerializeField] private Button BackButton;
 
-    private void OnEnable()
-    {
-        BackButton.Select();
-    }
+		private void OnEnable()
+		{
+			BackButton.Select();
+		}
 
-    public override GameMenus MenuType()
-    {
-        return GameMenus.SettingsMenu;
-    }
+		public override GameMenus MenuType()
+		{
+			return GameMenus.SettingsMenu;
+		}
 
-    public void Close()
-    {
-        UIMgr.Instance.HideMenu(GameMenus.SettingsMenu);
-    }
+		public void Close()
+		{
+			UiMgr.Instance.HideMenu(GameMenus.SettingsMenu);
+		}
+	}
 }

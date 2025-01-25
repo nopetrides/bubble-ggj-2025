@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -9,123 +5,125 @@ using UnityEngine.UI;
 namespace TheraBytes.BetterUi
 {
 #if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
+	[ExecuteAlways]
 #else
     [ExecuteInEditMode]
 #endif
-    [HelpURL("https://documentation.therabytes.de/better-ui/BetterText.html")]
-    [AddComponentMenu("Better UI/Controls/Better Text", 30)]
-    public class BetterText : Text, IResolutionDependency
-    {
-        public enum FittingMode
-        {
-            SizerOnly,
-            StayInBounds,
-            BestFit,
-        }
+	[HelpURL("https://documentation.therabytes.de/better-ui/BetterText.html")]
+	[AddComponentMenu("Better UI/Controls/Better Text", 30)]
+	public class BetterText : Text, IResolutionDependency
+	{
+		public enum FittingMode
+		{
+			SizerOnly,
+			StayInBounds,
+			BestFit
+		}
 
-        public FloatSizeModifier FontSizer { get { return customFontSizers.GetCurrentItem(fontSizerFallback); } }
-        public FittingMode Fitting { get { return fitting; } set { fitting = value; CalculateSize(); } }
+		public FloatSizeModifier FontSizer => customFontSizers.GetCurrentItem(fontSizerFallback);
 
-        public new float fontSize
-        {
-            get { return base.fontSize; }
-            set { Config.Set(value, (o) => base.fontSize = Mathf.RoundToInt(o), (o) => FontSizer.SetSize(this, o)); }
-        }
+		public FittingMode Fitting
+		{
+			get => fitting;
+			set
+			{
+				fitting = value;
+				CalculateSize();
+			}
+		}
 
-        [SerializeField]
-        FittingMode fitting = FittingMode.StayInBounds;
+		public new float fontSize
+		{
+			get => base.fontSize;
+			set { Config.Set(value, o => base.fontSize = Mathf.RoundToInt(o), o => FontSizer.SetSize(this, o)); }
+		}
 
-        [FormerlySerializedAs("fontSizer")]
-        [SerializeField]
-        FloatSizeModifier fontSizerFallback = new FloatSizeModifier(40, 0, 500);
+		[SerializeField] private FittingMode fitting = FittingMode.StayInBounds;
 
-        [SerializeField]
-        FloatSizeConfigCollection customFontSizers = new FloatSizeConfigCollection();
+		[FormerlySerializedAs("fontSizer")] [SerializeField]
+		private FloatSizeModifier fontSizerFallback = new(40, 0, 500);
 
-        bool isCalculatingSize;
+		[SerializeField] private FloatSizeConfigCollection customFontSizers = new();
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            CalculateSize();
-        }
-        
-        public void OnResolutionChanged()
-        {
-            CalculateSize();
-        }
+		private bool isCalculatingSize;
 
-        protected override void OnRectTransformDimensionsChange()
-        {
-            base.OnRectTransformDimensionsChange();
-            CalculateSize();
-        }
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			CalculateSize();
+		}
 
-        public override void SetVerticesDirty()
-        {
-            base.SetVerticesDirty();
-            CalculateSize();
-        }
+		public void OnResolutionChanged()
+		{
+			CalculateSize();
+		}
 
-        void CalculateSize()
-        {
-            if (isCalculatingSize)
-                return;
+		protected override void OnRectTransformDimensionsChange()
+		{
+			base.OnRectTransformDimensionsChange();
+			CalculateSize();
+		}
 
-            isCalculatingSize = true;
+		public override void SetVerticesDirty()
+		{
+			base.SetVerticesDirty();
+			CalculateSize();
+		}
 
-            switch (fitting)
-            {
-                case FittingMode.SizerOnly:
+		private void CalculateSize()
+		{
+			if (isCalculatingSize)
+				return;
 
-                    base.resizeTextForBestFit = false;
-                    base.fontSize = Mathf.RoundToInt(FontSizer.CalculateSize(this));
-                    break;
+			isCalculatingSize = true;
 
-                case FittingMode.StayInBounds:
+			switch (fitting)
+			{
+				case FittingMode.SizerOnly:
 
-                    base.resizeTextMinSize = Mathf.RoundToInt(FontSizer.MinSize);
-                    base.resizeTextMaxSize = Mathf.RoundToInt(FontSizer.MaxSize);
-                    base.resizeTextForBestFit = true;
-                    int size = Mathf.RoundToInt(FontSizer.CalculateSize(this));
-                    
-                    base.fontSize = size;
-                    base.Rebuild(CanvasUpdate.PreRender);
+					resizeTextForBestFit = false;
+					base.fontSize = Mathf.RoundToInt(FontSizer.CalculateSize(this));
+					break;
 
-                    int bestFit = base.cachedTextGenerator.fontSizeUsedForBestFit;
-                    base.resizeTextForBestFit = false;
+				case FittingMode.StayInBounds:
 
-                    fontSize = (bestFit < size) ? bestFit : size;
-                    FontSizer.OverrideLastCalculatedSize(base.fontSize);
+					resizeTextMinSize = Mathf.RoundToInt(FontSizer.MinSize);
+					resizeTextMaxSize = Mathf.RoundToInt(FontSizer.MaxSize);
+					resizeTextForBestFit = true;
+					var size = Mathf.RoundToInt(FontSizer.CalculateSize(this));
 
-                    break;
-                    
-                case FittingMode.BestFit:
+					base.fontSize = size;
+					base.Rebuild(CanvasUpdate.PreRender);
 
-                    base.resizeTextMinSize = Mathf.RoundToInt(FontSizer.MinSize);
-                    base.resizeTextMaxSize = Mathf.RoundToInt(FontSizer.MaxSize);
-                    base.resizeTextForBestFit = true;
+					var bestFit = cachedTextGenerator.fontSizeUsedForBestFit;
+					resizeTextForBestFit = false;
 
-                    base.Rebuild(CanvasUpdate.PreRender);
+					fontSize = bestFit < size ? bestFit : size;
+					FontSizer.OverrideLastCalculatedSize(base.fontSize);
 
-                    FontSizer.OverrideLastCalculatedSize(base.cachedTextGenerator.fontSizeUsedForBestFit);
-                    break;
+					break;
 
-                default:
-                    break;
-            }
-            
-            isCalculatingSize = false;
-            
-        }
+				case FittingMode.BestFit:
+
+					resizeTextMinSize = Mathf.RoundToInt(FontSizer.MinSize);
+					resizeTextMaxSize = Mathf.RoundToInt(FontSizer.MaxSize);
+					resizeTextForBestFit = true;
+
+					base.Rebuild(CanvasUpdate.PreRender);
+
+					FontSizer.OverrideLastCalculatedSize(cachedTextGenerator.fontSizeUsedForBestFit);
+					break;
+			}
+
+			isCalculatingSize = false;
+		}
 
 #if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            CalculateSize();
-            base.OnValidate();
-        }
+		protected override void OnValidate()
+		{
+			CalculateSize();
+			base.OnValidate();
+		}
 #endif
-    }
+	}
 }

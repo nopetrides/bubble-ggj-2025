@@ -5,41 +5,39 @@ using UnityEngine;
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class DpiManager
-    {
-
+	[Serializable]
+	public class DpiManager
+	{
 #if UNITY_WEBGL
         [System.Runtime.InteropServices.DllImport("__Internal")]
         private static extern double GetDPI();
 
 #endif
 
-        [Serializable]
-        public class DpiOverride
-        {
-            [SerializeField] float dpi = 96;
-            [SerializeField] string deviceModel;
+		[Serializable]
+		public class DpiOverride
+		{
+			[SerializeField] private float dpi = 96;
+			[SerializeField] private string deviceModel;
 
-            public float Dpi { get { return dpi; } }
-            public string DeviceModel { get { return deviceModel; } }
+			public DpiOverride(string deviceModel, float dpi)
+			{
+				this.deviceModel = deviceModel;
+				this.dpi = dpi;
+			}
 
-            public DpiOverride(string deviceModel, float dpi)
-            {
-                this.deviceModel = deviceModel;
-                this.dpi = dpi;
-            }
-        }
+			public float Dpi => dpi;
+			public string DeviceModel => deviceModel;
+		}
 
-        [SerializeField]
-        List<DpiOverride> overrides = new List<DpiOverride>();
+		[SerializeField] private List<DpiOverride> overrides = new();
 
-        public float GetDpi()
-        {
-            DpiOverride ov = overrides.FirstOrDefault(o => o.DeviceModel == SystemInfo.deviceModel);
+		public float GetDpi()
+		{
+			var ov = overrides.FirstOrDefault(o => o.DeviceModel == SystemInfo.deviceModel);
 
-            if (ov != null)
-                return ov.Dpi;
+			if (ov != null)
+				return ov.Dpi;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             try
@@ -52,7 +50,7 @@ namespace TheraBytes.BetterUi
                 Debug.LogError("Could not retrieve real DPI. Is the WebGL-DPI-Plugin installed in the project?");
             }
 #endif
-            return Screen.dpi;
-        }
-    }
+			return Screen.dpi;
+		}
+	}
 }

@@ -1,44 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class IsCertainAspectRatio : IScreenTypeCheck
-    {
+	[Serializable]
+	public class IsCertainAspectRatio : IScreenTypeCheck
+	{
+		[SerializeField] private float minAspect = 0.66f;
 
-        [SerializeField]
-        float minAspect = 0.66f;
+		[SerializeField] private float maxAspect = 1.5f;
 
-        [SerializeField]
-        float maxAspect = 1.5f;
+		[SerializeField] private bool inverse;
 
-        [SerializeField]
-        bool inverse;
+		[SerializeField] private bool isActive;
 
-        public float MinAspect { get { return minAspect; } set { minAspect = value; } }
-        public float MaxAspect { get { return maxAspect; } set { maxAspect = value; } }
-        public bool Inverse { get { return inverse; } set { inverse = value; } }
+		public float MinAspect
+		{
+			get => minAspect;
+			set => minAspect = value;
+		}
 
-        [SerializeField]
-        bool isActive;
-        public bool IsActive { get { return isActive; } set { isActive = value; } }
+		public float MaxAspect
+		{
+			get => maxAspect;
+			set => maxAspect = value;
+		}
 
-        public bool IsScreenType()
-        {
-            float realAspect = (float)Screen.width / Screen.height;
+		public bool Inverse
+		{
+			get => inverse;
+			set => inverse = value;
+		}
 
-            return (!(inverse) 
-                    && realAspect >= minAspect
-                    && realAspect <= maxAspect)
-                || ((inverse)
-                    && realAspect < minAspect
-                    && realAspect > maxAspect);
-        }
+		public bool IsActive
+		{
+			get => isActive;
+			set => isActive = value;
+		}
 
-       
-    }
+		public bool IsScreenType()
+		{
+			var realAspect = (float)Screen.width / Screen.height;
+
+			return (!inverse
+					&& realAspect >= minAspect
+					&& realAspect <= maxAspect)
+					|| (inverse
+						&& realAspect < minAspect
+						&& realAspect > maxAspect);
+		}
+	}
 }

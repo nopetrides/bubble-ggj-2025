@@ -1,91 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace TheraBytes.BetterUi
 {
 #if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
+	[ExecuteAlways]
 #else
     [ExecuteInEditMode]
 #endif
-    [HelpURL("https://documentation.therabytes.de/better-ui/GameObjectActivator.html")]
-    [AddComponentMenu("Better UI/Helpers/Game Object Activator", 30)]
-    public class GameObjectActivator : UIBehaviour, IResolutionDependency
-    {
-        [Serializable]
-        public class Settings : IScreenConfigConnection
-        {
-            public List<GameObject> ActiveObjects = new List<GameObject>();
-            public List<GameObject> InactiveObjects = new List<GameObject>();
+	[HelpURL("https://documentation.therabytes.de/better-ui/GameObjectActivator.html")]
+	[AddComponentMenu("Better UI/Helpers/Game Object Activator", 30)]
+	public class GameObjectActivator : UIBehaviour, IResolutionDependency
+	{
+		[Serializable]
+		public class Settings : IScreenConfigConnection
+		{
+			public List<GameObject> ActiveObjects = new();
+			public List<GameObject> InactiveObjects = new();
 
-            [SerializeField]
-            string screenConfigName;
-            public string ScreenConfigName { get { return screenConfigName; } set { screenConfigName = value; } }
-        }
+			[SerializeField] private string screenConfigName;
 
-        [Serializable]
-        public class SettingsConfigCollection : SizeConfigCollection<Settings> { }
+			public string ScreenConfigName
+			{
+				get => screenConfigName;
+				set => screenConfigName = value;
+			}
+		}
 
-        public Settings CurrentSettings { get { return customSettings.GetCurrentItem(settingsFallback); } }
+		[Serializable]
+		public class SettingsConfigCollection : SizeConfigCollection<Settings>
+		{
+		}
 
-        [SerializeField]
-        Settings settingsFallback = new Settings();
+		public Settings CurrentSettings => customSettings.GetCurrentItem(settingsFallback);
 
-        [SerializeField]
-        SettingsConfigCollection customSettings = new SettingsConfigCollection();
-        
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            Apply();
-        }
-        
-        public void OnResolutionChanged()
-        {
-            Apply();
-        }
+		[SerializeField] private Settings settingsFallback = new();
 
-        public void Apply()
-        {
+		[SerializeField] private SettingsConfigCollection customSettings = new();
+
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			Apply();
+		}
+
+		public void OnResolutionChanged()
+		{
+			Apply();
+		}
+
+		public void Apply()
+		{
 #if UNITY_EDITOR
-            if (!(EditorPreview) && !(UnityEditor.EditorApplication.isPlaying))
-                return;
+			if (!EditorPreview && !EditorApplication.isPlaying)
+				return;
 #endif
-            foreach (GameObject go in CurrentSettings.ActiveObjects)
-            {
-                if (go != null)
-                {
-                    go.SetActive(true);
-                }
-            }
+			foreach (var go in CurrentSettings.ActiveObjects)
+				if (go != null)
+					go.SetActive(true);
 
-            foreach (GameObject go in CurrentSettings.InactiveObjects)
-            {
-                if (go != null)
-                {
-                    go.SetActive(false);
-                }
-            }
-        }
+			foreach (var go in CurrentSettings.InactiveObjects)
+				if (go != null)
+					go.SetActive(false);
+		}
 
 #if UNITY_EDITOR
-        public bool EditorPreview { get; set; }
+		public bool EditorPreview { get; set; }
 
-        protected override void OnValidate()
-        {
-            base.OnValidate();
+		protected override void OnValidate()
+		{
+			base.OnValidate();
 
-            if (EditorPreview)
-            {
-                Apply();
-            }
-        }
+			if (EditorPreview) Apply();
+		}
 #endif
-    }
-    
+	}
 }

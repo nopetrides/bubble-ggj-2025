@@ -1,121 +1,113 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class VertexMaterialData
-    {
-        #region Property Types
+	[Serializable]
+	public class VertexMaterialData
+	{
+		public FloatProperty[] FloatProperties = new FloatProperty[0];
 
-        [Serializable]
-        public abstract class Property<T>
-        {
-            public string Name;
-            public T Value;
+		public void Apply(ref float uvX, ref float uvY, ref float tangentW)
+		{
+			Apply(FloatProperties, ref uvX, ref uvY, ref tangentW);
+		}
 
-            public abstract void SetValue(ref float uvX, ref float uvY, ref float tangentW);
-            public abstract Property<T> Clone();
-        }
+		private static void Apply<T>(IEnumerable<Property<T>> prop,
+			ref float uvX, ref float uvY, ref float tangentW)
+		{
+			if (prop == null)
+				return;
 
-        [Serializable]
-        public class FloatProperty : Property<float>
-        {
-            public enum Mapping
-            {
-                TexcoordX, TexcoordY, TangentW,
-            }
+			foreach (var item in prop) item.SetValue(ref uvX, ref uvY, ref tangentW);
+		}
 
-            public Mapping PropertyMap;
-            public float Min, Max;
+		public void Clear()
+		{
+			FloatProperties = new FloatProperty[0];
+		}
 
-            public bool IsRestricted { get { return Min < Max; } }
-
-            public override void SetValue(ref float uvX, ref float uvY, ref float tangentW)
-            {
-                switch (PropertyMap)
-                {
-                    case Mapping.TexcoordX:
-                        uvX = Value;
-                        break;
-                    case Mapping.TexcoordY:
-                        uvY = Value;
-                        break;
-                    case Mapping.TangentW:
-                        tangentW = Value;
-                        break;
-                    default:
-                        throw new ArgumentException();
-                }
-            }
-
-            public override Property<float> Clone()
-            {
-                return new FloatProperty()
-                {
-                    Name = this.Name,
-                    Value = this.Value,
-                    Min = this.Min,
-                    Max = this.Max,
-                    PropertyMap = this.PropertyMap,
-                };
-            }
-        }
+		public void CopyTo(VertexMaterialData target)
+		{
+			target.FloatProperties = CloneArray<FloatProperty, float>(FloatProperties);
+		}
 
 
-        #endregion
+		public VertexMaterialData Clone()
+		{
+			var result = new VertexMaterialData();
+			CopyTo(result);
 
-        public FloatProperty[] FloatProperties = new FloatProperty[0];
+			return result;
+		}
 
-        public void Apply(ref float uvX, ref float uvY, ref float tangentW)
-        {
-            VertexMaterialData.Apply(FloatProperties, ref uvX, ref uvY, ref tangentW);
-        }
+		private static T[] CloneArray<T, TValue>(T[] array)
+			where T : Property<TValue>
+		{
+			var result = new T[array.Length];
+			for (var i = 0; i < array.Length; i++) result[i] = array[i].Clone() as T;
 
-        private static void Apply<T>(IEnumerable<Property<T>> prop,
-            ref float uvX, ref float uvY, ref float tangentW)
-        {
-            if (prop == null)
-                return;
+			return result;
+		}
 
-            foreach (var item in prop)
-            {
-                item.SetValue(ref uvX, ref uvY, ref tangentW);
-            }
-        }
+#region Property Types
 
-        public void Clear()
-        {
-            FloatProperties = new FloatProperty[0];
-        }
+		[Serializable]
+		public abstract class Property<T>
+		{
+			public string Name;
+			public T Value;
 
-        public void CopyTo(VertexMaterialData target)
-        {
-            target.FloatProperties = CloneArray<FloatProperty, float>(this.FloatProperties);
-        }
+			public abstract void SetValue(ref float uvX, ref float uvY, ref float tangentW);
+			public abstract Property<T> Clone();
+		}
 
+		[Serializable]
+		public class FloatProperty : Property<float>
+		{
+			public enum Mapping
+			{
+				TexcoordX,
+				TexcoordY,
+				TangentW
+			}
 
-        public VertexMaterialData Clone()
-        {
-            VertexMaterialData result = new VertexMaterialData();
-            this.CopyTo(result);
+			public Mapping PropertyMap;
+			public float Min, Max;
 
-            return result;
-        }
+			public bool IsRestricted => Min < Max;
 
-        static T[] CloneArray<T, TValue>(T[] array)
-            where T : Property<TValue>
-        {
-            T[] result = new T[array.Length];
-            for(int i = 0; i < array.Length; i++)
-            {
-                result[i] = array[i].Clone() as T;
-            }
+			public override void SetValue(ref float uvX, ref float uvY, ref float tangentW)
+			{
+				switch (PropertyMap)
+				{
+					case Mapping.TexcoordX:
+						uvX = Value;
+						break;
+					case Mapping.TexcoordY:
+						uvY = Value;
+						break;
+					case Mapping.TangentW:
+						tangentW = Value;
+						break;
+					default:
+						throw new ArgumentException();
+				}
+			}
 
-            return result;
-        }
-    }
+			public override Property<float> Clone()
+			{
+				return new FloatProperty
+				{
+					Name = Name,
+					Value = Value,
+					Min = Min,
+					Max = Max,
+					PropertyMap = PropertyMap
+				};
+			}
+		}
+
+#endregion
+	}
 }

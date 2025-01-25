@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -10,258 +7,256 @@ using UnityEngine.UI;
 namespace TheraBytes.BetterUi
 {
 #if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
+	[ExecuteAlways]
 #else
     [ExecuteInEditMode]
 #endif
-    [HelpURL("https://documentation.therabytes.de/better-ui/BetterGridLayoutGroup.html")]
-    [AddComponentMenu("Better UI/Layout/Better Grid Layout Group", 30)]
-    public class BetterGridLayoutGroup : GridLayoutGroup, IResolutionDependency
-    {
-        [Serializable]
-        public class Settings : IScreenConfigConnection
-        {
-            public Constraint Constraint;
-            public int ConstraintCount;
-            public TextAnchor ChildAlignment;
-            public Axis StartAxis;
-            public Corner StartCorner;
-            public bool Fit;
+	[HelpURL("https://documentation.therabytes.de/better-ui/BetterGridLayoutGroup.html")]
+	[AddComponentMenu("Better UI/Layout/Better Grid Layout Group", 30)]
+	public class BetterGridLayoutGroup : GridLayoutGroup, IResolutionDependency
+	{
+		[Serializable]
+		public class Settings : IScreenConfigConnection
+		{
+			public Constraint Constraint;
+			public int ConstraintCount;
+			public TextAnchor ChildAlignment;
+			public Axis StartAxis;
+			public Corner StartCorner;
+			public bool Fit;
 
-            [SerializeField]
-            string screenConfigName;
-            public string ScreenConfigName { get { return screenConfigName; } set { screenConfigName = value; } }
+			[SerializeField] private string screenConfigName;
 
-            public Settings(BetterGridLayoutGroup grid)
-            {
-                this.Constraint = grid.m_Constraint;
-                this.ConstraintCount = grid.m_ConstraintCount;
-                this.ChildAlignment = grid.childAlignment;
-                this.StartAxis = grid.m_StartAxis;
-                this.StartCorner = grid.m_StartCorner;
-                this.Fit = grid.fit;
-            }
+			public Settings(BetterGridLayoutGroup grid)
+			{
+				Constraint = grid.m_Constraint;
+				ConstraintCount = grid.m_ConstraintCount;
+				ChildAlignment = grid.childAlignment;
+				StartAxis = grid.m_StartAxis;
+				StartCorner = grid.m_StartCorner;
+				Fit = grid.fit;
+			}
 
-        }
+			public string ScreenConfigName
+			{
+				get => screenConfigName;
+				set => screenConfigName = value;
+			}
+		}
 
-        [Serializable]
-        public class SettingsConfigCollection : SizeConfigCollection<Settings> { }
-
-
-        public MarginSizeModifier PaddingSizer { get { return customPaddingSizers.GetCurrentItem(paddingSizerFallback); } }
-        public Vector2SizeModifier CellSizer { get { return customCellSizers.GetCurrentItem(cellSizerFallback); } }
-        public Vector2SizeModifier SpacingSizer { get { return customSpacingSizers.GetCurrentItem(spacingSizerFallback); } }
-        public Settings CurrentSettings { get { return customSettings.GetCurrentItem(settingsFallback); } }
-
-        public new RectOffset padding
-        {
-            get { return base.padding; }
-            set { Config.Set(value, (o) => base.padding = value, (o) => PaddingSizer.SetSize(this, new Margin(o))); }
-        }
-        public new Vector2 spacing
-        {
-            get { return base.spacing; }
-            set { Config.Set(value, (o) => base.spacing = value, (o) => SpacingSizer.SetSize(this, o)); }
-        }
-        public new Vector2 cellSize
-        {
-            get { return base.cellSize; }
-            set { Config.Set(value, (o) => base.cellSize = value, (o) => CellSizer.SetSize(this, o)); }
-        }
-        public new Constraint constraint
-        {
-            get { return base.constraint; }
-            set { Set(value, (o) => base.constraint = o, (s, o) => s.Constraint = o); }
-        }
-        public new int constraintCount
-        {
-            get { return base.constraintCount; }
-            set { Set(value, (o) => base.constraintCount = o, (s, o) => s.ConstraintCount = o); }
-        }
-        public new TextAnchor childAlignment
-        {
-            get { return base.childAlignment; }
-            set { Set(value, (o) => base.childAlignment = o, (s, o) => s.ChildAlignment = o); }
-        }
-        public new Axis startAxis
-        {
-            get { return base.startAxis; }
-            set { Set(value, (o) => base.startAxis = o, (s, o) => s.StartAxis = o); }
-        }
-        public new Corner startCorner
-        {
-            get { return base.startCorner; }
-            set { Set(value, (o) => base.startCorner = o, (s, o) => s.StartCorner = o); }
-        }
-        public bool Fit
-        {
-            get { return fit; }
-            set { Set(value, (o) => fit = o, (s, o) => s.Fit = o); }
-        }
-
-        [FormerlySerializedAs("paddingSizer")]
-        [SerializeField]
-        MarginSizeModifier paddingSizerFallback =
-            new MarginSizeModifier(new Margin(), new Margin(), new Margin(1000, 1000, 1000, 1000));
-
-        [SerializeField]
-        MarginSizeConfigCollection customPaddingSizers = new MarginSizeConfigCollection();
-
-        [FormerlySerializedAs("cellSizer")]
-        [SerializeField]
-        Vector2SizeModifier cellSizerFallback =
-            new Vector2SizeModifier(new Vector2(100, 100), new Vector2(10, 10), new Vector2(300, 300));
-
-        [SerializeField]
-        Vector2SizeConfigCollection customCellSizers = new Vector2SizeConfigCollection();
-
-        [FormerlySerializedAs("spacingSizer")]
-        [SerializeField]
-        Vector2SizeModifier spacingSizerFallback =
-            new Vector2SizeModifier(Vector2.zero, Vector2.zero, new Vector2(300, 300));
-
-        [SerializeField]
-        Vector2SizeConfigCollection customSpacingSizers = new Vector2SizeConfigCollection();
-
-        [SerializeField]
-        Settings settingsFallback;
-
-        [SerializeField]
-        SettingsConfigCollection customSettings = new SettingsConfigCollection();
-
-        [SerializeField]
-        bool fit = false;
-
-        protected override void OnRectTransformDimensionsChange()
-        {
-            base.OnRectTransformDimensionsChange();
-            CalculateCellSize();
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-
-            if (settingsFallback == null || string.IsNullOrEmpty(settingsFallback.ScreenConfigName))
-            {
-                StartCoroutine(InitDelayed());
-            }
-            else
-            {
-                CalculateCellSize();
-            }
-        }
-
-        IEnumerator InitDelayed()
-        {
-            yield return null;
-
-            settingsFallback = new Settings(this)
-            {
-                ScreenConfigName = "Fallback",
-            };
-
-            CalculateCellSize();
-        }
-        
-        public void OnResolutionChanged()
-        {
-            CalculateCellSize();
-
-            // for fit mode we need to calculate it again because of unity internal stuff...
-            if (fit)
-            {
-                base.SetDirty();
-                CalculateCellSize();
-            }
-        }
-        
-        public void CalculateCellSize()
-        {
-
-            Rect r = this.rectTransform.rect;
-            if (r.width == float.NaN || r.height == float.NaN)
-                return;
-
-            this.ApplySettings(CurrentSettings);
-            
-            base.m_Spacing = SpacingSizer.CalculateSize(this);
-
-            Margin pad = PaddingSizer.CalculateSize(this);
-            pad.CopyValuesTo(base.m_Padding);
-
-            // cell size
-            CellSizer.CalculateSize(this);
-
-            if(fit)
-            {
-                Vector2 size = CellSizer.LastCalculatedSize;
-
-                switch (base.constraint)
-                {
-                    case Constraint.FixedColumnCount:
-                        
-                        size.x = GetCellWidth();
-                        break;
-
-                    case Constraint.FixedRowCount:
-
-                        size.y = GetCellHeight();
-                        break;
-                }
-
-                CellSizer.OverrideLastCalculatedSize(size);
-            }
-            
-            base.m_CellSize = CellSizer.LastCalculatedSize;
-        }
-        
-        
-        public float GetCellWidth()
-        {
-            float space = this.rectTransform.rect.width 
-                - base.padding.horizontal 
-                - base.constraintCount * base.spacing.x;
-
-            return space / constraintCount;
-        }
-
-        public float GetCellHeight()
-        {
-            float space = this.rectTransform.rect.height
-                - base.padding.vertical
-                - base.constraintCount * base.spacing.y;
-
-            return space / constraintCount;
-        }
+		[Serializable]
+		public class SettingsConfigCollection : SizeConfigCollection<Settings>
+		{
+		}
 
 
-        void ApplySettings(Settings settings)
-        {
-            if (settingsFallback == null)
-                return;
+		public MarginSizeModifier PaddingSizer => customPaddingSizers.GetCurrentItem(paddingSizerFallback);
+		public Vector2SizeModifier CellSizer => customCellSizers.GetCurrentItem(cellSizerFallback);
+		public Vector2SizeModifier SpacingSizer => customSpacingSizers.GetCurrentItem(spacingSizerFallback);
+		public Settings CurrentSettings => customSettings.GetCurrentItem(settingsFallback);
 
-            this.m_Constraint = settings.Constraint;
-            this.m_ConstraintCount = settings.ConstraintCount;
-            this.m_ChildAlignment = settings.ChildAlignment;
-            this.m_StartAxis = settings.StartAxis;
-            this.m_StartCorner = settings.StartCorner;
-            this.fit = settings.Fit;
-        }
+		public new RectOffset padding
+		{
+			get => base.padding;
+			set { Config.Set(value, o => base.padding = value, o => PaddingSizer.SetSize(this, new Margin(o))); }
+		}
 
-        void Set<T>(T value, Action<T> setBase, Action<Settings, T> setSettings)
-        {
-            Config.Set(value, setBase, (o) => setSettings(CurrentSettings, value));
-            CalculateCellSize();
-        }
+		public new Vector2 spacing
+		{
+			get => base.spacing;
+			set { Config.Set(value, o => base.spacing = value, o => SpacingSizer.SetSize(this, o)); }
+		}
+
+		public new Vector2 cellSize
+		{
+			get => base.cellSize;
+			set { Config.Set(value, o => base.cellSize = value, o => CellSizer.SetSize(this, o)); }
+		}
+
+		public new Constraint constraint
+		{
+			get => base.constraint;
+			set { Set(value, o => base.constraint = o, (s, o) => s.Constraint = o); }
+		}
+
+		public new int constraintCount
+		{
+			get => base.constraintCount;
+			set { Set(value, o => base.constraintCount = o, (s, o) => s.ConstraintCount = o); }
+		}
+
+		public new TextAnchor childAlignment
+		{
+			get => base.childAlignment;
+			set { Set(value, o => base.childAlignment = o, (s, o) => s.ChildAlignment = o); }
+		}
+
+		public new Axis startAxis
+		{
+			get => base.startAxis;
+			set { Set(value, o => base.startAxis = o, (s, o) => s.StartAxis = o); }
+		}
+
+		public new Corner startCorner
+		{
+			get => base.startCorner;
+			set { Set(value, o => base.startCorner = o, (s, o) => s.StartCorner = o); }
+		}
+
+		public bool Fit
+		{
+			get => fit;
+			set { Set(value, o => fit = o, (s, o) => s.Fit = o); }
+		}
+
+		[FormerlySerializedAs("paddingSizer")] [SerializeField]
+		private MarginSizeModifier paddingSizerFallback =
+			new(new Margin(), new Margin(), new Margin(1000, 1000, 1000, 1000));
+
+		[SerializeField] private MarginSizeConfigCollection customPaddingSizers = new();
+
+		[FormerlySerializedAs("cellSizer")] [SerializeField]
+		private Vector2SizeModifier cellSizerFallback =
+			new(new Vector2(100, 100), new Vector2(10, 10), new Vector2(300, 300));
+
+		[SerializeField] private Vector2SizeConfigCollection customCellSizers = new();
+
+		[FormerlySerializedAs("spacingSizer")] [SerializeField]
+		private Vector2SizeModifier spacingSizerFallback = new(Vector2.zero, Vector2.zero, new Vector2(300, 300));
+
+		[SerializeField] private Vector2SizeConfigCollection customSpacingSizers = new();
+
+		[SerializeField] private Settings settingsFallback;
+
+		[SerializeField] private SettingsConfigCollection customSettings = new();
+
+		[SerializeField] private bool fit;
+
+		protected override void OnRectTransformDimensionsChange()
+		{
+			base.OnRectTransformDimensionsChange();
+			CalculateCellSize();
+		}
+
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+
+			if (settingsFallback == null || string.IsNullOrEmpty(settingsFallback.ScreenConfigName))
+				StartCoroutine(InitDelayed());
+			else
+				CalculateCellSize();
+		}
+
+		private IEnumerator InitDelayed()
+		{
+			yield return null;
+
+			settingsFallback = new Settings(this)
+			{
+				ScreenConfigName = "Fallback"
+			};
+
+			CalculateCellSize();
+		}
+
+		public void OnResolutionChanged()
+		{
+			CalculateCellSize();
+
+			// for fit mode we need to calculate it again because of unity internal stuff...
+			if (fit)
+			{
+				SetDirty();
+				CalculateCellSize();
+			}
+		}
+
+		public void CalculateCellSize()
+		{
+			var r = rectTransform.rect;
+			if (r.width == float.NaN || r.height == float.NaN)
+				return;
+
+			ApplySettings(CurrentSettings);
+
+			m_Spacing = SpacingSizer.CalculateSize(this);
+
+			var pad = PaddingSizer.CalculateSize(this);
+			pad.CopyValuesTo(m_Padding);
+
+			// cell size
+			CellSizer.CalculateSize(this);
+
+			if (fit)
+			{
+				var size = CellSizer.LastCalculatedSize;
+
+				switch (base.constraint)
+				{
+					case Constraint.FixedColumnCount:
+
+						size.x = GetCellWidth();
+						break;
+
+					case Constraint.FixedRowCount:
+
+						size.y = GetCellHeight();
+						break;
+				}
+
+				CellSizer.OverrideLastCalculatedSize(size);
+			}
+
+			m_CellSize = CellSizer.LastCalculatedSize;
+		}
+
+
+		public float GetCellWidth()
+		{
+			var space = rectTransform.rect.width
+						- base.padding.horizontal
+						- base.constraintCount * base.spacing.x;
+
+			return space / constraintCount;
+		}
+
+		public float GetCellHeight()
+		{
+			var space = rectTransform.rect.height
+						- base.padding.vertical
+						- base.constraintCount * base.spacing.y;
+
+			return space / constraintCount;
+		}
+
+
+		private void ApplySettings(Settings settings)
+		{
+			if (settingsFallback == null)
+				return;
+
+			m_Constraint = settings.Constraint;
+			m_ConstraintCount = settings.ConstraintCount;
+			m_ChildAlignment = settings.ChildAlignment;
+			m_StartAxis = settings.StartAxis;
+			m_StartCorner = settings.StartCorner;
+			fit = settings.Fit;
+		}
+
+		private void Set<T>(T value, Action<T> setBase, Action<Settings, T> setSettings)
+		{
+			Config.Set(value, setBase, o => setSettings(CurrentSettings, value));
+			CalculateCellSize();
+		}
 
 
 #if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            CalculateCellSize();
-            base.OnValidate();
-        }
+		protected override void OnValidate()
+		{
+			CalculateCellSize();
+			base.OnValidate();
+		}
 #endif
-    }
+	}
 }

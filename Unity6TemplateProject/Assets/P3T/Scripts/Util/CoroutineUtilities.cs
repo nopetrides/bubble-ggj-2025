@@ -1,22 +1,23 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// A helper singleton to run coroutines globally
+///     A helper singleton to run coroutines globally
 /// </summary>
-public class CoroutineUtilities : Singleton<CoroutineUtilities> 
+public class CoroutineUtilities : Singleton<CoroutineUtilities>
 {
-    public static IEnumerator WaitAFrameAndExecute( System.Action execute ) 
-    {
-        yield return null;
+	public static IEnumerator WaitAFrameAndExecute(Action execute)
+	{
+		yield return null;
 
-        execute();
-    }
+		execute();
+	}
 
-    public static IEnumerator WaitForFixedUpdateFrameAndExecute( System.Action execute ) 
-    {
-        yield return new WaitForFixedUpdate();
+	public static IEnumerator WaitForFixedUpdateFrameAndExecute(Action execute)
+	{
+		yield return new WaitForFixedUpdate();
 
-        execute();
-    }
+		execute();
+	}
 }

@@ -1,295 +1,295 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace TheraBytes.BetterUi
 {
 #if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
+	[ExecuteAlways]
 #else
     [ExecuteInEditMode]
 #endif
-    [HelpURL("https://documentation.therabytes.de/better-ui/BetterAxisAlignedLayoutGroup.html")]
-    [AddComponentMenu("Better UI/Layout/Better Axis Aligned Layout Group", 30)]
-    public class BetterAxisAlignedLayoutGroup 
-        : HorizontalOrVerticalLayoutGroup, IBetterHorizontalOrVerticalLayoutGroup, IResolutionDependency
-    {
+	[HelpURL("https://documentation.therabytes.de/better-ui/BetterAxisAlignedLayoutGroup.html")]
+	[AddComponentMenu("Better UI/Layout/Better Axis Aligned Layout Group", 30)]
+	public class BetterAxisAlignedLayoutGroup
+		: HorizontalOrVerticalLayoutGroup, IBetterHorizontalOrVerticalLayoutGroup, IResolutionDependency
+	{
+		[Serializable]
+		public class Settings : IScreenConfigConnection
+		{
+			public TextAnchor ChildAlignment;
 
-        [Serializable]
-        public class Settings : IScreenConfigConnection
-        {
-            public TextAnchor ChildAlignment;
-            
-            public bool ReverseArrangement = false;
+			public bool ReverseArrangement;
 
-            public bool ChildForceExpandHeight = false;
-            public bool ChildForceExpandWidth = false;
+			public bool ChildForceExpandHeight;
+			public bool ChildForceExpandWidth;
 
-            public bool ChildScaleWidth = false;
-            public bool ChildScaleHeight = false;
+			public bool ChildScaleWidth;
+			public bool ChildScaleHeight;
 
-            public bool ChildControlWidth = true;
-            public bool ChildControlHeight = true;
+			public bool ChildControlWidth = true;
+			public bool ChildControlHeight = true;
 
-            public Axis Orientation;
+			public Axis Orientation;
 
-            [SerializeField]
-            string screenConfigName;
-            public string ScreenConfigName { get { return screenConfigName; } set { screenConfigName = value; } }
+			[SerializeField] private string screenConfigName;
 
 
-            public Settings(TextAnchor childAlignment, bool expandWidth, bool expandHeight, Axis orientation)
-            {
-                this.ChildAlignment = childAlignment;
-                this.ChildForceExpandWidth = expandWidth;
-                this.ChildForceExpandHeight = expandHeight;
-                this.Orientation = orientation;
-            }
-        }
+			public Settings(TextAnchor childAlignment, bool expandWidth, bool expandHeight, Axis orientation)
+			{
+				ChildAlignment = childAlignment;
+				ChildForceExpandWidth = expandWidth;
+				ChildForceExpandHeight = expandHeight;
+				Orientation = orientation;
+			}
 
-        [Serializable]
-        public class SettingsConfigCollection : SizeConfigCollection<Settings> { }
+			public string ScreenConfigName
+			{
+				get => screenConfigName;
+				set => screenConfigName = value;
+			}
+		}
 
-        public enum Axis
-        {
-            Horizontal,
-            Vertical,
-        }
+		[Serializable]
+		public class SettingsConfigCollection : SizeConfigCollection<Settings>
+		{
+		}
 
-        public MarginSizeModifier PaddingSizer { get { return customPaddingSizers.GetCurrentItem(paddingSizerFallback); } }
-        public FloatSizeModifier SpacingSizer { get { return customSpacingSizers.GetCurrentItem(spacingSizerFallback); } }
-        public Settings CurrentSettings { get { return customSettings.GetCurrentItem(settingsFallback); } }
-        public Axis Orientation { get { return orientation; } set { orientation = value; } }
-        bool isVertical { get { return orientation == Axis.Vertical; } }
-        
-        [SerializeField]
-        MarginSizeModifier paddingSizerFallback =
-            new MarginSizeModifier(new Margin(), new Margin(), new Margin(1000, 1000, 1000, 1000));
+		public enum Axis
+		{
+			Horizontal,
+			Vertical
+		}
 
-        [SerializeField]
-        MarginSizeConfigCollection customPaddingSizers = new MarginSizeConfigCollection();
-        
-        [SerializeField]
-        FloatSizeModifier spacingSizerFallback =
-            new FloatSizeModifier(0, 0, 300);
+		public MarginSizeModifier PaddingSizer => customPaddingSizers.GetCurrentItem(paddingSizerFallback);
+		public FloatSizeModifier SpacingSizer => customSpacingSizers.GetCurrentItem(spacingSizerFallback);
+		public Settings CurrentSettings => customSettings.GetCurrentItem(settingsFallback);
 
-        [SerializeField]
-        FloatSizeConfigCollection customSpacingSizers = new FloatSizeConfigCollection();
+		public Axis Orientation
+		{
+			get => orientation;
+			set => orientation = value;
+		}
 
-        [SerializeField]
-        Settings settingsFallback;
+		private bool isVertical => orientation == Axis.Vertical;
 
-        [SerializeField]
-        SettingsConfigCollection customSettings = new SettingsConfigCollection();
+		[SerializeField] private MarginSizeModifier paddingSizerFallback =
+			new(new Margin(), new Margin(), new Margin(1000, 1000, 1000, 1000));
 
-        [SerializeField]
-        Axis orientation;
+		[SerializeField] private MarginSizeConfigCollection customPaddingSizers = new();
 
-        #region new base setters
-        public new RectOffset padding
-        {
-            get { return base.padding; }
-            set { Config.Set(value, (o) => base.padding = value, (o) => PaddingSizer.SetSize(this, new Margin(o))); }
-        }
+		[SerializeField] private FloatSizeModifier spacingSizerFallback = new(0, 0, 300);
 
-        public new float spacing
-        {
-            get { return base.spacing; }
-            set { Config.Set(value, (o) => base.spacing = value, (o) => SpacingSizer.SetSize(this, o)); }
-        }
-        public new TextAnchor childAlignment
-        {
-            get { return base.childAlignment; }
-            set { Config.Set(value, (o) => base.childAlignment = o, (o) => CurrentSettings.ChildAlignment = o); }
-        }
+		[SerializeField] private FloatSizeConfigCollection customSpacingSizers = new();
+
+		[SerializeField] private Settings settingsFallback;
+
+		[SerializeField] private SettingsConfigCollection customSettings = new();
+
+		[SerializeField] private Axis orientation;
+
+#region new base setters
+
+		public new RectOffset padding
+		{
+			get => base.padding;
+			set { Config.Set(value, o => base.padding = value, o => PaddingSizer.SetSize(this, new Margin(o))); }
+		}
+
+		public new float spacing
+		{
+			get => base.spacing;
+			set { Config.Set(value, o => base.spacing = value, o => SpacingSizer.SetSize(this, o)); }
+		}
+
+		public new TextAnchor childAlignment
+		{
+			get => base.childAlignment;
+			set { Config.Set(value, o => base.childAlignment = o, o => CurrentSettings.ChildAlignment = o); }
+		}
 
 
-        public new bool childForceExpandHeight
-        {
-            get { return base.childForceExpandHeight; }
-            set { Config.Set(value, (o) => base.childForceExpandHeight = o, (o) => CurrentSettings.ChildForceExpandHeight = o); }
-        }
+		public new bool childForceExpandHeight
+		{
+			get => base.childForceExpandHeight;
+			set
+			{
+				Config.Set(value, o => base.childForceExpandHeight = o,
+					o => CurrentSettings.ChildForceExpandHeight = o);
+			}
+		}
 
-        public new bool childForceExpandWidth
-        {
-            get { return base.childForceExpandWidth; }
-            set { Config.Set(value, (o) => base.childForceExpandWidth = o, (o) => CurrentSettings.ChildForceExpandWidth = o); }
-        }
+		public new bool childForceExpandWidth
+		{
+			get => base.childForceExpandWidth;
+			set
+			{
+				Config.Set(value, o => base.childForceExpandWidth = o, o => CurrentSettings.ChildForceExpandWidth = o);
+			}
+		}
 
 #if UNITY_2020_1_OR_NEWER
-        public new bool reverseArrangement
-        {
-            get { return base.reverseArrangement; }
-            set { Config.Set(value, (o) => base.reverseArrangement = o, (o) => CurrentSettings.ReverseArrangement = o); }
-        }
+		public new bool reverseArrangement
+		{
+			get => base.reverseArrangement;
+			set { Config.Set(value, o => base.reverseArrangement = o, o => CurrentSettings.ReverseArrangement = o); }
+		}
 #endif
 #if UNITY_2019_1_OR_NEWER
-        public new bool childScaleWidth
-        {
-            get { return base.childScaleWidth; }
-            set { Config.Set(value, (o) => base.childScaleWidth = o, (o) => CurrentSettings.ChildScaleWidth = o); }
-        }
+		public new bool childScaleWidth
+		{
+			get => base.childScaleWidth;
+			set { Config.Set(value, o => base.childScaleWidth = o, o => CurrentSettings.ChildScaleWidth = o); }
+		}
 
-        public new bool childScaleHeight
-        {
-            get { return base.childScaleHeight; }
-            set { Config.Set(value, (o) => base.childScaleHeight = o, (o) => CurrentSettings.ChildScaleHeight = o); }
-        }
+		public new bool childScaleHeight
+		{
+			get => base.childScaleHeight;
+			set { Config.Set(value, o => base.childScaleHeight = o, o => CurrentSettings.ChildScaleHeight = o); }
+		}
 #endif
 #if !(UNITY_5_4) && !(UNITY_5_3)
-        public new bool childControlWidth
-        {
-            get { return base.childControlWidth; }
-            set { Config.Set(value, (o) => base.childControlWidth = o, (o) => CurrentSettings.ChildControlWidth = o); }
-        }
+		public new bool childControlWidth
+		{
+			get => base.childControlWidth;
+			set { Config.Set(value, o => base.childControlWidth = o, o => CurrentSettings.ChildControlWidth = o); }
+		}
 
-        public new bool childControlHeight
-        {
-            get { return base.childControlHeight; }
-            set { Config.Set(value, (o) => base.childControlHeight = o, (o) => CurrentSettings.ChildControlHeight = o); }
-        }
+		public new bool childControlHeight
+		{
+			get => base.childControlHeight;
+			set { Config.Set(value, o => base.childControlHeight = o, o => CurrentSettings.ChildControlHeight = o); }
+		}
 #endif
+
 #endregion
 
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
+		protected override void OnEnable()
+		{
+			base.OnEnable();
 
-            if (settingsFallback == null || string.IsNullOrEmpty(settingsFallback.ScreenConfigName))
-            {
-                StartCoroutine(InitDelayed());
-            }
-            else
-            {
-                CalculateCellSize();
-            }
-        }
+			if (settingsFallback == null || string.IsNullOrEmpty(settingsFallback.ScreenConfigName))
+				StartCoroutine(InitDelayed());
+			else
+				CalculateCellSize();
+		}
 
-        protected override void OnTransformChildrenChanged()
-        {
-            base.OnTransformChildrenChanged();
-            
-            if(isActiveAndEnabled)
-            {
-                StartCoroutine(SetDirtyDelayed());
-            }
-        }
+		protected override void OnTransformChildrenChanged()
+		{
+			base.OnTransformChildrenChanged();
 
-        private IEnumerator SetDirtyDelayed()
-        {
-            yield return null;
+			if (isActiveAndEnabled) StartCoroutine(SetDirtyDelayed());
+		}
 
-            base.SetDirty();
-        }
+		private IEnumerator SetDirtyDelayed()
+		{
+			yield return null;
 
-        protected override void OnRectTransformDimensionsChange()
-        {
-            base.OnRectTransformDimensionsChange();
-            base.SetDirty();
-        }
-        
+			SetDirty();
+		}
 
-        IEnumerator InitDelayed()
-        {
-            yield return null;
+		protected override void OnRectTransformDimensionsChange()
+		{
+			base.OnRectTransformDimensionsChange();
+			SetDirty();
+		}
 
-            settingsFallback = new Settings(this.childAlignment, this.childForceExpandWidth, this.childForceExpandHeight, this.orientation)
-            {
+
+		private IEnumerator InitDelayed()
+		{
+			yield return null;
+
+			settingsFallback = new Settings(childAlignment, childForceExpandWidth, childForceExpandHeight, orientation)
+			{
 #if !(UNITY_5_4) && !(UNITY_5_3)
-                ChildControlWidth = this.childControlWidth,
-                ChildControlHeight = this.childControlHeight,
+				ChildControlWidth = childControlWidth,
+				ChildControlHeight = childControlHeight,
 #endif
 #if UNITY_2019_1_OR_NEWER
-                ChildScaleWidth = this.childScaleWidth,
-                ChildScaleHeight = this.childScaleHeight,
+				ChildScaleWidth = childScaleWidth,
+				ChildScaleHeight = childScaleHeight,
 #endif
 #if UNITY_2020_1_OR_NEWER
-                ReverseArrangement = this.reverseArrangement,
+				ReverseArrangement = reverseArrangement,
 #endif
-                ScreenConfigName = "Fallback",
-            };
+				ScreenConfigName = "Fallback"
+			};
 
-            CalculateCellSize();
-        }
+			CalculateCellSize();
+		}
 
-        public override void CalculateLayoutInputHorizontal()
-        {
-            base.CalculateLayoutInputHorizontal();
-            base.CalcAlongAxis(0, isVertical);
-        }
-        
-        public override void CalculateLayoutInputVertical()
-        {
-            base.CalcAlongAxis(1, isVertical);
-        }
-        
-        public override void SetLayoutHorizontal()
-        {
-            base.SetChildrenAlongAxis(0, isVertical);
-        }
-        
-        public override void SetLayoutVertical()
-        {
-            base.SetChildrenAlongAxis(1, isVertical);
-        }
+		public override void CalculateLayoutInputHorizontal()
+		{
+			base.CalculateLayoutInputHorizontal();
+			CalcAlongAxis(0, isVertical);
+		}
 
-        public void OnResolutionChanged()
-        {
-            CalculateCellSize();
-        }
+		public override void CalculateLayoutInputVertical()
+		{
+			CalcAlongAxis(1, isVertical);
+		}
 
-        public void CalculateCellSize()
-        {
-            Rect r = this.rectTransform.rect;
-            if (r.width == float.NaN || r.height == float.NaN)
-                return;
+		public override void SetLayoutHorizontal()
+		{
+			SetChildrenAlongAxis(0, isVertical);
+		}
 
-            ApplySettings(CurrentSettings);
+		public override void SetLayoutVertical()
+		{
+			SetChildrenAlongAxis(1, isVertical);
+		}
 
-            base.m_Spacing = SpacingSizer.CalculateSize(this);
+		public void OnResolutionChanged()
+		{
+			CalculateCellSize();
+		}
 
-            Margin pad = PaddingSizer.CalculateSize(this);
-            pad.CopyValuesTo(base.m_Padding);
+		public void CalculateCellSize()
+		{
+			var r = rectTransform.rect;
+			if (r.width == float.NaN || r.height == float.NaN)
+				return;
 
-        }
+			ApplySettings(CurrentSettings);
 
-        void ApplySettings(Settings settings)
-        {
-            if (settingsFallback == null)
-                return;
+			m_Spacing = SpacingSizer.CalculateSize(this);
 
-            this.m_ChildAlignment = settings.ChildAlignment;
-            this.orientation = settings.Orientation;
-            this.m_ChildForceExpandWidth = settings.ChildForceExpandWidth;
-            this.m_ChildForceExpandHeight = settings.ChildForceExpandHeight;
+			var pad = PaddingSizer.CalculateSize(this);
+			pad.CopyValuesTo(m_Padding);
+		}
+
+		private void ApplySettings(Settings settings)
+		{
+			if (settingsFallback == null)
+				return;
+
+			m_ChildAlignment = settings.ChildAlignment;
+			orientation = settings.Orientation;
+			m_ChildForceExpandWidth = settings.ChildForceExpandWidth;
+			m_ChildForceExpandHeight = settings.ChildForceExpandHeight;
 
 #if !(UNITY_5_4) && !(UNITY_5_3)
-            this.m_ChildControlWidth = settings.ChildControlWidth;
-            this.m_ChildControlHeight = settings.ChildControlHeight;
+			m_ChildControlWidth = settings.ChildControlWidth;
+			m_ChildControlHeight = settings.ChildControlHeight;
 #endif
 #if UNITY_2019_1_OR_NEWER
-            this.childScaleWidth = settings.ChildScaleWidth;
-            this.childScaleHeight = settings.ChildScaleHeight;
+			childScaleWidth = settings.ChildScaleWidth;
+			childScaleHeight = settings.ChildScaleHeight;
 #endif
 #if UNITY_2020_1_OR_NEWER
-            this.reverseArrangement = settings.ReverseArrangement;
+			reverseArrangement = settings.ReverseArrangement;
 #endif
-        }
+		}
 
 
 #if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            CalculateCellSize();
-            base.OnValidate();
-        }
+		protected override void OnValidate()
+		{
+			CalculateCellSize();
+			base.OnValidate();
+		}
 #endif
-        
-    }
+	}
 }

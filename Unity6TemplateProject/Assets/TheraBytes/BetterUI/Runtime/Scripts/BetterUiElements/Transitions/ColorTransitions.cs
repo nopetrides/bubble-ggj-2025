@@ -1,209 +1,182 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 #pragma warning disable 0649 // disable "never assigned" warnings
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class ColorTransitions : TransitionStateCollection<Color>
-    {
-        static Dictionary<ColorTransitions, Coroutine> activeCoroutines = 
-            new Dictionary<ColorTransitions, Coroutine>();
+	[Serializable]
+	public class ColorTransitions : TransitionStateCollection<Color>
+	{
+		public enum AffectedColor
+		{
+			ColorMixedIn = 0,
 
-        static List<ColorTransitions> keysToRemove = new List<ColorTransitions>();
+			MainColorDirect = 1,
+			SecondColorDirect = 2
+		}
 
+		private static Dictionary<ColorTransitions, Coroutine> activeCoroutines = new();
 
-        public enum AffectedColor
-        {
-            ColorMixedIn = 0,
-
-            MainColorDirect = 1,
-            SecondColorDirect = 2,
-        }
-
-        [Serializable]
-        public class ColorTransitionState : TransitionState
-        {
-            public ColorTransitionState(string name, Color stateObject)
-                : base(name, stateObject)
-            { }
-        }
+		private static List<ColorTransitions> keysToRemove = new();
 
 
-        public override UnityEngine.Object Target { get { return target; } }
-        public float FadeDurtaion { get { return fadeDuration; } set { fadeDuration = value; } }
+		[SerializeField] private Graphic target;
+
+		[Range(1, 5)] [SerializeField] private float colorMultiplier = 1;
+
+		[SerializeField] private float fadeDuration = 0.1f;
+
+		[SerializeField] private AffectedColor affectedColor;
+
+		[SerializeField] private List<ColorTransitionState> states = new();
 
 
-        [SerializeField]
-        Graphic target;
-
-        [Range(1, 5)]
-        [SerializeField]
-        float colorMultiplier = 1;
-
-        [SerializeField]
-        float fadeDuration = 0.1f;
-
-        [SerializeField] AffectedColor affectedColor;
-
-        [SerializeField]
-        List<ColorTransitionState> states = new List<ColorTransitionState>();
+		public ColorTransitions(params string[] stateNames)
+			: base(stateNames)
+		{
+		}
 
 
-        public ColorTransitions(params string[] stateNames)
-            : base(stateNames)
-        {
-        }
+		public override Object Target => target;
 
-        protected override void ApplyState(TransitionState state, bool instant)
-        {
-            if (this.Target == null)
-                return;
+		public float FadeDurtaion
+		{
+			get => fadeDuration;
+			set => fadeDuration = value;
+		}
 
-            if (!(Application.isPlaying))
-            {
-                instant = true;
-            }
+		protected override void ApplyState(TransitionState state, bool instant)
+		{
+			if (Target == null)
+				return;
 
-            // Backwards compatibility: colorMultiplyer is a new field. 
-            // It is 0 for upgrades from 1.x versions of Better UI.
-            if (colorMultiplier <= float.Epsilon)
-            {
-                colorMultiplier = 1;
-            }
+			if (!Application.isPlaying) instant = true;
 
-            switch (affectedColor)
-            {
-                case AffectedColor.ColorMixedIn:
-                    this.target.CrossFadeColor(state.StateObject * colorMultiplier, (instant) ? 0f : this.fadeDuration, true, true);
-                    break;
+			// Backwards compatibility: colorMultiplyer is a new field. 
+			// It is 0 for upgrades from 1.x versions of Better UI.
+			if (colorMultiplier <= float.Epsilon) colorMultiplier = 1;
 
-                case AffectedColor.MainColorDirect:
-                    CrossFadeColor(target.color, state.StateObject * colorMultiplier, (instant) ? 0 : fadeDuration);
-                    break;
+			switch (affectedColor)
+			{
+				case AffectedColor.ColorMixedIn:
+					target.CrossFadeColor(state.StateObject * colorMultiplier, instant ? 0f : fadeDuration, true, true);
+					break;
 
-                case AffectedColor.SecondColorDirect:
-                    Color start;
-                    if (target is IImageAppearanceProvider img)
-                    {
-                        start = img.SecondColor;
-                    }
-                    else
-                    {
-                        throw new NotSupportedException("SecondaryColor transition not suppoted for " 
-                            + target.GetType().Name);
-                    }
-                    
-                    CrossFadeColor(start, state.StateObject * colorMultiplier, (instant) ? 0 : fadeDuration);
-                    break;
+				case AffectedColor.MainColorDirect:
+					CrossFadeColor(target.color, state.StateObject * colorMultiplier, instant ? 0 : fadeDuration);
+					break;
+
+				case AffectedColor.SecondColorDirect:
+					Color start;
+					if (target is IImageAppearanceProvider img)
+						start = img.SecondColor;
+					else
+						throw new NotSupportedException("SecondaryColor transition not suppoted for "
+														+ target.GetType().Name);
+
+					CrossFadeColor(start, state.StateObject * colorMultiplier, instant ? 0 : fadeDuration);
+					break;
 
 
-                default:
-                    throw new NotImplementedException();
-            }
+				default:
+					throw new NotImplementedException();
+			}
+		}
 
-        }
+		internal override void AddStateObject(string stateName)
+		{
+			var obj = new ColorTransitionState(stateName, Color.white);
+			states.Add(obj);
+		}
 
-        internal override void AddStateObject(string stateName)
-        {
-            var obj = new ColorTransitionState(stateName, Color.white);
-            this.states.Add(obj);
-        }
+		protected override IEnumerable<TransitionState> GetTransitionStates()
+		{
+			foreach (var s in states)
+				yield return s;
+		}
 
-        protected override IEnumerable<TransitionState> GetTransitionStates()
-        {
-            foreach (var s in states)
-                yield return s;
-        }
+		internal override void SortStates(string[] sortedOrder)
+		{
+			SortStatesLogic(states, sortedOrder);
+		}
 
-        internal override void SortStates(string[] sortedOrder)
-        {
-            base.SortStatesLogic(states, sortedOrder);
-        }
+		private void CrossFadeColor(Color startValue, Color targetValue, float duration)
+		{
+			// Stop clashing coroutines
+			foreach (var key in activeCoroutines.Keys)
+				if (key.target == target && key.affectedColor == affectedColor)
+				{
+					if (key.target != null)
+						key.target.StopCoroutine(activeCoroutines[key]);
 
-        void CrossFadeColor(Color startValue, Color targetValue, float duration)
-        {
+					keysToRemove.Add(key);
+				}
 
-            // Stop clashing coroutines
-            foreach (var key in activeCoroutines.Keys)
-            {
-                if (key.target == this.target && key.affectedColor == this.affectedColor)
-                {
-                    if (key.target != null)
-                        key.target.StopCoroutine(activeCoroutines[key]);
+			foreach (var key in keysToRemove) activeCoroutines.Remove(key);
 
-                    keysToRemove.Add(key);
-                }
-            }
+			keysToRemove.Clear();
 
-            foreach (var key in keysToRemove)
-            {
-                activeCoroutines.Remove(key);
-            }
+			// trigger value changes
+			if (duration == 0 || !target.enabled || !target.gameObject.activeInHierarchy)
+			{
+				ApplyColor(targetValue);
+			}
+			else
+			{
+				var coroutine = target.StartCoroutine(CoCrossFadeColorDirect(startValue, targetValue, duration));
+				activeCoroutines.Add(this, coroutine);
+			}
+		}
 
-            keysToRemove.Clear();
+		private IEnumerator CoCrossFadeColorDirect(Color startValue, Color targetValue, float duration)
+		{
+			// animate
+			var startTime = Time.unscaledTime;
+			var endTime = startTime + duration;
 
-            // trigger value changes
-            if (duration == 0 || !target.enabled || !target.gameObject.activeInHierarchy)
-            {
-                ApplyColor(targetValue);
-            }
-            else
-            {
-                Coroutine coroutine = target.StartCoroutine(CoCrossFadeColorDirect(startValue, targetValue, duration));
-                activeCoroutines.Add(this, coroutine);
-            }
-        }
+			while (Time.unscaledTime < endTime)
+			{
+				var amount = (Time.unscaledTime - startTime) / duration;
+				var value = Color.Lerp(startValue, targetValue, amount);
+				ApplyColor(value);
+				yield return null;
+			}
 
-        private IEnumerator CoCrossFadeColorDirect(Color startValue, Color targetValue, float duration)
-        {
-            // animate
-            float startTime = Time.unscaledTime;
-            float endTime = startTime + duration;
-
-            while (Time.unscaledTime < endTime)
-            {
-                float amount = (Time.unscaledTime - startTime) / duration;
-                Color value = Color.Lerp(startValue, targetValue, amount);
-                ApplyColor(value);
-                yield return null;
-            }
-
-            ApplyColor(targetValue);
-        }
+			ApplyColor(targetValue);
+		}
 
 
-        void ApplyColor(Color color)
-        {
-            if (target is IImageAppearanceProvider img)
-            {
-                switch (affectedColor)
-                {
-                    case AffectedColor.MainColorDirect:
-                        img.color = color;
-                        break;
-                    case AffectedColor.SecondColorDirect:
-                        img.SecondColor = color;
-                        break;
-                    default: throw new ArgumentException("MainColorDirect or GradientSecondColor expected.");
-                }
-            }
-            else if(affectedColor == AffectedColor.MainColorDirect)
-            {
-                target.color = color;
-            }
-            else
-            {
-                throw new ArgumentException("affected object doesn't have a secondary color.");
-            }
-        }
+		private void ApplyColor(Color color)
+		{
+			if (target is IImageAppearanceProvider img)
+				switch (affectedColor)
+				{
+					case AffectedColor.MainColorDirect:
+						img.color = color;
+						break;
+					case AffectedColor.SecondColorDirect:
+						img.SecondColor = color;
+						break;
+					default: throw new ArgumentException("MainColorDirect or GradientSecondColor expected.");
+				}
+			else if (affectedColor == AffectedColor.MainColorDirect)
+				target.color = color;
+			else
+				throw new ArgumentException("affected object doesn't have a secondary color.");
+		}
 
-    }
-
+		[Serializable]
+		public class ColorTransitionState : TransitionState
+		{
+			public ColorTransitionState(string name, Color stateObject)
+				: base(name, stateObject)
+			{
+			}
+		}
+	}
 }

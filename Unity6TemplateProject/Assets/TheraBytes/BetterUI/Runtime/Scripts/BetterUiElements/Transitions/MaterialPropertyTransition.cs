@@ -1,133 +1,127 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 #pragma warning disable 0649 // disable "never assigned" warnings
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class MaterialPropertyTransition : TransitionStateCollection<float>
-    {
-        static Dictionary<MaterialPropertyTransition, Coroutine> activeCoroutines = new Dictionary<MaterialPropertyTransition, Coroutine>();
-        static List<MaterialPropertyTransition> keysToRemove = new List<MaterialPropertyTransition>();
+	[Serializable]
+	public class MaterialPropertyTransition : TransitionStateCollection<float>
+	{
+		private static Dictionary<MaterialPropertyTransition, Coroutine> activeCoroutines = new();
+		private static List<MaterialPropertyTransition> keysToRemove = new();
 
-        [Serializable]
-        public class MaterialPropertyTransitionState : TransitionState
-        {
-            public MaterialPropertyTransitionState(string name, float stateObject)
-                : base(name, stateObject)
-            { }
-        }
+		[SerializeField] private BetterImage target;
 
-        public override UnityEngine.Object Target { get { return target; } }
-        public float FadeDurtaion { get { return fadeDuration; } set { fadeDuration = value; } }
+		[SerializeField] private float fadeDuration = 0.1f;
 
-        public int PropertyIndex { get { return propertyIndex; } set { propertyIndex = value; } }
+		[SerializeField] private List<MaterialPropertyTransitionState> states = new();
 
-        [SerializeField]
-        BetterImage target;
-
-        [SerializeField]
-        float fadeDuration = 0.1f;
-
-        [SerializeField]
-        List<MaterialPropertyTransitionState> states = new List<MaterialPropertyTransitionState>();
-
-        [SerializeField]
-        int propertyIndex;
+		[SerializeField] private int propertyIndex;
 
 
-        public MaterialPropertyTransition(params string[] stateNames)
-            : base(stateNames)
-        {
-        }
+		public MaterialPropertyTransition(params string[] stateNames)
+			: base(stateNames)
+		{
+		}
 
-        protected override void ApplyState(TransitionState state, bool instant)
-        {
-            if (this.Target == null)
-                return;
+		public override Object Target => target;
 
-            if (!(Application.isPlaying))
-            {
-                instant = true;
-            }
+		public float FadeDurtaion
+		{
+			get => fadeDuration;
+			set => fadeDuration = value;
+		}
 
-            float start = target.GetMaterialPropertyValue(propertyIndex);
-            CrossFadeProperty(start, state.StateObject, (instant) ? 0 : fadeDuration);
-        }
+		public int PropertyIndex
+		{
+			get => propertyIndex;
+			set => propertyIndex = value;
+		}
 
-        internal override void AddStateObject(string stateName)
-        {
-            var obj = new MaterialPropertyTransitionState(stateName, 1f);
-            this.states.Add(obj);
-        }
+		protected override void ApplyState(TransitionState state, bool instant)
+		{
+			if (Target == null)
+				return;
 
-        protected override IEnumerable<TransitionState> GetTransitionStates()
-        {
-            foreach (var s in states)
-                yield return s;
-        }
+			if (!Application.isPlaying) instant = true;
 
-        void CrossFadeProperty(float startValue, float targetValue, float duration)
-        {
+			var start = target.GetMaterialPropertyValue(propertyIndex);
+			CrossFadeProperty(start, state.StateObject, instant ? 0 : fadeDuration);
+		}
 
-            // Stop clashing coroutines
-            foreach (var key in activeCoroutines.Keys)
-            {
-                if (key.target == this.target && key.propertyIndex == this.propertyIndex)
-                {
-                    if(key.target != null)
-                        key.target.StopCoroutine(activeCoroutines[key]);
+		internal override void AddStateObject(string stateName)
+		{
+			var obj = new MaterialPropertyTransitionState(stateName, 1f);
+			states.Add(obj);
+		}
 
-                    keysToRemove.Add(key);
-                }
-            }
+		protected override IEnumerable<TransitionState> GetTransitionStates()
+		{
+			foreach (var s in states)
+				yield return s;
+		}
 
-            foreach (var key in keysToRemove)
-            {
-                activeCoroutines.Remove(key);
-            }
+		private void CrossFadeProperty(float startValue, float targetValue, float duration)
+		{
+			// Stop clashing coroutines
+			foreach (var key in activeCoroutines.Keys)
+				if (key.target == target && key.propertyIndex == propertyIndex)
+				{
+					if (key.target != null)
+						key.target.StopCoroutine(activeCoroutines[key]);
 
-            keysToRemove.Clear();
+					keysToRemove.Add(key);
+				}
 
-            // trigger value changes
-            if (duration == 0 || !target.enabled || !target.gameObject.activeInHierarchy)
-            {
-                target.SetMaterialProperty(propertyIndex, targetValue);
-            }
-            else
-            {
-                Coroutine coroutine = target.StartCoroutine(CoCrossFadeProperty(startValue, targetValue, duration));
-                activeCoroutines.Add(this, coroutine);
-            }
-        }
+			foreach (var key in keysToRemove) activeCoroutines.Remove(key);
 
-        private IEnumerator CoCrossFadeProperty(float startValue, float targetValue, float duration)
-        {
+			keysToRemove.Clear();
 
-            // animate
-            float startTime = Time.unscaledTime;
-            float endTime = startTime + duration;
+			// trigger value changes
+			if (duration == 0 || !target.enabled || !target.gameObject.activeInHierarchy)
+			{
+				target.SetMaterialProperty(propertyIndex, targetValue);
+			}
+			else
+			{
+				var coroutine = target.StartCoroutine(CoCrossFadeProperty(startValue, targetValue, duration));
+				activeCoroutines.Add(this, coroutine);
+			}
+		}
 
-            while(Time.unscaledTime < endTime)
-            {
-                float amount = (Time.unscaledTime - startTime) / duration;
-                float value = Mathf.Lerp(startValue, targetValue, amount);
-                target.SetMaterialProperty(propertyIndex, value);
-                yield return null;
-            }
+		private IEnumerator CoCrossFadeProperty(float startValue, float targetValue, float duration)
+		{
+			// animate
+			var startTime = Time.unscaledTime;
+			var endTime = startTime + duration;
 
-            target.SetMaterialProperty(propertyIndex, targetValue);
-        }
+			while (Time.unscaledTime < endTime)
+			{
+				var amount = (Time.unscaledTime - startTime) / duration;
+				var value = Mathf.Lerp(startValue, targetValue, amount);
+				target.SetMaterialProperty(propertyIndex, value);
+				yield return null;
+			}
 
-        internal override void SortStates(string[] sortedOrder)
-        {
-            base.SortStatesLogic(states, sortedOrder);
-        }
-    }
+			target.SetMaterialProperty(propertyIndex, targetValue);
+		}
+
+		internal override void SortStates(string[] sortedOrder)
+		{
+			SortStatesLogic(states, sortedOrder);
+		}
+
+		[Serializable]
+		public class MaterialPropertyTransitionState : TransitionState
+		{
+			public MaterialPropertyTransitionState(string name, float stateObject)
+				: base(name, stateObject)
+			{
+			}
+		}
+	}
 }

@@ -1,105 +1,89 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace TheraBytes.BetterUi
 {
-    [HelpURL("https://documentation.therabytes.de/better-ui/BetterToggle.html")]
-    [AddComponentMenu("Better UI/Controls/Better Toggle", 30)]
-    public class BetterToggle : Toggle, IBetterTransitionUiElement
-    {
-        public List<Transitions> BetterTransitions { get { return betterTransitions; } }
-        public List<Transitions> BetterTransitionsWhenOn { get { return betterTransitionsWhenOn; } }
-        public List<Transitions> BetterTransitionsWhenOff { get { return betterTransitionsWhenOff; } }
-        public List<Transitions> BetterToggleTransitions { get { return betterToggleTransitions; } }
+	[HelpURL("https://documentation.therabytes.de/better-ui/BetterToggle.html")]
+	[AddComponentMenu("Better UI/Controls/Better Toggle", 30)]
+	public class BetterToggle : Toggle, IBetterTransitionUiElement
+	{
+		[SerializeField] [DefaultTransitionStates]
+		private List<Transitions> betterTransitions = new();
 
-        [SerializeField, DefaultTransitionStates]
-        List<Transitions> betterTransitions = new List<Transitions>();
+		[SerializeField] [TransitionStates("On", "Off")]
+		private List<Transitions> betterToggleTransitions = new();
 
-        [SerializeField, TransitionStates("On", "Off")]
-        List<Transitions> betterToggleTransitions = new List<Transitions>();
-        [SerializeField, DefaultTransitionStates]
-        List<Transitions> betterTransitionsWhenOn = new List<Transitions>();
-        [SerializeField, DefaultTransitionStates]
-        List<Transitions> betterTransitionsWhenOff = new List<Transitions>();
+		[SerializeField] [DefaultTransitionStates]
+		private List<Transitions> betterTransitionsWhenOn = new();
 
-        bool wasOn;
+		[SerializeField] [DefaultTransitionStates]
+		private List<Transitions> betterTransitionsWhenOff = new();
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            ValueChanged(base.isOn, true);
-            DoStateTransition(SelectionState.Normal, true);
-        }
+		private bool wasOn;
+		public List<Transitions> BetterTransitionsWhenOn => betterTransitionsWhenOn;
+		public List<Transitions> BetterTransitionsWhenOff => betterTransitionsWhenOff;
+		public List<Transitions> BetterToggleTransitions => betterToggleTransitions;
 
-        void Update()
-        {
-            if (wasOn != isOn)
-            {
-                ValueChanged(isOn);
-            }
-        }
+		private void Update()
+		{
+			if (wasOn != isOn) ValueChanged(isOn);
+		}
 
-        protected override void DoStateTransition(SelectionState state, bool instant)
-        {
-            base.DoStateTransition(state, instant);
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			ValueChanged(isOn, true);
+			DoStateTransition(SelectionState.Normal, true);
+		}
 
-            if (!(base.gameObject.activeInHierarchy))
-                return;
+		public List<Transitions> BetterTransitions => betterTransitions;
 
-            var stateTransitions = (isOn)
-                ? betterTransitionsWhenOn
-                : betterTransitionsWhenOff;
+		protected override void DoStateTransition(SelectionState state, bool instant)
+		{
+			base.DoStateTransition(state, instant);
 
-            foreach (var info in stateTransitions)
-            {
-                info.SetState(state.ToString(), instant);
-            }
+			if (!gameObject.activeInHierarchy)
+				return;
 
-            foreach (var info in betterTransitions)
-            {
-                if (state != SelectionState.Disabled && isOn)
-                {
-                    var tglTr = betterToggleTransitions.FirstOrDefault(
-                        (o) => o.TransitionStates != null && info.TransitionStates != null
-                            && o.TransitionStates.Target == info.TransitionStates.Target
-                            && o.Mode == info.Mode);
+			var stateTransitions = isOn
+				? betterTransitionsWhenOn
+				: betterTransitionsWhenOff;
 
-                    if (tglTr != null)
-                    {
-                        continue;
-                    }
-                }
+			foreach (var info in stateTransitions) info.SetState(state.ToString(), instant);
 
-                info.SetState(state.ToString(), instant);
-            }
-        }
+			foreach (var info in betterTransitions)
+			{
+				if (state != SelectionState.Disabled && isOn)
+				{
+					var tglTr = betterToggleTransitions.FirstOrDefault(
+						o => o.TransitionStates != null && info.TransitionStates != null
+														&& o.TransitionStates.Target == info.TransitionStates.Target
+														&& o.Mode == info.Mode);
 
-        private void ValueChanged(bool on)
-        {
-            ValueChanged(on, false);
-        }
+					if (tglTr != null) continue;
+				}
 
-        private void ValueChanged(bool on, bool immediate)
-        {
-            wasOn = on;
-            foreach (var state in betterToggleTransitions)
-            {
-                state.SetState((on) ? "On" : "Off", immediate);
-            }
+				info.SetState(state.ToString(), instant);
+			}
+		}
 
-            var stateTransitions = (on)
-                ? betterTransitionsWhenOn
-                : betterTransitionsWhenOff;
+		private void ValueChanged(bool on)
+		{
+			ValueChanged(on, false);
+		}
 
-            foreach (var state in stateTransitions)
-            {
-                state.SetState(currentSelectionState.ToString(), immediate);
-            }
-        }
+		private void ValueChanged(bool on, bool immediate)
+		{
+			wasOn = on;
+			foreach (var state in betterToggleTransitions) state.SetState(on ? "On" : "Off", immediate);
 
-    }
+			var stateTransitions = on
+				? betterTransitionsWhenOn
+				: betterTransitionsWhenOff;
+
+			foreach (var state in stateTransitions) state.SetState(currentSelectionState.ToString(), immediate);
+		}
+	}
 }

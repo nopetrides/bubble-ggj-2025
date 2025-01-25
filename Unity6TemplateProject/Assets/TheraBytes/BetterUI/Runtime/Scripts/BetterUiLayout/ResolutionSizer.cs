@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,70 +5,64 @@ using UnityEngine.UI;
 namespace TheraBytes.BetterUi
 {
 #if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
+	[ExecuteAlways]
 #else
     [ExecuteInEditMode]
 #endif
-    public abstract class ResolutionSizer<T> : UIBehaviour, ILayoutController, ILayoutSelfController, IResolutionDependency
-    {
-        protected abstract ScreenDependentSize<T> sizer { get; }
-        
-        public virtual void SetLayoutHorizontal()
-        {
-            UpdateSize();
-        }
+	public abstract class ResolutionSizer<T> : UIBehaviour, ILayoutController, ILayoutSelfController,
+		IResolutionDependency
+	{
+		protected abstract ScreenDependentSize<T> sizer { get; }
 
-        public virtual void SetLayoutVertical()
-        {
-            UpdateSize();
-        }
+		public virtual void SetLayoutHorizontal()
+		{
+			UpdateSize();
+		}
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            UpdateSize();
-        }
+		public virtual void SetLayoutVertical()
+		{
+			UpdateSize();
+		}
+
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			UpdateSize();
+		}
 
 #if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            this.SetDirty();
-        }
+		protected override void OnValidate()
+		{
+			SetDirty();
+		}
 #endif
 
-        protected void SetDirty()
-        {
-            if (!(this.isActiveAndEnabled))
-            {
-                return;
-            }
+		protected void SetDirty()
+		{
+			if (!isActiveAndEnabled) return;
 
-            this.UpdateSize();
-        }
+			UpdateSize();
+		}
 
-        protected override void OnRectTransformDimensionsChange()
-        {
-            base.OnRectTransformDimensionsChange();
-            UpdateSize();
-        }
-        
-        void UpdateSize()
-        {
-            if(!(isActiveAndEnabled))
-            {
-                return;
-            }
+		protected override void OnRectTransformDimensionsChange()
+		{
+			base.OnRectTransformDimensionsChange();
+			UpdateSize();
+		}
 
-            T newSize = sizer.CalculateSize(this);
-            this.ApplySize(newSize);
-        }
+		private void UpdateSize()
+		{
+			if (!isActiveAndEnabled) return;
 
-        protected abstract void ApplySize(T newSize);
+			var newSize = sizer.CalculateSize(this);
+			ApplySize(newSize);
+		}
 
-        public void OnResolutionChanged()
-        {
-            UpdateSize();
-        }
-    }
+		protected abstract void ApplySize(T newSize);
 
+		public void OnResolutionChanged()
+		{
+			UpdateSize();
+		}
+	}
 }

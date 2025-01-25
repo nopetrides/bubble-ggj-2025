@@ -1,48 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class IsCertainScreenOrientation : IScreenTypeCheck
-    {
-        public enum Orientation
-        {
-            Portrait,
-            Landscape,
-        }
+	[Serializable]
+	public class IsCertainScreenOrientation : IScreenTypeCheck
+	{
+		public enum Orientation
+		{
+			Portrait,
+			Landscape
+		}
 
-        [SerializeField]
-        Orientation expectedOrientation;
-        public Orientation ExpectedOrientation { get { return expectedOrientation; } set { expectedOrientation = value; } }
+		[SerializeField] private Orientation expectedOrientation;
 
-        [SerializeField]
-        bool isActive;
-        public bool IsActive { get { return isActive; } set { isActive = value; } }
+		[SerializeField] private bool isActive;
 
-        public IsCertainScreenOrientation(Orientation expectedOrientation)
-        {
-            this.expectedOrientation = expectedOrientation;
-        }
+		public IsCertainScreenOrientation(Orientation expectedOrientation)
+		{
+			this.expectedOrientation = expectedOrientation;
+		}
 
-        public bool IsScreenType()
-        {
-            var res = ResolutionMonitor.CurrentResolution;
+		public Orientation ExpectedOrientation
+		{
+			get => expectedOrientation;
+			set => expectedOrientation = value;
+		}
 
-            switch (expectedOrientation)
-            {
-                case Orientation.Portrait:
-                    return res.x < res.y;
+		public bool IsActive
+		{
+			get => isActive;
+			set => isActive = value;
+		}
 
-                case Orientation.Landscape:
-                    return res.x >= res.y;
+		public bool IsScreenType()
+		{
+			var res = ResolutionMonitor.CurrentResolution;
 
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-    }
+			switch (expectedOrientation)
+			{
+				case Orientation.Portrait:
+					return res.x < res.y;
+
+				case Orientation.Landscape:
+					return res.x >= res.y;
+
+				default:
+					throw new NotImplementedException();
+			}
+		}
+	}
 }

@@ -1,301 +1,285 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 #pragma warning disable 0618 // disable "never assigned" warnings
 
 namespace TheraBytes.BetterUi
 {
-    [HelpURL("https://documentation.therabytes.de/better-ui/ResolutionMonitor.html")]
-    public class ResolutionMonitor : SingletonScriptableObject<ResolutionMonitor>
-    {
-        static string FilePath { get { return "TheraBytes/Resources/ResolutionMonitor"; } }
+	[HelpURL("https://documentation.therabytes.de/better-ui/ResolutionMonitor.html")]
+	public class ResolutionMonitor : SingletonScriptableObject<ResolutionMonitor>
+	{
+		private static string FilePath => "TheraBytes/Resources/ResolutionMonitor";
 
 
-        #region Obsolete
-        [Obsolete("Use 'GetOptimizedResolution()' instead.")]
-        public static Vector2 OptimizedResolution
-        {
-            get { return ResolutionMonitor.Instance.optimizedResolutionFallback; }
-            set
-            {
-                if (ResolutionMonitor.Instance.optimizedResolutionFallback == value)
-                    return;
+#region Obsolete
 
-                ResolutionMonitor.Instance.optimizedResolutionFallback = value;
-                CallResolutionChanged();
-            }
-        }
+		[Obsolete("Use 'GetOptimizedResolution()' instead.")]
+		public static Vector2 OptimizedResolution
+		{
+			get => Instance.optimizedResolutionFallback;
+			set
+			{
+				if (Instance.optimizedResolutionFallback == value)
+					return;
 
-        [Obsolete("Use 'GetOptimizedDpi()' instead.")]
-        public static float OptimizedDpi
-        {
-            get { return ResolutionMonitor.Instance.optimizedDpiFallback; }
-            set
-            {
-                if (ResolutionMonitor.Instance.optimizedDpiFallback == value)
-                    return;
+				Instance.optimizedResolutionFallback = value;
+				CallResolutionChanged();
+			}
+		}
 
-                ResolutionMonitor.Instance.optimizedDpiFallback = value;
-                CallResolutionChanged();
-            }
-        }
-        #endregion
+		[Obsolete("Use 'GetOptimizedDpi()' instead.")]
+		public static float OptimizedDpi
+		{
+			get => Instance.optimizedDpiFallback;
+			set
+			{
+				if (Instance.optimizedDpiFallback == value)
+					return;
 
-        public static Vector2 CurrentResolution
-        {
-            get
-            {
-                if (lastScreenResolution == Vector2.zero)
-                {
-                    lastScreenResolution = new Vector2(Screen.width, Screen.height);
-                }
+				Instance.optimizedDpiFallback = value;
+				CallResolutionChanged();
+			}
+		}
 
-                return lastScreenResolution;
-            }
-        }
+#endregion
 
-        public static float CurrentDpi
-        {
-            get
-            {
-                if (lastDpi == 0)
-                {
-                    lastDpi = Instance.dpiManager.GetDpi();
-                }
+		public static Vector2 CurrentResolution
+		{
+			get
+			{
+				if (lastScreenResolution == Vector2.zero)
+					lastScreenResolution = new Vector2(Screen.width, Screen.height);
 
-                return lastDpi;
-            }
-        }
+				return lastScreenResolution;
+			}
+		}
 
-        public string FallbackName { get { return fallbackName; } set { fallbackName = value; } }
+		public static float CurrentDpi
+		{
+			get
+			{
+				if (lastDpi == 0) lastDpi = Instance.dpiManager.GetDpi();
 
-        public static Vector2 OptimizedResolutionFallback { get { return ResolutionMonitor.Instance.optimizedResolutionFallback; } }
-        public static float OptimizedDpiFallback { get { return ResolutionMonitor.Instance.optimizedDpiFallback; } }
+				return lastDpi;
+			}
+		}
 
-        [FormerlySerializedAs("optimizedResolution")]
-        [SerializeField]
-        Vector2 optimizedResolutionFallback = new Vector2(1080, 1920);
+		public string FallbackName
+		{
+			get => fallbackName;
+			set => fallbackName = value;
+		}
 
-        [FormerlySerializedAs("optimizedDpi")]
-        [SerializeField]
-        float optimizedDpiFallback = 96;
+		public static Vector2 OptimizedResolutionFallback => Instance.optimizedResolutionFallback;
+		public static float OptimizedDpiFallback => Instance.optimizedDpiFallback;
 
-        [SerializeField]
-        string fallbackName = "Portrait";
+		[FormerlySerializedAs("optimizedResolution")] [SerializeField]
+		private Vector2 optimizedResolutionFallback = new(1080, 1920);
 
-        [SerializeField]
-        StaticSizerMethod[] staticSizerMethods = new StaticSizerMethod[5];
+		[FormerlySerializedAs("optimizedDpi")] [SerializeField]
+		private float optimizedDpiFallback = 96;
 
-        [SerializeField]
-        DpiManager dpiManager = new DpiManager();
+		[SerializeField] private string fallbackName = "Portrait";
 
-        ScreenTypeConditions currentScreenConfig;
+		[SerializeField] private StaticSizerMethod[] staticSizerMethods = new StaticSizerMethod[5];
 
-        [SerializeField]
-        List<ScreenTypeConditions> optimizedScreens = new List<ScreenTypeConditions>()
-        {
-            new ScreenTypeConditions("Landscape", typeof(IsCertainScreenOrientation)),
-        };
+		[SerializeField] private DpiManager dpiManager = new();
 
-        public List<ScreenTypeConditions> OptimizedScreens { get { return optimizedScreens; } }
+		private ScreenTypeConditions currentScreenConfig;
 
-        static Dictionary<string, ScreenTypeConditions> lookUpScreens = new Dictionary<string, ScreenTypeConditions>();
+		[SerializeField] private List<ScreenTypeConditions> optimizedScreens = new()
+		{
+			new("Landscape", typeof(IsCertainScreenOrientation))
+		};
 
-        #region Screen Tags
+		public List<ScreenTypeConditions> OptimizedScreens => optimizedScreens;
 
-        static HashSet<string> screenTags = new HashSet<string>();
-        public static IEnumerable<string> CurrentScreenTags { get { return screenTags; } }
+		private static readonly Dictionary<string, ScreenTypeConditions> lookUpScreens = new();
 
-        public static bool AddScreenTag(string screenTag)
-        {
-            if(screenTags.Add(screenTag))
-            {
-                isDirty = true;
-                Update();
-                return true;
-            }
+#region Screen Tags
 
-            return false;
-        }
+		private static readonly HashSet<string> screenTags = new();
+		public static IEnumerable<string> CurrentScreenTags => screenTags;
 
-        public static bool RemoveScreenTag(string screenTag)
-        {
-            if (screenTags.Remove(screenTag))
-            {
-                isDirty = true;
-                Update();
-                return true;
-            }
+		public static bool AddScreenTag(string screenTag)
+		{
+			if (screenTags.Add(screenTag))
+			{
+				isDirty = true;
+				Update();
+				return true;
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        public static void ClearScreenTags()
-        {
-            screenTags.Clear();
-            isDirty = true;
-            Update();
-        }
+		public static bool RemoveScreenTag(string screenTag)
+		{
+			if (screenTags.Remove(screenTag))
+			{
+				isDirty = true;
+				Update();
+				return true;
+			}
 
-        #endregion
+			return false;
+		}
+
+		public static void ClearScreenTags()
+		{
+			screenTags.Clear();
+			isDirty = true;
+			Update();
+		}
+
+#endregion
 
 #if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
-        static UnityEditor.SceneManagement.StageHandle currentStage;
+		private static StageHandle currentStage;
 #endif
 
-        public static ScreenTypeConditions CurrentScreenConfiguration
-        {
-            get
-            {
+		public static ScreenTypeConditions CurrentScreenConfiguration
+		{
+			get
+			{
 #if UNITY_EDITOR
-                if (simulatedScreenConfig != null)
-                {
-                    return simulatedScreenConfig;
-                }
+				if (simulatedScreenConfig != null) return simulatedScreenConfig;
 #endif
-                return ResolutionMonitor.Instance.currentScreenConfig;
-            }
-        }
+				return Instance.currentScreenConfig;
+			}
+		}
 
-        public static ScreenTypeConditions GetConfig(string name)
-        {
-            if (lookUpScreens.Count == 0)
-            {
-                foreach (var config in ResolutionMonitor.Instance.optimizedScreens)
-                {
-                    lookUpScreens.Add(config.Name, config);
-                }
-            }
+		public static ScreenTypeConditions GetConfig(string name)
+		{
+			if (lookUpScreens.Count == 0)
+				foreach (var config in Instance.optimizedScreens)
+					lookUpScreens.Add(config.Name, config);
 
-            if (!(lookUpScreens.ContainsKey(name)))
-            {
-                var config = ResolutionMonitor.Instance.optimizedScreens.FirstOrDefault(o => o.Name == name);
+			if (!lookUpScreens.ContainsKey(name))
+			{
+				var config = Instance.optimizedScreens.FirstOrDefault(o => o.Name == name);
 
-                if (config != null)
-                {
-                    lookUpScreens.Add(name, config);
-                    return config;
-                }
-                else
-                {
-                    return null;
-                }
-            }
+				if (config != null)
+				{
+					lookUpScreens.Add(name, config);
+					return config;
+				}
 
-            return lookUpScreens[name];
-        }
+				return null;
+			}
+
+			return lookUpScreens[name];
+		}
 
 
-        public static ScreenInfo GetOpimizedScreenInfo(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                return new ScreenInfo(OptimizedResolutionFallback, OptimizedDpiFallback);
-            }
+		public static ScreenInfo GetOpimizedScreenInfo(string name)
+		{
+			if (string.IsNullOrEmpty(name)) return new ScreenInfo(OptimizedResolutionFallback, OptimizedDpiFallback);
 
-            return GetConfig(name).OptimizedScreenInfo;
-        }
+			return GetConfig(name).OptimizedScreenInfo;
+		}
 
 
-        public static IEnumerable<ScreenTypeConditions> GetCurrentScreenConfigurations()
-        {
-            foreach (ScreenTypeConditions config in ResolutionMonitor.Instance.optimizedScreens)
-            {
-                if (config.IsActive)
-                    yield return config;
-            }
-        }
+		public static IEnumerable<ScreenTypeConditions> GetCurrentScreenConfigurations()
+		{
+			foreach (var config in Instance.optimizedScreens)
+				if (config.IsActive)
+					yield return config;
+		}
 
 
-        static Vector2 lastScreenResolution;
-        static float lastDpi;
+		private static Vector2 lastScreenResolution;
+		private static float lastDpi;
 
-        static bool isDirty;
+		private static bool isDirty;
 
 #if UNITY_EDITOR
-        static Type gameViewType = null;
-        static UnityEditor.EditorWindow gameViewWindow = null;
-        static Version unityVersion;
+		private static Type gameViewType;
+		private static EditorWindow gameViewWindow;
+		private static Version unityVersion;
 
-        static ScreenTypeConditions simulatedScreenConfig;
-        public static ScreenTypeConditions SimulatedScreenConfig
-        {
-            get { return simulatedScreenConfig; }
-            set
-            {
-                if (simulatedScreenConfig != value)
-                    isDirty = true;
+		private static ScreenTypeConditions simulatedScreenConfig;
 
-                simulatedScreenConfig = value;
-            }
-        }
+		public static ScreenTypeConditions SimulatedScreenConfig
+		{
+			get => simulatedScreenConfig;
+			set
+			{
+				if (simulatedScreenConfig != value)
+					isDirty = true;
 
-        void OnEnable()
-        {
-            RegisterCallbacks();
-        }
+				simulatedScreenConfig = value;
+			}
+		}
 
-        void OnDisable()
-        {
-            UnregisterCallbacks();
-        }
+		private void OnEnable()
+		{
+			RegisterCallbacks();
+		}
 
-        static void RegisterCallbacks()
-        {
-            unityVersion = UnityEditorInternal.InternalEditorUtility.GetUnityVersion();
+		private void OnDisable()
+		{
+			UnregisterCallbacks();
+		}
 
-            isDirty = true;
+		private static void RegisterCallbacks()
+		{
+			unityVersion = InternalEditorUtility.GetUnityVersion();
 
-            UnityEditor.EditorApplication.update += Update;
+			isDirty = true;
+
+			EditorApplication.update += Update;
 
 #if UNITY_5_6_OR_NEWER
-            UnityEditor.SceneManagement.EditorSceneManager.sceneOpened += SceneOpened;
+			EditorSceneManager.sceneOpened += SceneOpened;
 #endif
 
 #if UNITY_2018_0_OR_NEWER
             UnityEditor.EditorApplication.playModeStateChanged += PlayModeStateChanged;
 #else
-            UnityEditor.EditorApplication.playmodeStateChanged += PlayModeStateChanged;
+			EditorApplication.playmodeStateChanged += PlayModeStateChanged;
 #endif
-        }
+		}
 
-        static void UnregisterCallbacks()
-        {
-            UnityEditor.EditorApplication.update -= Update;
+		private static void UnregisterCallbacks()
+		{
+			EditorApplication.update -= Update;
 
 #if UNITY_5_6_OR_NEWER
-            UnityEditor.SceneManagement.EditorSceneManager.sceneOpened -= SceneOpened;
+			EditorSceneManager.sceneOpened -= SceneOpened;
 #endif
 
 #if UNITY_2018_0_OR_NEWER
             UnityEditor.EditorApplication.playModeStateChanged -= PlayModeStateChanged;
 #else
-            UnityEditor.EditorApplication.playmodeStateChanged -= PlayModeStateChanged;
+			EditorApplication.playmodeStateChanged -= PlayModeStateChanged;
 #endif
-        }
+		}
 
 
 #if UNITY_5_6_OR_NEWER
-        private static void SceneOpened(UnityEngine.SceneManagement.Scene scene, UnityEditor.SceneManagement.OpenSceneMode mode)
-        {
-            isDirty = true;
-            Update();
-        }
+		private static void SceneOpened(Scene scene, OpenSceneMode mode)
+		{
+			isDirty = true;
+			Update();
+		}
 #endif
 
 
-        private static void PlayModeStateChanged()
-        {
-            if(!UnityEditor.EditorApplication.isPlaying)
-            {
-                ClearScreenTags();
-            }
+		private static void PlayModeStateChanged()
+		{
+			if (!EditorApplication.isPlaying) ClearScreenTags();
 
-            Instance.ResolutionChanged();
-        }
+			Instance.ResolutionChanged();
+		}
 #else
         void OnEnable()
         {
@@ -303,309 +287,303 @@ namespace TheraBytes.BetterUi
         }
 #endif
 
-        public static float InvokeStaticMethod(ImpactMode mode, Component caller, Vector2 optimizedResolution, Vector2 actualResolution, float optimizedDpi, float actualDpi)
-        {
-            int idx = 0;
-            switch (mode)
-            {
-                case ImpactMode.StaticMethod1: idx = 0; break;
-                case ImpactMode.StaticMethod2: idx = 1; break;
-                case ImpactMode.StaticMethod3: idx = 2; break;
-                case ImpactMode.StaticMethod4: idx = 3; break;
-                case ImpactMode.StaticMethod5: idx = 4; break;
-                default: throw new ArgumentException();
-            }
+		public static float InvokeStaticMethod(ImpactMode mode, Component caller, Vector2 optimizedResolution,
+			Vector2 actualResolution, float optimizedDpi, float actualDpi)
+		{
+			var idx = 0;
+			switch (mode)
+			{
+				case ImpactMode.StaticMethod1:
+					idx = 0;
+					break;
+				case ImpactMode.StaticMethod2:
+					idx = 1;
+					break;
+				case ImpactMode.StaticMethod3:
+					idx = 2;
+					break;
+				case ImpactMode.StaticMethod4:
+					idx = 3;
+					break;
+				case ImpactMode.StaticMethod5:
+					idx = 4;
+					break;
+				default: throw new ArgumentException();
+			}
 
-            return (ResolutionMonitor.HasInstance && Instance.staticSizerMethods[idx] != null)
-                ? Instance.staticSizerMethods[idx].Invoke(caller, optimizedResolution, actualResolution, optimizedDpi, actualDpi)
-                : 1;
-        }
-
-
-        public static void MarkDirty()
-        {
-            ResolutionMonitor.isDirty = true;
-        }
-
-        public static float GetOptimizedDpi(string screenName)
-        {
-            if (string.IsNullOrEmpty(screenName) || screenName == Instance.fallbackName)
-                return OptimizedDpiFallback;
-
-            var s = Instance.optimizedScreens.FirstOrDefault(o => o.Name == screenName);
-            if (s == null)
-            {
-                Debug.LogError("Screen Config with name " + screenName + " could not be found.");
-                return OptimizedDpiFallback;
-            }
-
-            return s.OptimizedDpi;
-        }
+			return HasInstance && Instance.staticSizerMethods[idx] != null
+				? Instance.staticSizerMethods[idx]
+					.Invoke(caller, optimizedResolution, actualResolution, optimizedDpi, actualDpi)
+				: 1;
+		}
 
 
-        public static Vector2 GetOptimizedResolution(string screenName)
-        {
-            if (string.IsNullOrEmpty(screenName) || screenName == Instance.fallbackName)
-                return OptimizedResolutionFallback;
+		public static void MarkDirty()
+		{
+			isDirty = true;
+		}
 
-            var s = GetConfig(screenName);
-            if (s == null)
-                return OptimizedResolutionFallback;
+		public static float GetOptimizedDpi(string screenName)
+		{
+			if (string.IsNullOrEmpty(screenName) || screenName == Instance.fallbackName)
+				return OptimizedDpiFallback;
 
-            return s.OptimizedResolution;
-        }
+			var s = Instance.optimizedScreens.FirstOrDefault(o => o.Name == screenName);
+			if (s == null)
+			{
+				Debug.LogError("Screen Config with name " + screenName + " could not be found.");
+				return OptimizedDpiFallback;
+			}
 
-        public static bool IsOptimizedResolution(int width, int height)
-        {
-            if ((int)OptimizedResolutionFallback.x == width && (int)OptimizedResolutionFallback.y == height)
-                return true;
+			return s.OptimizedDpi;
+		}
 
-            foreach (var config in Instance.optimizedScreens)
-            {
-                ScreenInfo si = config.OptimizedScreenInfo;
-                if (si != null && (int)si.Resolution.x == width && (int)si.Resolution.y == height)
-                    return true;
-            }
 
-            return false;
-        }
+		public static Vector2 GetOptimizedResolution(string screenName)
+		{
+			if (string.IsNullOrEmpty(screenName) || screenName == Instance.fallbackName)
+				return OptimizedResolutionFallback;
 
-        public static void Update()
-        {
+			var s = GetConfig(screenName);
+			if (s == null)
+				return OptimizedResolutionFallback;
+
+			return s.OptimizedResolution;
+		}
+
+		public static bool IsOptimizedResolution(int width, int height)
+		{
+			if ((int)OptimizedResolutionFallback.x == width && (int)OptimizedResolutionFallback.y == height)
+				return true;
+
+			foreach (var config in Instance.optimizedScreens)
+			{
+				var si = config.OptimizedScreenInfo;
+				if (si != null && (int)si.Resolution.x == width && (int)si.Resolution.y == height)
+					return true;
+			}
+
+			return false;
+		}
+
+		public static void Update()
+		{
 #if UNITY_EDITOR
-            // check if file was deleted
-            if(!HasInstance)
-            {
-                UnregisterCallbacks();
-                return;
-            }
+			// check if file was deleted
+			if (!HasInstance)
+			{
+				UnregisterCallbacks();
+				return;
+			}
 #endif
 
-            isDirty = isDirty
+			isDirty = isDirty
 #if UNITY_EDITOR // should never change in reality...
-                || (Instance.GetCurrentDpi() != lastDpi)
+					|| Instance.GetCurrentDpi() != lastDpi
 #endif
-                || GetCurrentResolution() != lastScreenResolution;
+					|| GetCurrentResolution() != lastScreenResolution;
 
 #if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
-            if(!isDirty)
-            {
-                var stage = UnityEditor.SceneManagement.StageUtility.GetCurrentStageHandle();
-                if (stage != currentStage)
-                {
-                    currentStage = stage;
-                    isDirty = true;
-                }
-            }
+			if (!isDirty)
+			{
+				var stage = StageUtility.GetCurrentStageHandle();
+				if (stage != currentStage)
+				{
+					currentStage = stage;
+					isDirty = true;
+				}
+			}
 #endif
 
-            if (isDirty)
-            {
-                CallResolutionChanged();
-                isDirty = false;
-            }
-        }
+			if (isDirty)
+			{
+				CallResolutionChanged();
+				isDirty = false;
+			}
+		}
 
-        public static void CallResolutionChanged()
-        {
-            Instance.ResolutionChanged();
-        }
+		public static void CallResolutionChanged()
+		{
+			Instance.ResolutionChanged();
+		}
 
-        public void ResolutionChanged()
-        {
-            lastScreenResolution = GetCurrentResolution();
-            lastDpi = GetCurrentDpi();
+		public void ResolutionChanged()
+		{
+			lastScreenResolution = GetCurrentResolution();
+			lastDpi = GetCurrentDpi();
 
-            currentScreenConfig = null;
+			currentScreenConfig = null;
 
-            bool foundConfig = false;
-            foreach (var config in optimizedScreens)
-            {
-                if (config.IsScreenType() && !(foundConfig))
-                {
-                    currentScreenConfig = config;
-                    foundConfig = true;
-                }
-            }
+			var foundConfig = false;
+			foreach (var config in optimizedScreens)
+				if (config.IsScreenType() && !foundConfig)
+				{
+					currentScreenConfig = config;
+					foundConfig = true;
+				}
 
-            if (ResolutionMonitor.HasInstance) // preserve calling too early
-            {
-                foreach (IResolutionDependency rd in AllResolutionDependencies())
-                {
-                    if (!(rd as Behaviour).isActiveAndEnabled)
-                        continue;
+			if (HasInstance) // preserve calling too early
+				foreach (var rd in AllResolutionDependencies())
+				{
+					if (!(rd as Behaviour).isActiveAndEnabled)
+						continue;
 
-                    rd.OnResolutionChanged();
-                }
-            }
+					rd.OnResolutionChanged();
+				}
 
 #if UNITY_EDITOR
-            if (IsZoomPossible())
-            {
-                FindAndStoreGameView();
-                if (gameViewWindow != null)
-                {
-                    var method = gameViewType.GetMethod("UpdateZoomAreaAndParent",
-                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+			if (IsZoomPossible())
+			{
+				FindAndStoreGameView();
+				if (gameViewWindow != null)
+				{
+					var method = gameViewType.GetMethod("UpdateZoomAreaAndParent",
+						BindingFlags.Instance | BindingFlags.NonPublic);
 
-                    try
-                    {
-                        if (method != null)
-                            method.Invoke(gameViewWindow, null);
-                    }
-                    catch (Exception) { }
-                }
-            }
+					try
+					{
+						if (method != null)
+							method.Invoke(gameViewWindow, null);
+					}
+					catch (Exception)
+					{
+					}
+				}
+			}
 #endif
-        }
+		}
 
-        static IEnumerable<IResolutionDependency> AllResolutionDependencies()
-        {
-            var allObjects = GetAllEditableObjects();
+		private static IEnumerable<IResolutionDependency> AllResolutionDependencies()
+		{
+			var allObjects = GetAllEditableObjects();
 
-            // first update the "override screen properties", because other objects rely on them
-            foreach (GameObject go in allObjects)
-            {
-                var resDeps = go.GetComponents<OverrideScreenProperties>();
-                foreach (IResolutionDependency comp in resDeps)
-                {
-                    yield return comp;
-                }
-            }
+			// first update the "override screen properties", because other objects rely on them
+			foreach (var go in allObjects)
+			{
+				var resDeps = go.GetComponents<OverrideScreenProperties>();
+				foreach (IResolutionDependency comp in resDeps) yield return comp;
+			}
 
-            // then update all other objects
-            foreach (GameObject go in allObjects)
-            {
-                var resDeps = go.GetComponents<Behaviour>().OfType<IResolutionDependency>();
-                foreach (IResolutionDependency comp in resDeps)
-                {
-                    if (comp is OverrideScreenProperties)
-                        continue;
+			// then update all other objects
+			foreach (var go in allObjects)
+			{
+				var resDeps = go.GetComponents<Behaviour>().OfType<IResolutionDependency>();
+				foreach (var comp in resDeps)
+				{
+					if (comp is OverrideScreenProperties)
+						continue;
 
-                    yield return comp;
-                }
-            }
-        }
+					yield return comp;
+				}
+			}
+		}
 
-        static IEnumerable<GameObject> GetAllEditableObjects()
-        {
-            var allObjects =
+		private static IEnumerable<GameObject> GetAllEditableObjects()
+		{
+			var allObjects =
 #if UNITY_2022_2_OR_NEWER
-                UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+				FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 #else
                 UnityEngine.Object.FindObjectsOfType<GameObject>();
 #endif
 
-            foreach (GameObject go in allObjects)
-                yield return go;
+			foreach (var go in allObjects)
+				yield return go;
 
 #if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
-            var prefabStage =
+			var prefabStage =
 #if UNITY_2021_2_OR_NEWER
-                UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+				PrefabStageUtility.GetCurrentPrefabStage();
 #else
                 UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
 #endif
 
-            if (prefabStage != null)
-            {
-                foreach(GameObject root in prefabStage.scene.GetRootGameObjects())
-                {
-                    foreach (GameObject go in IterateHierarchy(root))
-                    {
-                        yield return go;
-                    }
-                }
-            }
+			if (prefabStage != null)
+				foreach (var root in prefabStage.scene.GetRootGameObjects())
+				{
+					foreach (var go in IterateHierarchy(root)) yield return go;
+				}
 #endif
-        }
+		}
 
-        static IEnumerable<GameObject> IterateHierarchy(GameObject root)
-        {
-            yield return root;
+		private static IEnumerable<GameObject> IterateHierarchy(GameObject root)
+		{
+			yield return root;
 
-            foreach (Transform child in root.transform)
-            {
-                foreach (GameObject subChild in IterateHierarchy(child.gameObject))
-                {
-                    yield return subChild;
-                }
-            }
-        }
+			foreach (Transform child in root.transform)
+			{
+				foreach (var subChild in IterateHierarchy(child.gameObject)) yield return subChild;
+			}
+		}
 
-        static Vector2 GetCurrentResolution()
-        {
+		private static Vector2 GetCurrentResolution()
+		{
 #if UNITY_EDITOR
-            FindAndStoreGameView();
+			FindAndStoreGameView();
 
-            System.Reflection.MethodInfo GetSizeOfMainGameView = gameViewType.GetMethod("GetSizeOfMainGameView",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+			var GetSizeOfMainGameView = gameViewType.GetMethod("GetSizeOfMainGameView",
+				BindingFlags.NonPublic | BindingFlags.Static);
 
-            object res = GetSizeOfMainGameView.Invoke(null, null);
-            return (Vector2)res;
+			var res = GetSizeOfMainGameView.Invoke(null, null);
+			return (Vector2)res;
 #else
             return new Vector2(Screen.width, Screen.height);
 #endif
-        }
+		}
 
-        float GetCurrentDpi()
-        {
+		private float GetCurrentDpi()
+		{
 #if UNITY_EDITOR
 
-            if (IsZoomPossible())
-            {
-                Vector2 scale = Vector2.one;
+			if (IsZoomPossible())
+			{
+				var scale = Vector2.one;
 
-                FindAndStoreGameView();
+				FindAndStoreGameView();
 
-                if (gameViewWindow != null)
-                {
-                    var zoomArea = gameViewType.GetField("m_ZoomArea",
-                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-                        .GetValue(gameViewWindow);
+				if (gameViewWindow != null)
+				{
+					var zoomArea = gameViewType.GetField("m_ZoomArea",
+							BindingFlags.Instance | BindingFlags.NonPublic)
+						.GetValue(gameViewWindow);
 
-                    scale = (Vector2)zoomArea.GetType().GetField("m_Scale",
-                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-                        .GetValue(zoomArea);
-                }
+					scale = (Vector2)zoomArea.GetType().GetField("m_Scale",
+							BindingFlags.Instance | BindingFlags.NonPublic)
+						.GetValue(zoomArea);
+				}
 
-                return Screen.dpi / scale.y;
-            }
+				return Screen.dpi / scale.y;
+			}
 #endif
-            return dpiManager.GetDpi();
-        }
+			return dpiManager.GetDpi();
+		}
 
 #if UNITY_EDITOR
-        static void FindAndStoreGameView()
-        {
-            if (gameViewType == null)
-            {
-                gameViewType = Type.GetType("UnityEditor.GameView,UnityEditor");
-            }
+		private static void FindAndStoreGameView()
+		{
+			if (gameViewType == null) gameViewType = Type.GetType("UnityEditor.GameView,UnityEditor");
 
-            if (gameViewWindow == null)
-            {
-                gameViewWindow = Resources.FindObjectsOfTypeAll(gameViewType)
-                    .FirstOrDefault() as UnityEditor.EditorWindow;
-            }
-        }
+			if (gameViewWindow == null)
+				gameViewWindow = Resources.FindObjectsOfTypeAll(gameViewType)
+					.FirstOrDefault() as EditorWindow;
+		}
 
-        public static bool IsZoomPossible()
-        {
+		public static bool IsZoomPossible()
+		{
 #if UNITY_2018_3_OR_NEWER // minimum officially supported version
-            return true;
+			return true;
 #else
             return unityVersion.Major > 5
                 || (unityVersion.Major == 5 && unityVersion.Minor >= 4);
 #endif
-        }
+		}
 
-        public void SetOptimizedResolutionFallback(Vector2 resolution)
-        {
-            this.optimizedResolutionFallback = resolution;
-        }
+		public void SetOptimizedResolutionFallback(Vector2 resolution)
+		{
+			optimizedResolutionFallback = resolution;
+		}
 #endif
-        }
+	}
 }
 
 #pragma warning restore 0618

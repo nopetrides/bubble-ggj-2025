@@ -1,96 +1,100 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class IsScreenOfCertainSize : IScreenTypeCheck
-    {
-        public const float DEFAULT_SMALL_THRESHOLD = 4.7f;
-        public const float DEFAULT_LARGE_THRESHOLD = 7.6f;
+	[Serializable]
+	public class IsScreenOfCertainSize : IScreenTypeCheck
+	{
+		public enum ScreenMeasure
+		{
+			Width,
+			Height,
+			Diagonal
+		}
 
-        public enum ScreenMeasure
-        {
-            Width,
-            Height,
-            Diagonal,
-        }
+		public enum UnitType
+		{
+			Inches,
+			Centimeters
+		}
 
-        public enum UnitType
-        {
-            Inches,
-            Centimeters,
-        }
-        
-        [SerializeField]
-        ScreenMeasure measureType = ScreenMeasure.Height;
+		public const float DEFAULT_SMALL_THRESHOLD = 4.7f;
+		public const float DEFAULT_LARGE_THRESHOLD = 7.6f;
 
-        [SerializeField]
-        UnitType unitType;
+		[SerializeField] private ScreenMeasure measureType = ScreenMeasure.Height;
 
-        [SerializeField]
-        float minSizeInInches = DEFAULT_SMALL_THRESHOLD;
+		[SerializeField] private UnitType unitType;
 
-        [SerializeField]
-        float maxSizeInInches = DEFAULT_LARGE_THRESHOLD;
+		[SerializeField] private float minSizeInInches = DEFAULT_SMALL_THRESHOLD;
 
-        public ScreenMeasure MeasureType { get { return measureType; } set { measureType = value; } }
+		[SerializeField] private float maxSizeInInches = DEFAULT_LARGE_THRESHOLD;
 
-        public UnitType Units { get { return unitType; } set { unitType = value; } }
+		[SerializeField] private bool isActive;
 
-        public float MinSize
-        {
-            get { return (unitType == UnitType.Centimeters) ? 2.54f * minSizeInInches : minSizeInInches; }
-            set { minSizeInInches = (unitType == UnitType.Centimeters) ? value / 2.54f : value; }
-        }
+		public IsScreenOfCertainSize()
+		{
+		}
 
-        public float MaxSize
-        {
-            get { return (unitType == UnitType.Centimeters) ? 2.54f * maxSizeInInches : maxSizeInInches; }
-            set { maxSizeInInches = (unitType == UnitType.Centimeters) ? value / 2.54f : value; }
-        }
+		public IsScreenOfCertainSize(float minHeighInInches, float maxHeightInInches)
+		{
+			minSizeInInches = minHeighInInches;
+			maxSizeInInches = maxHeightInInches;
+		}
 
-        [SerializeField]
-        bool isActive;
-        public bool IsActive { get { return isActive; } set { isActive = value; } }
+		public ScreenMeasure MeasureType
+		{
+			get => measureType;
+			set => measureType = value;
+		}
 
-        public IsScreenOfCertainSize()
-        {
+		public UnitType Units
+		{
+			get => unitType;
+			set => unitType = value;
+		}
 
-        }
+		public float MinSize
+		{
+			get => unitType == UnitType.Centimeters ? 2.54f * minSizeInInches : minSizeInInches;
+			set => minSizeInInches = unitType == UnitType.Centimeters ? value / 2.54f : value;
+		}
 
-        public IsScreenOfCertainSize(float minHeighInInches, float maxHeightInInches)
-        {
-            this.minSizeInInches = minHeighInInches;
-            this.maxSizeInInches = maxHeightInInches;
-        }
+		public float MaxSize
+		{
+			get => unitType == UnitType.Centimeters ? 2.54f * maxSizeInInches : maxSizeInInches;
+			set => maxSizeInInches = unitType == UnitType.Centimeters ? value / 2.54f : value;
+		}
 
-        public bool IsScreenType()
-        {
-            Vector2 res = ResolutionMonitor.CurrentResolution;
-            float dpi = ResolutionMonitor.CurrentDpi;
+		public bool IsActive
+		{
+			get => isActive;
+			set => isActive = value;
+		}
 
-            float size = 0;
-            switch (measureType)
-            {
-                case ScreenMeasure.Width:
-                    size = res.x / dpi;
-                    break;
-                case ScreenMeasure.Height:
-                    size = res.y / dpi;
-                    break;
-                case ScreenMeasure.Diagonal:
-                    size = Mathf.Sqrt(res.x * res.x + res.y * res.y) / dpi;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+		public bool IsScreenType()
+		{
+			var res = ResolutionMonitor.CurrentResolution;
+			var dpi = ResolutionMonitor.CurrentDpi;
 
-            return size >= minSizeInInches
-                && size < maxSizeInInches;
-        }
-    }
+			float size = 0;
+			switch (measureType)
+			{
+				case ScreenMeasure.Width:
+					size = res.x / dpi;
+					break;
+				case ScreenMeasure.Height:
+					size = res.y / dpi;
+					break;
+				case ScreenMeasure.Diagonal:
+					size = Mathf.Sqrt(res.x * res.x + res.y * res.y) / dpi;
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+
+			return size >= minSizeInInches
+					&& size < maxSizeInInches;
+		}
+	}
 }

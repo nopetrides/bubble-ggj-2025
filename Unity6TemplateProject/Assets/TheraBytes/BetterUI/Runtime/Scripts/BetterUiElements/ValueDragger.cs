@@ -1,153 +1,151 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace TheraBytes.BetterUi
 {
-    [HelpURL("https://documentation.therabytes.de/better-ui/ValueDragger.html")]
-    [AddComponentMenu("Better UI/Controls/Value Dragger", 30)]
-    public class ValueDragger : BetterSelectable, IDragHandler, IBeginDragHandler, IPointerClickHandler
-    {
-        #region Nested Types
-        [Serializable]
-        public class ValueDragEvent : UnityEvent<float> { }
+	[HelpURL("https://documentation.therabytes.de/better-ui/ValueDragger.html")]
+	[AddComponentMenu("Better UI/Controls/Value Dragger", 30)]
+	public class ValueDragger : BetterSelectable, IDragHandler, IBeginDragHandler, IPointerClickHandler
+	{
+		[SerializeField] private DragSettings fallbackDragSettings = new();
 
-        public enum DragDirection
-        {
-            Horizontal = 0, // maps to Vector2's X index
-            Vertical = 1,   // maps to Vector2's Y index
-        }
+		[SerializeField] private DragSettingsConfigCollection customDragSettings = new();
 
-        [Serializable]
-        public class DragSettings : IScreenConfigConnection
-        {
-            public DragDirection Direction = DragDirection.Horizontal;
-            public bool Invert;
+		[SerializeField] private ValueSettings fallbackValueSettings = new();
 
-            [SerializeField]
-            string screenConfigName;
-            public string ScreenConfigName { get { return screenConfigName; } set { screenConfigName = value; } }
-        }
+		[SerializeField] private ValueSettingsConfigCollection customValueSettings = new();
 
-        [Serializable]
-        public class DragSettingsConfigCollection : SizeConfigCollection<DragSettings> { }
+		[SerializeField] private FloatSizeModifier fallbackDragDistance = new(1, float.Epsilon, 10000);
 
-        [Serializable]
-        public class ValueSettings : IScreenConfigConnection
-        {
-            public bool HasMinValue;
-            public float MinValue = 0f;
+		[SerializeField] private FloatSizeConfigCollection customDragDistance = new();
 
-            public bool HasMaxValue;
-            public float MaxValue = 1f;
+		[SerializeField] private float value;
 
-            public bool WholeNumbers;
+		[SerializeField] private ValueDragEvent onValueChanged = new();
 
-            [SerializeField]
-            string screenConfigName;
-            public string ScreenConfigName { get { return screenConfigName; } set { screenConfigName = value; } }
-        }
+		private float internalValue;
 
-        [Serializable]
-        public class ValueSettingsConfigCollection : SizeConfigCollection<ValueSettings> { }
-        #endregion
+		public DragSettings CurrentDragSettings => customDragSettings.GetCurrentItem(fallbackDragSettings);
 
-        [SerializeField]
-        DragSettings fallbackDragSettings = new DragSettings();
-        [SerializeField]
-        DragSettingsConfigCollection customDragSettings = new DragSettingsConfigCollection();
+		public ValueSettings CurrentValueSettings => customValueSettings.GetCurrentItem(fallbackValueSettings);
 
-        [SerializeField]
-        ValueSettings fallbackValueSettings = new ValueSettings();
-        [SerializeField]
-        ValueSettingsConfigCollection customValueSettings = new ValueSettingsConfigCollection();
+		public FloatSizeModifier CurrentDragDistanceSizer => customDragDistance.GetCurrentItem(fallbackDragDistance);
 
-        [SerializeField]
-        FloatSizeModifier fallbackDragDistance = new FloatSizeModifier(1, float.Epsilon, 10000);
-        [SerializeField]
-        FloatSizeConfigCollection customDragDistance = new FloatSizeConfigCollection();
+		public float Value
+		{
+			get => value;
+			set => ApplyValue(value);
+		}
 
-        [SerializeField]
-        float value;
+		public ValueDragEvent OnValueChanged
+		{
+			get => onValueChanged;
+			set => onValueChanged = value;
+		}
 
-        [SerializeField]
-        ValueDragEvent onValueChanged = new ValueDragEvent();
+		void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
+		{
+			internalValue = value;
+			CurrentDragDistanceSizer.CalculateSize(this);
+		}
 
-        float internalValue;
+		void IDragHandler.OnDrag(PointerEventData eventData)
+		{
+			var dragSettings = CurrentDragSettings;
 
-        public DragSettings CurrentDragSettings 
-        {
-            get { return customDragSettings.GetCurrentItem(fallbackDragSettings); } 
-        }
+			var axis = (int)dragSettings.Direction;
+			var delta = eventData.delta[axis];
+			var divisor = CurrentDragDistanceSizer.LastCalculatedSize;
 
-        public ValueSettings CurrentValueSettings
-        { 
-            get { return customValueSettings.GetCurrentItem(fallbackValueSettings); }
-        }
+			internalValue += dragSettings.Invert
+				? -delta / divisor
+				: delta / divisor;
 
-        public FloatSizeModifier CurrentDragDistanceSizer
-        { 
-            get { return customDragDistance.GetCurrentItem(fallbackDragDistance); } 
-        }
+			ApplyValue(internalValue);
+		}
 
-        public float Value { get { return this.value; } set { ApplyValue(value); } }
+		void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+		{
+			// consume the click by implementing this interface.
+			// we don't want to let the click pass through to a control higher up in the hierarchy.
+		}
 
-        public ValueDragEvent OnValueChanged { get { return onValueChanged; } set { onValueChanged = value; } }
+		private void ApplyValue(float val)
+		{
+			var valueSettings = CurrentValueSettings;
+			if (valueSettings.HasMinValue && val < valueSettings.MinValue)
+				val = valueSettings.MinValue;
+			else if (valueSettings.HasMaxValue && val > valueSettings.MaxValue) val = valueSettings.MaxValue;
 
-        void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
-        {
-            internalValue = value;
-            CurrentDragDistanceSizer.CalculateSize(this);
-        }
+			if (valueSettings.WholeNumbers) val = (int)val;
 
-        void IDragHandler.OnDrag(PointerEventData eventData)
-        {
-            var dragSettings = CurrentDragSettings;
+			if (val != value)
+			{
+				value = val;
+				onValueChanged.Invoke(value);
+			}
+		}
 
-            int axis = (int)dragSettings.Direction;
-            float delta = eventData.delta[axis];
-            float divisor = CurrentDragDistanceSizer.LastCalculatedSize;
+#region Nested Types
 
-            internalValue += (dragSettings.Invert)
-                ? -delta / divisor
-                :  delta / divisor;
+		[Serializable]
+		public class ValueDragEvent : UnityEvent<float>
+		{
+		}
 
-            ApplyValue(internalValue);
-        }
+		public enum DragDirection
+		{
+			Horizontal = 0, // maps to Vector2's X index
+			Vertical = 1 // maps to Vector2's Y index
+		}
 
-        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
-        {
-            // consume the click by implementing this interface.
-            // we don't want to let the click pass through to a control higher up in the hierarchy.
-        }
+		[Serializable]
+		public class DragSettings : IScreenConfigConnection
+		{
+			public DragDirection Direction = DragDirection.Horizontal;
+			public bool Invert;
 
-        private void ApplyValue(float val)
-        {
-            var valueSettings = CurrentValueSettings;
-            if(valueSettings.HasMinValue && val < valueSettings.MinValue)
-            {
-                val = valueSettings.MinValue;
-            }
-            else if(valueSettings.HasMaxValue && val > valueSettings.MaxValue)
-            {
-                val = valueSettings.MaxValue;
-            }
+			[SerializeField] private string screenConfigName;
 
-            if(valueSettings.WholeNumbers)
-            {
-                val = (int)val;
-            }
+			public string ScreenConfigName
+			{
+				get => screenConfigName;
+				set => screenConfigName = value;
+			}
+		}
 
-            if (val != value)
-            {
-                value = val;
-                onValueChanged.Invoke(value);
-            }
-        }
-    }
+		[Serializable]
+		public class DragSettingsConfigCollection : SizeConfigCollection<DragSettings>
+		{
+		}
+
+		[Serializable]
+		public class ValueSettings : IScreenConfigConnection
+		{
+			public bool HasMinValue;
+			public float MinValue;
+
+			public bool HasMaxValue;
+			public float MaxValue = 1f;
+
+			public bool WholeNumbers;
+
+			[SerializeField] private string screenConfigName;
+
+			public string ScreenConfigName
+			{
+				get => screenConfigName;
+				set => screenConfigName = value;
+			}
+		}
+
+		[Serializable]
+		public class ValueSettingsConfigCollection : SizeConfigCollection<ValueSettings>
+		{
+		}
+
+#endregion
+	}
 }

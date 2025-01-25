@@ -1,101 +1,91 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Object = UnityEngine.Object;
 
 namespace TheraBytes.BetterUi
 {
-    //
-    // GENERIC CLASS
-    //
-    public abstract class TransitionStateCollection<T> : TransitionStateCollection
-    {
-        [Serializable]
-        public abstract class TransitionState : TransitionStateBase
-        {
-            public T StateObject;
+	//
+	// GENERIC CLASS
+	//
+	public abstract class TransitionStateCollection<T> : TransitionStateCollection
+	{
+		protected TransitionStateCollection(string[] stateNames)
+		{
+			foreach (var name in stateNames) AddStateObject(name);
+		}
 
-            public TransitionState(string name, T stateObject)
-                : base(name)
-            {
-                this.StateObject = stateObject;
-            }
-        }
+		public IEnumerable<TransitionState> GetStates()
+		{
+			foreach (var s in GetTransitionStates()) yield return s;
+		}
 
-        protected TransitionStateCollection(string[] stateNames)
-        {
-            foreach (string name in stateNames)
-            {
-                AddStateObject(name);
-            }
-        }
+		public override void Apply(string stateName, bool instant)
+		{
+			var s = GetTransitionStates().FirstOrDefault(o => o.Name == stateName);
+			if (s != null) ApplyState(s, instant);
+		}
 
-        public IEnumerable<TransitionState> GetStates()
-        {
-            foreach (var s in GetTransitionStates())
-            {
-                yield return s;
-            }
-        }
+		protected abstract IEnumerable<TransitionState> GetTransitionStates();
+		protected abstract void ApplyState(TransitionState state, bool instant);
+		internal abstract void AddStateObject(string stateName);
 
-        public override void Apply(string stateName, bool instant)
-        {
-            var s = GetTransitionStates().FirstOrDefault((o) => o.Name == stateName);
-            if (s != null)
-            {
-                ApplyState(s, instant);
-            }
-        }
+		[Serializable]
+		public abstract class TransitionState : TransitionStateBase
+		{
+			public T StateObject;
 
-        protected abstract IEnumerable<TransitionState> GetTransitionStates();
-        protected abstract void ApplyState(TransitionState state, bool instant);
-        internal abstract void AddStateObject(string stateName);
+			public TransitionState(string name, T stateObject)
+				: base(name)
+			{
+				StateObject = stateObject;
+			}
+		}
+	}
 
-    }
+	//
+	// NON GENERIC CLASS
+	//
+	[Serializable]
+	public abstract class TransitionStateCollection
+	{
+		public abstract Object Target { get; }
 
-    //
-    // NON GENERIC CLASS
-    //
-    [Serializable]
-    public abstract class TransitionStateCollection
-    {
-        public abstract UnityEngine.Object Target { get; }
+		public abstract void Apply(string stateName, bool instant);
 
-        [Serializable]
-        public abstract class TransitionStateBase
-        {
-            public string Name;
-            public TransitionStateBase(string name)
-            {
-                this.Name = name;
-            }
-        }
-
-        public abstract void Apply(string stateName, bool instant);
-
-        internal abstract void SortStates(string[] sortedOrder);
+		internal abstract void SortStates(string[] sortedOrder);
 
 
-        protected void SortStatesLogic<T>(List<T> states, string[] sortedOrder)
-            where T : TransitionStateBase
-        {
-            states.Sort((a, b) =>
-            {
-                int idxA = -1;
-                int idxB = -1;
+		protected void SortStatesLogic<T>(List<T> states, string[] sortedOrder)
+			where T : TransitionStateBase
+		{
+			states.Sort((a, b) =>
+			{
+				var idxA = -1;
+				var idxB = -1;
 
-                for (int i = 0; i < sortedOrder.Length; i++)
-                {
-                    if (sortedOrder[i] == a.Name)
-                        idxA = i;
+				for (var i = 0; i < sortedOrder.Length; i++)
+				{
+					if (sortedOrder[i] == a.Name)
+						idxA = i;
 
-                    if (sortedOrder[i] == b.Name)
-                        idxB = i;
-                }
+					if (sortedOrder[i] == b.Name)
+						idxB = i;
+				}
 
-                return idxA.CompareTo(idxB);
-            });
-        }
-    }
+				return idxA.CompareTo(idxB);
+			});
+		}
 
+		[Serializable]
+		public abstract class TransitionStateBase
+		{
+			public string Name;
+
+			public TransitionStateBase(string name)
+			{
+				Name = name;
+			}
+		}
+	}
 }

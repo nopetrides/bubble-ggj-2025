@@ -1,63 +1,60 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 #pragma warning disable 0649 // disable "never assigned" warnings
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class LocationAnimationTransitions : TransitionStateCollection<string>
-    {
-        [Serializable]
-        public class LocationAnimationTransitionState : TransitionState
-        {
-            public LocationAnimationTransitionState(string name, string stateObject)
-                : base(name, stateObject)
-            { }
-        }
+	[Serializable]
+	public class LocationAnimationTransitions : TransitionStateCollection<string>
+	{
+		[SerializeField] private LocationAnimations target;
+
+		[SerializeField] private List<LocationAnimationTransitionState> states = new();
 
 
-        public override UnityEngine.Object Target { get { return target; } }
-
-        [SerializeField]
-        LocationAnimations target;
-
-        [SerializeField]
-        List<LocationAnimationTransitionState> states = new List<LocationAnimationTransitionState>();
+		public LocationAnimationTransitions(params string[] stateNames)
+			: base(stateNames)
+		{
+		}
 
 
-        public LocationAnimationTransitions(params string[] stateNames)
-            : base(stateNames)
-        {
-        }
+		public override Object Target => target;
 
-        protected override void ApplyState(TransitionState state, bool instant)
-        {
-            if (this.Target == null)
-                return;
+		protected override void ApplyState(TransitionState state, bool instant)
+		{
+			if (Target == null)
+				return;
 
-            target.StartAnimation(state.StateObject);
-        }
+			target.StartAnimation(state.StateObject);
+		}
 
-        internal override void AddStateObject(string stateName)
-        {
-            var obj = new LocationAnimationTransitionState(stateName, "");
-            this.states.Add(obj);
-        }
+		internal override void AddStateObject(string stateName)
+		{
+			var obj = new LocationAnimationTransitionState(stateName, "");
+			states.Add(obj);
+		}
 
-        protected override IEnumerable<TransitionState> GetTransitionStates()
-        {
-            foreach (var s in states)
-                yield return s;
-        }
+		protected override IEnumerable<TransitionState> GetTransitionStates()
+		{
+			foreach (var s in states)
+				yield return s;
+		}
 
-        internal override void SortStates(string[] sortedOrder)
-        {
-            base.SortStatesLogic(states, sortedOrder);
-        }
-    }
+		internal override void SortStates(string[] sortedOrder)
+		{
+			SortStatesLogic(states, sortedOrder);
+		}
+
+		[Serializable]
+		public class LocationAnimationTransitionState : TransitionState
+		{
+			public LocationAnimationTransitionState(string name, string stateObject)
+				: base(name, stateObject)
+			{
+			}
+		}
+	}
 }

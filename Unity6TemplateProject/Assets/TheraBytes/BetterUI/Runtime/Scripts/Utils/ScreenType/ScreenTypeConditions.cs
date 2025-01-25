@@ -1,124 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class ScreenTypeConditions
-    {
-        [SerializeField]
-        string name = "Screen";
+	[Serializable]
+	public class ScreenTypeConditions
+	{
+		[SerializeField] private string name = "Screen";
 
-        public string Name
-        {
-            get { return name; }
-            set { this.name = value; }
-        }
+		[SerializeField] private IsCertainScreenOrientation checkOrientation;
 
-        [SerializeField]
-        IsCertainScreenOrientation checkOrientation;
+		[SerializeField] private IsScreenOfCertainSize checkScreenSize;
 
-        [SerializeField]
-        IsScreenOfCertainSize checkScreenSize;
+		[SerializeField] private IsCertainAspectRatio checkAspectRatio;
 
-        [SerializeField]
-        IsCertainAspectRatio checkAspectRatio;
+		[SerializeField] private IsScreenOfCertainDeviceInfo checkDeviceType;
 
-        [SerializeField]
-        IsScreenOfCertainDeviceInfo checkDeviceType;
+		[SerializeField] private IsScreenTagPresent checkScreenTag;
 
-        [SerializeField]
-        IsScreenTagPresent checkScreenTag;
+		[SerializeField] private ScreenInfo optimizedScreenInfo;
 
-        [SerializeField]
-        ScreenInfo optimizedScreenInfo;
+		[SerializeField] private List<string> fallbacks = new();
 
-        [SerializeField]
-        List<string> fallbacks = new List<string>();
+		public ScreenTypeConditions(string displayName, params Type[] enabledByDefault)
+		{
+			name = displayName;
+			optimizedScreenInfo = new ScreenInfo(new Vector2(1920, 1080), 96);
+			EnsureScreenConditions(enabledByDefault);
+		}
 
-        public bool IsActive { get; private set; }
+		public string Name
+		{
+			get => name;
+			set => name = value;
+		}
 
-        public List<string> Fallbacks { get { return fallbacks; } }
+		public bool IsActive { get; private set; }
 
-        public Vector2 OptimizedResolution { get { return (optimizedScreenInfo != null) ? optimizedScreenInfo.Resolution : ResolutionMonitor.OptimizedResolutionFallback; } }
+		public List<string> Fallbacks => fallbacks;
 
-        public int OptimizedWidth { get { return (int)OptimizedResolution.x; } }
-        public int OptimizedHeight { get { return (int)OptimizedResolution.y; } }
+		public Vector2 OptimizedResolution => optimizedScreenInfo != null
+			? optimizedScreenInfo.Resolution
+			: ResolutionMonitor.OptimizedResolutionFallback;
 
-        public float OptimizedDpi { get { return (optimizedScreenInfo != null) ? optimizedScreenInfo.Dpi : ResolutionMonitor.OptimizedDpiFallback; } }
+		public int OptimizedWidth => (int)OptimizedResolution.x;
+		public int OptimizedHeight => (int)OptimizedResolution.y;
 
-        public IsCertainScreenOrientation CheckOrientation
-        {
-            get { return checkOrientation; }
-        }
+		public float OptimizedDpi => optimizedScreenInfo != null
+			? optimizedScreenInfo.Dpi
+			: ResolutionMonitor.OptimizedDpiFallback;
 
-        public IsScreenOfCertainSize CheckScreenSize
-        {
-            get { return checkScreenSize; }
-        }
+		public IsCertainScreenOrientation CheckOrientation => checkOrientation;
 
-        public IsCertainAspectRatio CheckAspectRatio
-        {
-            get { return checkAspectRatio; }
-        }
+		public IsScreenOfCertainSize CheckScreenSize => checkScreenSize;
 
-        public IsScreenOfCertainDeviceInfo CheckDeviceType
-        {
-            get { return checkDeviceType; }
-        }
-        public IsScreenTagPresent CheckScreenTag
-        {
-            get { return checkScreenTag; }
-        }
+		public IsCertainAspectRatio CheckAspectRatio => checkAspectRatio;
+
+		public IsScreenOfCertainDeviceInfo CheckDeviceType => checkDeviceType;
+
+		public IsScreenTagPresent CheckScreenTag => checkScreenTag;
 
 
-        public ScreenInfo OptimizedScreenInfo
-        {
-            get { return optimizedScreenInfo; }
-        }
+		public ScreenInfo OptimizedScreenInfo => optimizedScreenInfo;
 
-        public ScreenTypeConditions(string displayName, params Type[] enabledByDefault)
-        {
-            this.name = displayName;
-            this.optimizedScreenInfo = new ScreenInfo(new Vector2(1920, 1080), 96);
-            EnsureScreenConditions(enabledByDefault);
-        }
+		private void EnsureScreenConditions(params Type[] enabledByDefault)
+		{
+			EnsureScreenCondition(ref checkOrientation,
+				() => new IsCertainScreenOrientation(IsCertainScreenOrientation.Orientation.Landscape),
+				enabledByDefault);
+			EnsureScreenCondition(ref checkScreenSize, () => new IsScreenOfCertainSize(), enabledByDefault);
+			EnsureScreenCondition(ref checkAspectRatio, () => new IsCertainAspectRatio(), enabledByDefault);
+			EnsureScreenCondition(ref checkDeviceType, () => new IsScreenOfCertainDeviceInfo(), enabledByDefault);
+			EnsureScreenCondition(ref checkScreenTag, () => new IsScreenTagPresent(), enabledByDefault);
+		}
 
-        private void EnsureScreenConditions(params Type[] enabledByDefault)
-        {
-            EnsureScreenCondition(ref checkOrientation, () => new IsCertainScreenOrientation(IsCertainScreenOrientation.Orientation.Landscape), enabledByDefault);
-            EnsureScreenCondition(ref checkScreenSize, () => new IsScreenOfCertainSize(), enabledByDefault);
-            EnsureScreenCondition(ref checkAspectRatio, () => new IsCertainAspectRatio(), enabledByDefault);
-            EnsureScreenCondition(ref checkDeviceType, () => new IsScreenOfCertainDeviceInfo(), enabledByDefault);
-            EnsureScreenCondition(ref checkScreenTag, () => new IsScreenTagPresent(), enabledByDefault);
-        }
+		private void EnsureScreenCondition<T>(ref T screenCondition, Func<T> instantiatoMethod, Type[] enabledTypes)
+			where T : IIsActive
+		{
+			if (screenCondition != null)
+				return;
 
-        private void EnsureScreenCondition<T>(ref T screenCondition, Func<T> instantiatoMethod, Type[] enabledTypes)
-            where T : IIsActive
-        {
-            if (screenCondition != null)
-                return;
+			screenCondition = instantiatoMethod();
+			screenCondition.IsActive = enabledTypes.Contains(typeof(T));
+		}
 
-            screenCondition = instantiatoMethod();
-            screenCondition.IsActive = enabledTypes.Contains(typeof(T));
-        }
+		public bool IsScreenType()
+		{
+			EnsureScreenConditions();
 
-        public bool IsScreenType()
-        {
-            EnsureScreenConditions();
+			IsActive = (!checkOrientation.IsActive || checkOrientation.IsScreenType())
+						&& (!checkScreenSize.IsActive || checkScreenSize.IsScreenType())
+						&& (!checkAspectRatio.IsActive || checkAspectRatio.IsScreenType())
+						&& (!checkDeviceType.IsActive || checkDeviceType.IsScreenType())
+						&& (!checkScreenTag.IsActive || checkScreenTag.IsScreenType());
 
-            IsActive = (!(checkOrientation.IsActive)    || checkOrientation.IsScreenType())
-                && (!(checkScreenSize.IsActive)         || checkScreenSize.IsScreenType())
-                && (!(checkAspectRatio.IsActive)        || checkAspectRatio.IsScreenType())
-                && (!(checkDeviceType.IsActive)         || checkDeviceType.IsScreenType())
-                && (!(checkScreenTag.IsActive)          || checkScreenTag.IsScreenType());
-
-            return IsActive;
-        }
-
-    }
+			return IsActive;
+		}
+	}
 }

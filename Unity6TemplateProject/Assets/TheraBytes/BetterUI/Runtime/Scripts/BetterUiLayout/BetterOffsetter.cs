@@ -1,179 +1,185 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace TheraBytes.BetterUi
 {
 #if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
+	[ExecuteAlways]
 #else
     [ExecuteInEditMode]
 #endif
-    [HelpURL("https://documentation.therabytes.de/better-ui/BetterOffsetter.html")]
-    [RequireComponent(typeof(RectTransform))]
-    [AddComponentMenu("Better UI/Layout/Better Offsetter", 30)]
-    public class BetterOffsetter : UIBehaviour, ILayoutController, ILayoutSelfController, IResolutionDependency
-    {
-        [Serializable]
-        public class Settings : IScreenConfigConnection
-        {
-            public bool ApplyPosX { get { return applyPosX; } set { applySizeX = value; } }
-            public bool ApplyPosY { get { return applyPosY; } set { applyPosY = value; } }
-            public bool ApplySizeX{ get { return applySizeX; } set { applySizeX = value; } }
-            public bool ApplySizeY { get { return applySizeY; } set { applySizeY = value; } }
+	[HelpURL("https://documentation.therabytes.de/better-ui/BetterOffsetter.html")]
+	[RequireComponent(typeof(RectTransform))]
+	[AddComponentMenu("Better UI/Layout/Better Offsetter", 30)]
+	public class BetterOffsetter : UIBehaviour, ILayoutController, ILayoutSelfController, IResolutionDependency
+	{
+		[Serializable]
+		public class Settings : IScreenConfigConnection
+		{
+			[SerializeField] private bool applyPosX;
 
-            [SerializeField]
-            bool applyPosX = false;
+			[SerializeField] private bool applyPosY;
 
-            [SerializeField]
-            bool applyPosY = false;
+			[SerializeField] private bool applySizeX;
 
-            [SerializeField]
-            bool applySizeX = false;
+			[SerializeField] private bool applySizeY;
 
-            [SerializeField]
-            bool applySizeY = false;
+			[SerializeField] private string screenConfigName;
 
-            [SerializeField]
-            string screenConfigName;
-            public string ScreenConfigName { get { return screenConfigName; } set { screenConfigName = value; } }
-        }
+			public bool ApplyPosX
+			{
+				get => applyPosX;
+				set => applySizeX = value;
+			}
 
-        [Serializable]
-        public class SettingsConfigCollection : SizeConfigCollection<Settings> { }
-        public Settings CurrentSettings { get { return customSettings.GetCurrentItem(settingsFallback); } }
+			public bool ApplyPosY
+			{
+				get => applyPosY;
+				set => applyPosY = value;
+			}
 
-        [SerializeField]
-        Settings settingsFallback = new Settings();
+			public bool ApplySizeX
+			{
+				get => applySizeX;
+				set => applySizeX = value;
+			}
 
-        [SerializeField]
-        SettingsConfigCollection customSettings = new SettingsConfigCollection();
+			public bool ApplySizeY
+			{
+				get => applySizeY;
+				set => applySizeY = value;
+			}
 
+			public string ScreenConfigName
+			{
+				get => screenConfigName;
+				set => screenConfigName = value;
+			}
+		}
 
-        public FloatSizeModifier AnchoredPositionXSizer 
-        {
-            get { return customAnchorPosXSizers.GetCurrentItem(anchorPosXSizerFallback); }
-        }
+		[Serializable]
+		public class SettingsConfigCollection : SizeConfigCollection<Settings>
+		{
+		}
 
-        public FloatSizeModifier AnchoredPositionYSizer
-        {
-            get { return customAnchorPosYSizers.GetCurrentItem(anchorPosYSizerFallback); }
-        }
+		public Settings CurrentSettings => customSettings.GetCurrentItem(settingsFallback);
 
+		[SerializeField] private Settings settingsFallback = new();
 
-        public FloatSizeModifier SizeDeltaXSizer 
-        { 
-            get { return customSizeDeltaXSizers.GetCurrentItem(sizeDeltaXSizerFallback); } 
-        }
-
-        public FloatSizeModifier SizeDeltaYSizer
-        {
-            get { return customSizeDeltaYSizers.GetCurrentItem(sizeDeltaYSizerFallback); }
-        }
-
-        [SerializeField] FloatSizeModifier anchorPosXSizerFallback = new FloatSizeModifier(100, 0, 1000);
-        [SerializeField] FloatSizeConfigCollection customAnchorPosXSizers = new FloatSizeConfigCollection();
-
-        [SerializeField] FloatSizeModifier anchorPosYSizerFallback = new FloatSizeModifier(100, 0, 1000);
-        [SerializeField] FloatSizeConfigCollection customAnchorPosYSizers = new FloatSizeConfigCollection();
-        
-        [SerializeField] FloatSizeModifier sizeDeltaXSizerFallback = new FloatSizeModifier(100, 0, 1000);
-        [SerializeField] FloatSizeConfigCollection customSizeDeltaXSizers = new FloatSizeConfigCollection();
-
-        [SerializeField] FloatSizeModifier sizeDeltaYSizerFallback = new FloatSizeModifier(100, 0, 1000);
-        [SerializeField] FloatSizeConfigCollection customSizeDeltaYSizers = new FloatSizeConfigCollection();
+		[SerializeField] private SettingsConfigCollection customSettings = new();
 
 
-        DrivenRectTransformTracker rectTransformTracker = new DrivenRectTransformTracker();
+		public FloatSizeModifier AnchoredPositionXSizer =>
+			customAnchorPosXSizers.GetCurrentItem(anchorPosXSizerFallback);
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            ApplySize();
-        }
+		public FloatSizeModifier AnchoredPositionYSizer =>
+			customAnchorPosYSizers.GetCurrentItem(anchorPosYSizerFallback);
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            rectTransformTracker.Clear();
-        }
+
+		public FloatSizeModifier SizeDeltaXSizer => customSizeDeltaXSizers.GetCurrentItem(sizeDeltaXSizerFallback);
+
+		public FloatSizeModifier SizeDeltaYSizer => customSizeDeltaYSizers.GetCurrentItem(sizeDeltaYSizerFallback);
+
+		[SerializeField] private FloatSizeModifier anchorPosXSizerFallback = new(100, 0, 1000);
+		[SerializeField] private FloatSizeConfigCollection customAnchorPosXSizers = new();
+
+		[SerializeField] private FloatSizeModifier anchorPosYSizerFallback = new(100, 0, 1000);
+		[SerializeField] private FloatSizeConfigCollection customAnchorPosYSizers = new();
+
+		[SerializeField] private FloatSizeModifier sizeDeltaXSizerFallback = new(100, 0, 1000);
+		[SerializeField] private FloatSizeConfigCollection customSizeDeltaXSizers = new();
+
+		[SerializeField] private FloatSizeModifier sizeDeltaYSizerFallback = new(100, 0, 1000);
+		[SerializeField] private FloatSizeConfigCollection customSizeDeltaYSizers = new();
+
+
+		private DrivenRectTransformTracker rectTransformTracker;
+
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			ApplySize();
+		}
+
+		protected override void OnDisable()
+		{
+			base.OnDisable();
+			rectTransformTracker.Clear();
+		}
 
 #if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            base.OnValidate();
+		protected override void OnValidate()
+		{
+			base.OnValidate();
 
-            // NOTE: Unity sends a message when setting RectTransform.sizeDelta which is required here.
-            //       This logs a warning: "SendMessage cannot be called during Awake, CheckConsistency, or OnValidate"
-            //       However, everything seems to work anyway. Seems like there is no easy way to work around this problem.
-            ApplySize();
-        }
+			// NOTE: Unity sends a message when setting RectTransform.sizeDelta which is required here.
+			//       This logs a warning: "SendMessage cannot be called during Awake, CheckConsistency, or OnValidate"
+			//       However, everything seems to work anyway. Seems like there is no easy way to work around this problem.
+			ApplySize();
+		}
 #endif
 
-        void ApplySize()
-        {
-            if (!isActiveAndEnabled)
-                return;
+		private void ApplySize()
+		{
+			if (!isActiveAndEnabled)
+				return;
 
-            RectTransform rt = (this.transform as RectTransform);
-            Vector2 pos = rt.anchoredPosition;
-            Vector2 size = rt.sizeDelta;
+			var rt = transform as RectTransform;
+			var pos = rt.anchoredPosition;
+			var size = rt.sizeDelta;
 
-            Settings settings = CurrentSettings;
-            rectTransformTracker.Clear();
+			var settings = CurrentSettings;
+			rectTransformTracker.Clear();
 
-            if (settings.ApplySizeX)
-            {
-                size.x = SizeDeltaXSizer.CalculateSize(this);
-                rectTransformTracker.Add(this, this.transform as RectTransform, DrivenTransformProperties.SizeDeltaX);
-            }
+			if (settings.ApplySizeX)
+			{
+				size.x = SizeDeltaXSizer.CalculateSize(this);
+				rectTransformTracker.Add(this, transform as RectTransform, DrivenTransformProperties.SizeDeltaX);
+			}
 
-            if (settings.ApplySizeY)
-            {
-                size.y = SizeDeltaYSizer.CalculateSize(this);
-                rectTransformTracker.Add(this, this.transform as RectTransform, DrivenTransformProperties.SizeDeltaY);
-            }
+			if (settings.ApplySizeY)
+			{
+				size.y = SizeDeltaYSizer.CalculateSize(this);
+				rectTransformTracker.Add(this, transform as RectTransform, DrivenTransformProperties.SizeDeltaY);
+			}
 
-            if (settings.ApplyPosX)
-            {
-                pos.x = AnchoredPositionXSizer.CalculateSize(this);
-                rectTransformTracker.Add(this, this.transform as RectTransform, DrivenTransformProperties.AnchoredPositionX);
-            }
+			if (settings.ApplyPosX)
+			{
+				pos.x = AnchoredPositionXSizer.CalculateSize(this);
+				rectTransformTracker.Add(this, transform as RectTransform, DrivenTransformProperties.AnchoredPositionX);
+			}
 
-            if (settings.ApplyPosY)
-            {
-                pos.y = AnchoredPositionYSizer.CalculateSize(this);
-                rectTransformTracker.Add(this, this.transform as RectTransform, DrivenTransformProperties.AnchoredPositionY);
-            }
+			if (settings.ApplyPosY)
+			{
+				pos.y = AnchoredPositionYSizer.CalculateSize(this);
+				rectTransformTracker.Add(this, transform as RectTransform, DrivenTransformProperties.AnchoredPositionY);
+			}
 
-            rt.anchoredPosition = pos;
-            rt.sizeDelta = size;
-        }
+			rt.anchoredPosition = pos;
+			rt.sizeDelta = size;
+		}
 
-        public void OnResolutionChanged()
-        {
-            ApplySize();
-        }
+		public void OnResolutionChanged()
+		{
+			ApplySize();
+		}
 
-        public void SetLayoutHorizontal()
-        {
-            ApplySize();
-        }
+		public void SetLayoutHorizontal()
+		{
+			ApplySize();
+		}
 
-        public void SetLayoutVertical()
-        {
-            ApplySize();
-        }
+		public void SetLayoutVertical()
+		{
+			ApplySize();
+		}
 
-        protected override void OnRectTransformDimensionsChange()
-        {
-            base.OnRectTransformDimensionsChange();
-            ApplySize();
-        }
-    }
+		protected override void OnRectTransformDimensionsChange()
+		{
+			base.OnRectTransformDimensionsChange();
+			ApplySize();
+		}
+	}
 }

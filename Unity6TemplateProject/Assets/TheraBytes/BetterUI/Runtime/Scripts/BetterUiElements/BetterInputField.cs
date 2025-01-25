@@ -1,57 +1,45 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace TheraBytes.BetterUi
-{   
-    [HelpURL("https://documentation.therabytes.de/better-ui/BetterInputField.html")]
-    [AddComponentMenu("Better UI/Controls/Better Input Field", 30)]
-    public class BetterInputField : InputField, IBetterTransitionUiElement
-    {
-        public List<Transitions> BetterTransitions { get { return betterTransitions; } }
-        public List<Graphic> AdditionalPlaceholders { get { return additionalPlaceholders; } }
+{
+	[HelpURL("https://documentation.therabytes.de/better-ui/BetterInputField.html")]
+	[AddComponentMenu("Better UI/Controls/Better Input Field", 30)]
+	public class BetterInputField : InputField, IBetterTransitionUiElement
+	{
+		[SerializeField] [DefaultTransitionStates]
+		private List<Transitions> betterTransitions = new();
 
-        [SerializeField, DefaultTransitionStates]
-        List<Transitions> betterTransitions = new List<Transitions>();
+		[SerializeField] private List<Graphic> additionalPlaceholders = new();
 
-        [SerializeField]
-        List<Graphic> additionalPlaceholders = new List<Graphic>();
-        
-        protected override void DoStateTransition(SelectionState state, bool instant)
-        {
-            base.DoStateTransition(state, instant);
+		public List<Graphic> AdditionalPlaceholders => additionalPlaceholders;
+		public List<Transitions> BetterTransitions => betterTransitions;
 
-            if (!(base.gameObject.activeInHierarchy))
-                return;
+		protected override void DoStateTransition(SelectionState state, bool instant)
+		{
+			base.DoStateTransition(state, instant);
 
-            foreach (var info in betterTransitions)
-            {
-                info.SetState(state.ToString(), instant);
-            }
-        }
-        
-        public override void OnUpdateSelected(BaseEventData eventData)
-        {
-            base.OnUpdateSelected(eventData);
-            DisplayPlaceholders(this.text);
-        }
+			if (!gameObject.activeInHierarchy)
+				return;
 
-        void DisplayPlaceholders(string input)
-        {
-            bool show = string.IsNullOrEmpty(input);
+			foreach (var info in betterTransitions) info.SetState(state.ToString(), instant);
+		}
 
-            if (Application.isPlaying)
-            {
-                foreach (var ph in additionalPlaceholders)
-                {
-                    ph.enabled = show;
-                }
-            }
-        }
-    }
+		public override void OnUpdateSelected(BaseEventData eventData)
+		{
+			base.OnUpdateSelected(eventData);
+			DisplayPlaceholders(text);
+		}
+
+		private void DisplayPlaceholders(string input)
+		{
+			var show = string.IsNullOrEmpty(input);
+
+			if (Application.isPlaying)
+				foreach (var ph in additionalPlaceholders)
+					ph.enabled = show;
+		}
+	}
 }

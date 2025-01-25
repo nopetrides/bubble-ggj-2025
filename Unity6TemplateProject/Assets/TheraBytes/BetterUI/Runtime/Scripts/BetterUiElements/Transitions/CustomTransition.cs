@@ -1,56 +1,54 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 #pragma warning disable 0649 // disable "never assigned" warnings
 
 namespace TheraBytes.BetterUi
 {
-    [Serializable]
-    public class CustomTransitions : TransitionStateCollection<UnityEvent>
-    {
-        [Serializable]
-        public class CustomTransitionState : TransitionState
-        {
-            public CustomTransitionState(string name)
-                : base(name, new UnityEvent())
-            { }
-        }
+	[Serializable]
+	public class CustomTransitions : TransitionStateCollection<UnityEvent>
+	{
+		[SerializeField] private List<CustomTransitionState> states = new();
 
-        [SerializeField]
-        List<CustomTransitionState> states = new List<CustomTransitionState>();
+		public CustomTransitions(params string[] stateNames)
+			: base(stateNames)
+		{
+		}
 
-        public override UnityEngine.Object Target { get { return null; } }
+		public override Object Target => null;
 
-        public CustomTransitions(params string[] stateNames)
-            : base(stateNames)
-        {
-        }
+		protected override void ApplyState(TransitionState state, bool instant)
+		{
+			state.StateObject.Invoke();
+		}
 
-        protected override void ApplyState(TransitionState state, bool instant)
-        {
-            state.StateObject.Invoke();
-        }
+		internal override void AddStateObject(string stateName)
+		{
+			var obj = new CustomTransitionState(stateName);
+			states.Add(obj);
+		}
 
-        internal override void AddStateObject(string stateName)
-        {
-            var obj = new CustomTransitionState(stateName);
-            this.states.Add(obj);
-        }
+		protected override IEnumerable<TransitionState> GetTransitionStates()
+		{
+			foreach (var s in states)
+				yield return s;
+		}
 
-        protected override IEnumerable<TransitionState> GetTransitionStates()
-        {
-            foreach (var s in states)
-                yield return s;
-        }
+		internal override void SortStates(string[] sortedOrder)
+		{
+			SortStatesLogic(states, sortedOrder);
+		}
 
-        internal override void SortStates(string[] sortedOrder)
-        {
-            base.SortStatesLogic(states, sortedOrder);
-        }
-    }
+		[Serializable]
+		public class CustomTransitionState : TransitionState
+		{
+			public CustomTransitionState(string name)
+				: base(name, new UnityEvent())
+			{
+			}
+		}
+	}
 }

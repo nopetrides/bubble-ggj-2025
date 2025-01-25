@@ -6,13 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Bootloader.unity
+    path: Assets/P3T/Scenes/Bootloader.unity
     guid: edd896bda70254a3eb83592c3e23f64b
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
+    path: Assets/P3T/Scenes/MainMenu.unity
     guid: cc8ca354e020d4ac3b939bef52e6137e
   - enabled: 1
-    path: Assets/Scenes/GameOver.unity
+    path: Assets/P3T/Scenes/GameOver.unity
     guid: 90c5005f9900d42a5829ed158bd61e3b
   - enabled: 1
     path: Assets/Scenes/StarFieldLevel.unity
