@@ -13,9 +13,9 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         [SerializeField] private Transform VisualsConfigAssetParent;
 
-        [SerializeField] private SpriteRenderer SpawnedAssetRenderer;
+        [SerializeField] private Renderer SpawnedAssetRenderer;
         [SerializeField] private Animator SpawnedAssetAnimator;
-        [SerializeField] private Collider2D SpawnedAssetCollider;
+        [SerializeField] private Collider SpawnedAssetCollider;
         [SerializeField] private SurvivorPickupAnimationEventListener AnimationEventListener;
 
         private SurvivorPointsPickupManager _manager;

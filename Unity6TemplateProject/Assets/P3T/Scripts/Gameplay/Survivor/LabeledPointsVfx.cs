@@ -4,7 +4,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 {
 	public class LabeledPointsVfx : DefaultPointsVfx
 	{
-		[SerializeField] private float _relativeLabelFontSize = .67f;
+		[SerializeField] private float RelativeLabelFontSize = .67f;
     
 		private string _labelText;
     
@@ -26,8 +26,8 @@ namespace P3T.Scripts.Gameplay.Survivor
 			var prefix = "";
 			if (string.IsNullOrEmpty(_labelText) == false)
 			{
-				var vOffset = (1 - _relativeLabelFontSize) / 2;
-				prefix = $"<size={_relativeLabelFontSize}em><voffset={vOffset}em>{_labelText}</voffset></size> ";
+				var vOffset = (1 - RelativeLabelFontSize) / 2;
+				prefix = $"<size={RelativeLabelFontSize}em><voffset={vOffset}em>{_labelText}</voffset></size> ";
 			}
 			ScoreEarnedText.text = $"{prefix}{Points:D}";
 		}

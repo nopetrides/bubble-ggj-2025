@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using P3T.Scripts.Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace P3T.Scripts.Gameplay.Survivor
@@ -15,7 +14,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         [Header("Components")] 
         [SerializeField] private Transform HeroConfigAssetParent;
 
-        [SerializeField] private Rigidbody2D Rigidbody;
+        [SerializeField] private Rigidbody Rigidbody;
 
         [Header("Bullets")] 
         [SerializeField] private SurvivorBulletManager BulletPool;
@@ -26,45 +25,37 @@ namespace P3T.Scripts.Gameplay.Survivor
         [SerializeField] private float RapidShotMultiplier = 3f;
         [SerializeField] private float PierceShotDuration = 5f;
 
-        [Header("Movement Variables")] [FormerlySerializedAs("ThrustSpeed")] [SerializeField]
-        private float ThrustSpeed = 1f;
+        [Header("Movement Variables")] 
+        [SerializeField] private float ThrustSpeed = 1f;
 
-        //[FormerlySerializedAs("BrakingSpeed")] [SerializeField] private float _brakingSpeed = 1f;
-        [FormerlySerializedAs("RotationSpeed")] [SerializeField]
-        private float RotationSpeed = 1f;
+        [SerializeField] private float RotationSpeed = 1f;
 
-        //[FormerlySerializedAs("ThrustWhenFacingAngleMin")] [SerializeField] private float _thrustWhenFacingAngleMin = 10f;
-        [FormerlySerializedAs("BulletsPerSecond")] [SerializeField]
-        private float BulletsPerSecond = 3f;
+        [SerializeField] private float BulletsPerSecond = 3f;
 
         /* No longer increasing firing speed over time
-        [FormerlySerializedAs("BpsIncreasePerPowerUp")] [SerializeField]
-        private float _bpsIncreasePerPowerUp = 1f;
+        [SerializeField] private float _bpsIncreasePerPowerUp = 1f;
 
-        [FormerlySerializedAs("BpsDiminishingReturnMultiplier")] [SerializeField]
-        private float _bpsDiminishingReturnMultiplier = 0.9f;
+        [SerializeField] private float _bpsDiminishingReturnMultiplier = 0.9f;
         */
-        //[FormerlySerializedAs("ThrustDeadZoneSize")] [SerializeField] private float _thrustDeadZoneSize = 3f; // Radius around the hero that only rotates and doesn't thrust. A multiplier of the hero size
+        //[SerializeField] private float _thrustDeadZoneSize = 3f; // Radius around the hero that only rotates and doesn't thrust. A multiplier of the hero size
 
-        [FormerlySerializedAs("Controller")] [Header("Controller")] [SerializeField]
-        private SurvivorController Controller;
+        [Header("Controller")] 
+        [SerializeField] private SurvivorController Controller;
 
-        [FormerlySerializedAs("ShieldRenderer")] [SerializeField]
-        private SpriteRenderer ShieldRenderer;
+        [SerializeField] private Renderer ShieldRenderer;
 
         [SerializeField] private float InvulnerabilityTime = 3f;
         [SerializeField] private float FlickerRate = 0.1f;
 
         [SerializeField] private SurvivorLifeCounter LifeCounter;
         [SerializeField] private SurvivorBombPower BombPower;
-        [SerializeField] private Collider2D PrimaryTargetingTrigger;
-        [SerializeField] private Collider2D SecondaryTargetingTrigger;
-        [SerializeField] private GameObject ConfigAsset;
+        [SerializeField] private Collider PrimaryTargetingTrigger;
+        [SerializeField] private Collider SecondaryTargetingTrigger;
 
         private float _bulletTimer;
-        private Collider2D[] _facingContacts;
+        private Collider[] _facingContacts;
         private float _flickerTimer;
-        private Collider2D _heroCollider;
+        private Collider _heroCollider;
         private TrailRenderer _heroTrail;
         private float _invulnerableTimer;
         private float _pierceShotTimer;
@@ -73,9 +64,9 @@ namespace P3T.Scripts.Gameplay.Survivor
         private bool _shooting; // start shooting after first input
         private SurvivorAdvancedTrailFx _spawnedTrailFx;
         private float _spreadShotTimer;
-        private Rigidbody2D _target;
+        private Rigidbody _target;
         private TrailLocator _trailParent;
-        private List<SpriteRenderer> _flickerRenderers = new();
+        private List<Renderer> _flickerRenderers = new();
 
         public GameObject SpawnedArtAsset { get; private set; }
 
@@ -83,7 +74,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         private void FixedUpdate()
         {
-            Rigidbody.angularVelocity = 0f;
+            Rigidbody.angularVelocity = Vector3.zero;
 
             // Invulnerability handler
             CheckInvulnerabilityTimer();
@@ -94,12 +85,12 @@ namespace P3T.Scripts.Gameplay.Survivor
             CheckPierceShotTimer();
         }
 
-        private void OnCollisionEnter2D(Collision2D collision)
+        private void OnCollisionEnter(Collision collision)
         {
             // Don't lose hp during invulnerable time.
             // Only die to obstacles.
             if (collision.rigidbody == null
-                || Controller.DoesRigidbodyBelongToShootable(collision.rigidbody) == false)
+                || Controller.DoesRigidbodyBelongToHazard(collision.rigidbody) == false)
                 return;
 
             Controller.DamageHazard(collision.rigidbody);
@@ -138,20 +129,20 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             _setupDone = false;
             // Results array should be fixed size
-            _facingContacts = new Collider2D[50];
+            _facingContacts = new Collider[50];
 
             ShieldRenderer.enabled = false;
-            SpawnedArtAsset = Instantiate(ConfigAsset, HeroConfigAssetParent);
+            //SpawnedArtAsset = Instantiate(Config.art, HeroConfigAssetParent);
 
             if (SpawnedArtAsset)
-                _heroCollider = SpawnedArtAsset.GetComponentInChildren<Collider2D>(); // should only have one
+                _heroCollider = SpawnedArtAsset.GetComponentInChildren<Collider>(); // should only have one
             
-            _flickerRenderers.AddRange(SpawnedArtAsset.GetComponentsInChildren<SpriteRenderer>().Where(r => r.enabled));
+            _flickerRenderers.AddRange(SpawnedArtAsset.GetComponentsInChildren<Renderer>().Where(r => r.enabled));
 
             _setupDone = true;
         }
 
-        public async Task SetupTrail(SurvivorAdvancedTrailFx trailFxInfo)
+        public void SetupTrail(SurvivorAdvancedTrailFx trailFxInfo)
         {
             var trailParent = SpawnedArtAsset.GetComponentInChildren<TrailLocator>();
             if (trailParent == null)
@@ -183,23 +174,23 @@ namespace P3T.Scripts.Gameplay.Survivor
             // Right now, this is a either, or scenario where it tries to find targets in the facing cone
             // if not it searches all valid hazards
             // Check for hazards in the cone where the player is facing
-            var contacts = Physics2D.OverlapCollider(PrimaryTargetingTrigger, filter, _facingContacts);
-            if (contacts > 0) _target = FindClosestHazardCollider(_facingContacts)?.attachedRigidbody;
+            //var contacts = Physics.OverlapSphere(PrimaryTargetingTrigger, filter, _facingContacts);
+            //if (contacts > 0) _target = FindClosestHazardCollider(_facingContacts)?.attachedRigidbody;
             if (_target == null)
                 // Find the closest enemy
                 _target = FindClosestRigidbody(Controller.GetActiveHazardRigidbodies());
             Array.Clear(_facingContacts, 0, _facingContacts.Length);
         }
 
-        private Collider2D FindClosestHazardCollider(Collider2D[] colliders)
+        private Collider FindClosestHazardCollider(Collider[] colliders)
         {
             var smallestDistance = float.MaxValue;
-            Collider2D result = null;
+            Collider result = null;
             foreach (var col in colliders)
             {
                 if (col == null ||
                     col.attachedRigidbody == null ||
-                    Controller.DoesRigidbodyBelongToShootable(col.attachedRigidbody) == false) continue;
+                    Controller.DoesRigidbodyBelongToHazard(col.attachedRigidbody) == false) continue;
 
                 var distance = Vector3.Distance(transform.position, col.transform.position);
                 if (distance < smallestDistance)
@@ -212,10 +203,10 @@ namespace P3T.Scripts.Gameplay.Survivor
             return result;
         }
 
-        private Rigidbody2D FindClosestRigidbody(Rigidbody2D[] rigidbodies)
+        private Rigidbody FindClosestRigidbody(Rigidbody[] rigidbodies)
         {
             var smallestDistance = float.MaxValue;
-            Rigidbody2D result = null;
+            Rigidbody result = null;
             foreach (var rb in rigidbodies)
             {
                 if (rb == null) continue;
@@ -279,8 +270,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             
             if (_target != null)
             {
-                var v2Pos = new Vector2(position.x, position.y);
-                var dir = _target.position - v2Pos;
+                var dir = _target.position - position;
                 aimingDirection = new Vector3(dir.x, dir.y, bulletOrigin.right.z);
             }
 

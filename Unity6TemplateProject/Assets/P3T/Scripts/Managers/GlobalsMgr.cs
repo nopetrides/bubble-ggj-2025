@@ -1,12 +1,15 @@
-/// <summary>
-///     The "don't destroy on load" parent that contains all other global managers
-/// </summary>
-public class GlobalsMgr : Singleton<GlobalsMgr>
+namespace P3T.Scripts.Managers
 {
-	public override void Awake()
+	/// <summary>
+	///     The "don't destroy on load" parent that contains all other global managers
+	/// </summary>
+	public class GlobalsMgr : Singleton<GlobalsMgr>
 	{
-		base.Awake();
-		if (Instance == this)
-			DontDestroyOnLoad(gameObject);
+		public override void Awake()
+		{
+			base.Awake();
+			if (Instance == this)
+				DontDestroyOnLoad(gameObject);
+		}
 	}
 }

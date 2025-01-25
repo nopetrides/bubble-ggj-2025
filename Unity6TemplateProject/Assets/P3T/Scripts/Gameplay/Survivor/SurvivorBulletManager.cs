@@ -20,7 +20,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         private SurvivorBullet _arcadeSurvivorBulletToSpawn;
         private SurvivorController _controller;
         private ObjectPool<SurvivorBullet> _pool;
-        private Collider2D _gameBounds;
+        private Collider _gameBounds;
 
         private void ReadyPool(GameObject firingCharacter)
         {
@@ -57,7 +57,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             );
         }
 
-        public void Setup(SurvivorController gameController, GameObject hero, Collider2D gameBounds)
+        public void Setup(SurvivorController gameController, GameObject hero, Collider gameBounds)
         {
             _controller = gameController;
             _gameBounds = gameBounds;
@@ -65,7 +65,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         }
 
         public void FireBullet(Vector3 originPosition, Vector3 rightVector,
-            BulletModifiers modifiers, Rigidbody2D target = null)
+            BulletModifiers modifiers, Rigidbody target = null)
         {
             var nextBullet = _pool.Get();
             var bulletTransform = nextBullet.transform;
@@ -83,12 +83,12 @@ namespace P3T.Scripts.Gameplay.Survivor
             _pool.Release(arcadeSurvivorBullet);
         }
 
-        public bool LookupShootable(Rigidbody2D rb)
+        public bool LookupHazard(Rigidbody rb)
         {
-            return _controller.DoesRigidbodyBelongToShootable(rb);
+            return _controller.DoesRigidbodyBelongToHazard(rb);
         }
 
-        public void DamageHazard(Rigidbody2D rb, Collider2D damagingCollider)
+        public void DamageHazard(Rigidbody rb, Collider damagingCollider)
         {
             _controller.DamageHazard(rb, damagingCollider);
         }

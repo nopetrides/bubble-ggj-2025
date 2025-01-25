@@ -7,6 +7,5 @@ namespace P3T.Scripts.Gameplay.Survivor
 	public class SurvivorBackgroundConfig
 	{
 		public AudioClip Music;
-		public SurvivorAdvancedTrailFx TrailFx;
 	}
 }

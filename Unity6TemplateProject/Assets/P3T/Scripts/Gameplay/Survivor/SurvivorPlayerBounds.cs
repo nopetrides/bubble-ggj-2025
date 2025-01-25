@@ -11,7 +11,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 		/// <summary>
 		///     Used with <see cref="WrapDirection" />
 		/// </summary>
-		[SerializeField] private Collider2D PlayerMovementColliders;
+		[SerializeField] private Collider PlayerMovementColliders;
 
 		/// <summary>
 		///     Spawned objects should be fully offscreen, and not touching the edge of the screen.
@@ -21,7 +21,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 
 		public float SpawnOffset => GameObjectSize / 2f;
 
-		public Collider2D PlayerMovementBounds => PlayerMovementColliders;
+		public Collider PlayerMovementBounds => PlayerMovementColliders;
 	}
 
 	/// <summary>

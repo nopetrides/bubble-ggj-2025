@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Threading.Tasks;
 using DG.Tweening;
+using P3T.Scripts.Managers;
 using UnityEngine;
 
 namespace P3T.Scripts.Gameplay.Survivor
@@ -44,12 +44,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         [Header("Obstacles")] 
         [SerializeField] private SurvivorHazardManager HazardManager;
 
-        [Header("Background")] 
-        [SerializeField] private Transform BackgroundParent;
-
         [Header("Camera")]
-        // The Rect that all the parent objects anchor and stretch with
-        [SerializeField] private RectTransform GameParentTransform;
         [SerializeField] private Camera GameCamera;
         [SerializeField] private VirtualJoystick Joystick;
 
@@ -249,39 +244,36 @@ namespace P3T.Scripts.Gameplay.Survivor
                 () => _gameIsCompleted = true);
         }
 
-        public bool DoesRigidbodyBelongToShootable(Rigidbody2D rb)
+        public bool DoesRigidbodyBelongToHazard(Rigidbody rb)
         {
-            return HazardManager.IsRigidbodyActiveShootable(rb);
+            return HazardManager.IsRigidbodyActiveHazard(rb);
         }
 
         /// <summary>
         ///     Something  has damaged a hazard object
         /// </summary>
-        /// <param name="shootableRigidbody"> </param>
+        /// <param name="hazardRigidbody"> </param>
         /// <param name="damagingCollider"> Leave null if the collider should be able to damage the same hazard twice (i.e. player) </param>
-        public void DamageHazard(Rigidbody2D shootableRigidbody, Collider2D damagingCollider = null)
+        public void DamageHazard(Rigidbody hazardRigidbody, Collider damagingCollider = null)
         {
-            HazardManager.DamageHazard(shootableRigidbody, damagingCollider);
+            HazardManager.DamageHazard(hazardRigidbody, damagingCollider);
         }
 
         /// <summary>
         ///     Something damaged the hazard by completely obliterating it.
         ///     No pickups will spawn
         /// </summary>
-        public void EliminateHazard(Rigidbody2D shootableRigidbody)
+        /// <param name="hazardRigidbody"></param>
+        public void EliminateHazard(Rigidbody hazardRigidbody)
         {
-            HazardManager.EliminateHazard(shootableRigidbody);
+            HazardManager.EliminateHazard(hazardRigidbody);
         }
 
-        public Rigidbody2D[] GetActiveHazardRigidbodies()
+        public Rigidbody[] GetActiveHazardRigidbodies()
         {
             return HazardManager.GetActiveHazardRigidbodies();
         }
-
-
-
-
-
+        
         public void Init()
         {
             _gamePaused = false;
@@ -307,7 +299,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         private async void PreloadAssets()
         {
             _waitForPreload = true;
-            await PreloadAssetsRoutine();
+            PreloadAssetsRoutine();
             _waitForPreload = false;
         }
         
@@ -323,9 +315,9 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     Load game assets so they are ready for the game to start
         /// </summary>
         /// <returns> </returns>
-        protected async Task PreloadAssetsRoutine()
+        private void PreloadAssetsRoutine()
         {
-            // Process ConfigurableMinigameAssetInfo from the config (defaults or mod panel assigned)
+            // Process the configs
 
             // Spawn background art asset
 
@@ -342,7 +334,9 @@ namespace P3T.Scripts.Gameplay.Survivor
             // Wait for the hero to be setup before attaching the trail. It needs the hero config to be setup first
 
             // Setup the hero trail
-            SurvivorHero.SetupTrail(GameConfig.BackgroundConfig.TrailFx);
+            SurvivorHero.SetupTrail(GameConfig.HeroConfig.TrailFx);
+            
+            AudioMgr.Instance.PlayMusic(GameConfig.BackgroundConfig.Music, 1f);
         }
         
         /// <summary>
@@ -359,8 +353,6 @@ namespace P3T.Scripts.Gameplay.Survivor
             var cameraMin = GameCamera.ViewportToWorldPoint(new Vector2(0f, 0f));
             var cameraSize = new Vector2(Math.Abs(cameraMin.x) + Math.Abs(cameraMax.x),
                 Math.Abs(cameraMin.y) + Math.Abs(cameraMax.y));
-
-            GameParentTransform.sizeDelta = cameraSize;
 
             BulletManager.Setup(this, SurvivorHero.SpawnedArtAsset, PlayerBounds.PlayerMovementBounds);
             HazardManager.Setup(this, PlayerBounds, OffscreenIndicatorManager);

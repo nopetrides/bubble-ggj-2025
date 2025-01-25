@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {
@@ -24,39 +23,36 @@ namespace P3T.Scripts.Gameplay.Survivor
         
         private static readonly int Collected = Animator.StringToHash("Collected");
 
-        [FormerlySerializedAs("PowerUp")] [SerializeField]
-        private PowerUpType _powerUp;
+        [SerializeField] private PowerUpType PowerUp;
 
-        [SerializeField] private SpriteRenderer _primaryRenderer;
+        [SerializeField] private Renderer PrimaryRenderer;
 
-        [FormerlySerializedAs("OnPickupAppearSound")] [SerializeField]
-        private AudioClip _pickupAppearSound;
+        [SerializeField] private AudioClip PickupAppearSound;
 
-        [FormerlySerializedAs("OnPickupCollectedSound")] [SerializeField]
-        private AudioClip _pickupCollectedSound;
+        [SerializeField] private AudioClip PickupCollectedSound;
         
-        [SerializeField] private Animator _animator;
-        [SerializeField] private Collider2D _collider;
-        [SerializeField] private SurvivorPickupAnimationEventListener _animationEventListener;
+        [SerializeField] private Animator Animator;
+        [SerializeField] private Collider Collider;
+        [SerializeField] private SurvivorPickupAnimationEventListener AnimationEventListener;
 
         private OffScreenIndicator _indicator;
 
         private SurvivorPowerUpManager _manager;
 
-        public PowerUpType Power => _powerUp;
+        public PowerUpType Power => PowerUp;
 
-        public AudioClip AppearSound => _pickupAppearSound;
+        public AudioClip AppearSound => PickupAppearSound;
 
-        public AudioClip CollectedSound => _pickupCollectedSound;
+        public AudioClip CollectedSound => PickupCollectedSound;
 
         private void FixedUpdate()
         {
-            if (_primaryRenderer.isVisible && _indicator != null)
+            if (PrimaryRenderer.isVisible && _indicator != null)
             {
                 _manager.NoLongerOffscreen(_indicator);
                 _indicator = null;
             }
-            else if (_primaryRenderer.isVisible == false && _indicator == null)
+            else if (PrimaryRenderer.isVisible == false && _indicator == null)
             {
                 _indicator = _manager.IndicateOffscreen(transform);
             }
@@ -72,10 +68,10 @@ namespace P3T.Scripts.Gameplay.Survivor
             if (collision.attachedRigidbody.TryGetComponent(out SurvivorHero hero))
             {
                 base.OnTriggerEnter2D(collision);
-                _collider.enabled = false;
+                Collider.enabled = false;
 
-                if (_animator != null)
-                    _animator.SetBool(Collected, true);
+                if (Animator != null)
+                    Animator.SetBool(Collected, true);
                 else
                     CollectionDone();
             }
@@ -90,7 +86,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 _manager.NoLongerOffscreen(_indicator);
                 _indicator = null;
             }
-            _collider.enabled = true;
+            Collider.enabled = true;
             _manager.Release(this);
         }
 
@@ -103,7 +99,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         public ShooterPickup SetManager(SurvivorPowerUpManager parent)
         {
             _manager = parent;
-            if (_animationEventListener != null) _animationEventListener.OnAnimationComplete += CollectionDone;
+            if (AnimationEventListener != null) AnimationEventListener.OnAnimationComplete += CollectionDone;
             return this;
         }
     }

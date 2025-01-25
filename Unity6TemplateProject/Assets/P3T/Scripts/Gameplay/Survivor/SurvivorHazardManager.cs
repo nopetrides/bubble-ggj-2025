@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using P3T.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Serialization;
@@ -10,7 +10,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 {
     public class SurvivorHazardManager : MonoBehaviour
     {
-        [SerializeField] private Transform ShootableParent;
+        [SerializeField] private Transform HazardParent;
 
         [SerializeField] private SurvivorHazard SurvivorHazardPrefab;
 
@@ -45,7 +45,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         [SerializeField] private SurvivorHazardDestroyParticle _defaultExplosionParticlePrefab;
 
         // A dictionary of all the active shootables and their colliders for quick lookup
-        private readonly Dictionary<Rigidbody2D, SurvivorHazard> _activeShootablesLookup = new();
+        private readonly Dictionary<Rigidbody, SurvivorHazard> _activeShootablesLookup = new();
         private SurvivorController _controller;
         private float _currentSpeed;
         private SurvivorHazardDestroyParticle _explosionParticlePrefab;
@@ -72,7 +72,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 () =>
                 {
                     var pooledObject = Instantiate(SurvivorHazardPrefab)
-                        .SetParent(ShootableParent)
+                        .SetParent(HazardParent)
                         .SetManager(this)
                         .SetSpeedIncrease(SpeedIncreasePerFixedUpdate);
                     var count = _pool.CountAll;
@@ -82,7 +82,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 pooledObject =>
                 {
                     pooledObject.gameObject.SetActive(true);
-                    pooledObject.IgnoreCollider(_playerBounds.PlayerMovementBounds);
+                    //pooledObject.IgnoreCollider(_playerBounds.PlayerMovementBounds);
 
                     _activeShootablesLookup.Add(pooledObject.Rigidbody, pooledObject);
                 },
@@ -99,7 +99,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 () =>
                 {
                     var pooledObject = Instantiate(_explosionParticlePrefab);
-                    pooledObject.SetParent(ShootableParent);
+                    pooledObject.SetParent(HazardParent);
                     pooledObject.SetManager(this);
 
                     pooledObject.name = _explosionParticlePrefab.name + _fxPool.CountAll;
@@ -111,13 +111,13 @@ namespace P3T.Scripts.Gameplay.Survivor
             );
         }
 
-        public bool IsRigidbodyActiveShootable(Rigidbody2D rb)
+        public bool IsRigidbodyActiveHazard(Rigidbody rb)
         {
             if (rb == null) return false;
             return _activeShootablesLookup.TryGetValue(rb, out var _);
         }
 
-        public Rigidbody2D[] GetActiveHazardRigidbodies()
+        public Rigidbody[] GetActiveHazardRigidbodies()
         {
             return _activeShootablesLookup.Keys.ToArray();
         }
@@ -226,7 +226,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             }
 
             var spawnPoint = gameCamera.ViewportToWorldPoint(offscreenSpawn);
-            spawnPoint = new Vector3(spawnPoint.x, spawnPoint.y, ShootableParent.position.z);
+            spawnPoint = new Vector3(spawnPoint.x, spawnPoint.y, HazardParent.position.z);
             spawnPoint += offset;
 
             shootableTransform.position = spawnPoint;
@@ -251,7 +251,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             Vector2 offset = Quaternion.Euler(0, 0, angle) * Vector3.up * (diameter / 2f);
             offset += _controller.HeroPosition;
             
-            Vector3 spawnPoint = new Vector3(offset.x, offset.y, ShootableParent.position.z);
+            Vector3 spawnPoint = new Vector3(offset.x, offset.y, HazardParent.position.z);
             StartCoroutine(WarnIncomingSpawn(spawnPoint, spawnsPickup, powerToSpawnOnDestroy));
         }
 
@@ -284,12 +284,12 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     Damage hazard and release them back to the pool
         ///     Do this after the collision event so we can handle it in a specific order
         /// </summary>
-        /// <param name="shootableRigidbody"> </param>
+        /// <param name="hazardRigidbody"> </param>
         /// <param name="damagingCollider"> </param>
-        public void DamageHazard(Rigidbody2D shootableRigidbody,
-            Collider2D damagingCollider = null)
+        public void DamageHazard(Rigidbody hazardRigidbody,
+            Collider damagingCollider = null)
         {
-            var arcadeSurvivorHazard = _activeShootablesLookup[shootableRigidbody];
+            var arcadeSurvivorHazard = _activeShootablesLookup[hazardRigidbody];
             var destroyed = arcadeSurvivorHazard.DealtDamage(damagingCollider);
             if (destroyed)
             {
@@ -305,10 +305,10 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <summary>
         ///     Destroy hazard and don't let it drop anything
         /// </summary>
-        /// <param name="shootableRigidbody"></param>
-        public void EliminateHazard(Rigidbody2D shootableRigidbody)
+        /// <param name="hazardRigidbody"></param>
+        public void EliminateHazard(Rigidbody hazardRigidbody)
         {
-            var arcadeSurvivorHazard = _activeShootablesLookup[shootableRigidbody];
+            var arcadeSurvivorHazard = _activeShootablesLookup[hazardRigidbody];
             arcadeSurvivorHazard.Eliminate();
             
             _controller.OnShootableDestroyed(arcadeSurvivorHazard.transform.position, false);

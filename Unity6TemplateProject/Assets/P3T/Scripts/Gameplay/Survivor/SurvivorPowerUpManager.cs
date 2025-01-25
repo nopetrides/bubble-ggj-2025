@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using P3T.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Serialization;
@@ -14,7 +15,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         [SerializeField] private Transform PowerUpParent;
 
-        [SerializeField] private PowerCollectedParticle CollectParticle;
+        [SerializeField] private SurvivorPowerCollectedParticle CollectParticle;
 
         [SerializeField] private float AnyPickupSpawnChance = 50f;
         
@@ -26,7 +27,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         [FormerlySerializedAs("_defensivePowerUps")] [SerializeField] private GameObject[] SpawnOncePowers;
         
         private SurvivorController _controller;
-        private ObjectPool<PowerCollectedParticle> _fxPool;
+        private ObjectPool<SurvivorPowerCollectedParticle> _fxPool;
         private OffScreenIndicatorManager _offScreenIndicatorManager;
         private Dictionary<ShooterPickup.PowerUpType, ObjectPool<ShooterPickup>> _poolDictionary;
 
@@ -62,7 +63,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 _poolDictionary.Add(power.Power, pool);
             }
 
-            _fxPool = new ObjectPool<PowerCollectedParticle>(
+            _fxPool = new ObjectPool<SurvivorPowerCollectedParticle>(
                 () =>
                 {
                     var pooledObject = Instantiate(CollectParticle);
@@ -146,7 +147,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             _poolDictionary[pickup.Power].Release(pickup);
         }
 
-        public void Release(PowerCollectedParticle particle)
+        public void Release(SurvivorPowerCollectedParticle particle)
         {
             _fxPool.Release(particle);
         }

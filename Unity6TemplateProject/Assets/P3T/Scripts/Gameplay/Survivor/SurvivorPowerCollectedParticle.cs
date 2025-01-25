@@ -1,6 +1,6 @@
 ﻿namespace P3T.Scripts.Gameplay.Survivor
 {
-	public class PowerCollectedParticle : PooledParticleBase<SurvivorPowerUpManager>
+	public class SurvivorPowerCollectedParticle : PooledParticleBase<SurvivorPowerUpManager>
 	{
 		private SurvivorPowerUpManager _manager;
 

@@ -7,7 +7,7 @@ namespace P3T.Scripts.Gameplay.Survivor
     /// </summary>
     public class OffScreenIndicator : MonoBehaviour
     {
-        [SerializeField] private SpriteRenderer SpriteRenderer;
+        [SerializeField] private Renderer Renderer;
         private Camera _gameCamera;
 
         private Bounds _indicatorBounds;
@@ -59,7 +59,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <param name="color"> </param>
         public void SetColor(Color color)
         {
-            SpriteRenderer.color = color;
+            Renderer.material.color = color;
         }
 
         public void Reset()

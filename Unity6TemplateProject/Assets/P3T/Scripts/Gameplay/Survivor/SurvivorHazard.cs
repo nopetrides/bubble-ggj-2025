@@ -27,7 +27,7 @@ namespace P3T.Scripts.Gameplay.Survivor
     {
         public SurvivorHazardConfig Config;
         
-        public Rigidbody2D Rigidbody;
+        public Rigidbody Rigidbody;
         
         [SerializeField] private Transform HazardConfigAssetParent;
 
@@ -134,11 +134,10 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         /// <param name="colliderToIgnore"> </param>
         /// <returns> </returns>
-        public SurvivorHazard IgnoreCollider(Collider2D colliderToIgnore)
+        public SurvivorHazard IgnoreCollider(Collider colliderToIgnore)
         {
-            var colliders = new List<Collider2D>();
-            Rigidbody.GetAttachedColliders(colliders);
-            foreach (var col in colliders) Physics2D.IgnoreCollision(colliderToIgnore, col);
+            // todo optimize GetComponents
+            foreach (var col in Rigidbody.GetComponentsInChildren<Collider>()) Physics.IgnoreCollision(colliderToIgnore, col);
             return this;
         }
 
@@ -148,7 +147,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         /// <param name="colliderToIgnore"> </param>
         /// <returns> If the object is destroyed </returns>
-        public bool DealtDamage(Collider2D colliderToIgnore = null)
+        public bool DealtDamage(Collider colliderToIgnore = null)
         {
             // Ignore bullet that just damaged us
             if (colliderToIgnore != null) IgnoreCollider(colliderToIgnore);

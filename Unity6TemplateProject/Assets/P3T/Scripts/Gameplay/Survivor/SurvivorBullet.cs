@@ -1,30 +1,25 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {
     public class SurvivorBullet : MonoBehaviour
     {
-        [FormerlySerializedAs("Rigidbody")] [SerializeField]
-        private Rigidbody2D _rigidbody;
+        [SerializeField] private Rigidbody Rigidbody;
 
-        [FormerlySerializedAs("_collider")] 
-        [FormerlySerializedAs("Collider")] [SerializeField]
-        private Collider2D _damagingTrigger;
+        [SerializeField] private Collider DamagingTrigger;
 
-        [FormerlySerializedAs("Renderer")] [SerializeField]
-        private SpriteRenderer _renderer;
+        [SerializeField] private SpriteRenderer Renderer;
 
-        [SerializeField] private Collider2D _targetingTrigger;
+        [SerializeField] private Collider2D TargetingTrigger;
 
-        [SerializeField] private ParticleSystem _pierceFX;
+        [SerializeField] private ParticleSystem PierceFX;
         
         private float _currentImpulse;
         private SurvivorBulletManager _manager;
         private SurvivorBulletManager.BulletModifiers _modifiers =
             SurvivorBulletManager.BulletModifiers.None;
-        private Rigidbody2D _target;
-        private Collider2D _gameBounds;
+        private Rigidbody _target;
+        private Collider _gameBounds;
 
         private void Start()
         {
@@ -48,7 +43,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             if (_target != null)
             {
-                _targetingTrigger.enabled = false;
+                TargetingTrigger.enabled = false;
                 if (_target.gameObject.activeInHierarchy)
                 {
                     AimAndFireAtTarget();
@@ -60,7 +55,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             }
             else
             {
-                _targetingTrigger.enabled = true;
+                TargetingTrigger.enabled = true;
                 // FindTargetWithRaycast();
             }
         }
@@ -71,14 +66,14 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     Bullet hit something, check if we can damage it
         /// </summary>
         /// <param name="col"></param>
-        private void OnDamageTriggerEnter(Collider2D col)
+        private void OnDamageTriggerEnter(Collider col)
         {
             bool removeBullet = false;
             if (col == _gameBounds) removeBullet = true;
-            else if (col.attachedRigidbody != null && _manager.LookupShootable(col.attachedRigidbody))
+            else if (col.attachedRigidbody != null && _manager.LookupHazard(col.attachedRigidbody))
             {
                 _target = null;
-                _manager.DamageHazard(col.attachedRigidbody, _damagingTrigger);
+                _manager.DamageHazard(col.attachedRigidbody, DamagingTrigger);
                 IgnoreCollider(col); // could cause problems if collider gets reused but not cleared from the ignore list, but that shouldn't be the case
                 // If the bullet has the pierce modifier, don't destroy it on collision with a hazard
                 if (_modifiers.HasFlag(SurvivorBulletManager.BulletModifiers.Pierce) == false)
@@ -90,8 +85,8 @@ namespace P3T.Scripts.Gameplay.Survivor
             if (removeBullet && gameObject.activeSelf && _manager != null)
             {
                 _target = null;
-                _damagingTrigger.enabled = false;
-                _targetingTrigger.enabled = false;
+                DamagingTrigger.enabled = false;
+                TargetingTrigger.enabled = false;
                 _manager.Release(this);
             }
         }
@@ -100,21 +95,21 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     Find and sets target with a trigger collider
         /// </summary>
         /// <param name="col"> </param>
-        private void OnTargetTriggerEnter(Collider2D col)
+        private void OnTargetTriggerEnter(Collider col)
         {
             if (col == null) return;
             var rb = col.attachedRigidbody; 
-            if (rb != null && _manager.LookupShootable(rb))
+            if (rb != null && _manager.LookupHazard(rb))
                 SetTarget(rb);
         }
         
         /// <summary>
         ///     Set the target this bullet will seek
         /// </summary>
-        /// <param name="col"></param>
-        public SurvivorBullet SetTarget(Rigidbody2D col)
+        /// <param name="rb"></param>
+        public SurvivorBullet SetTarget(Rigidbody rb)
         {
-            _target = col;
+            _target = rb;
             return this;
         }
 
@@ -157,7 +152,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         /// <param name="boundsCollider"> </param>
         /// <returns> </returns>
-        public SurvivorBullet SetBoundsCollider(Collider2D boundsCollider)
+        public SurvivorBullet SetBoundsCollider(Collider boundsCollider)
         {
             _gameBounds = boundsCollider;
             return this;
@@ -168,9 +163,9 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         /// <param name="colliderToIgnore"> </param>
         /// <returns> </returns>
-        public SurvivorBullet IgnoreCollider(Collider2D colliderToIgnore)
+        public SurvivorBullet IgnoreCollider(Collider colliderToIgnore)
         {
-            Physics2D.IgnoreCollision(colliderToIgnore, _damagingTrigger);
+            Physics.IgnoreCollision(colliderToIgnore, DamagingTrigger);
             return this;
         }
 
@@ -181,12 +176,12 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <returns> </returns>
         public SurvivorBullet SetModifiers(SurvivorBulletManager.BulletModifiers bulletModifiers)
         {
-            _damagingTrigger.enabled = true;
+            DamagingTrigger.enabled = true;
             _modifiers = bulletModifiers;
             if (_modifiers.HasFlag(SurvivorBulletManager.BulletModifiers.Pierce))
-                _pierceFX.Play();
+                PierceFX.Play();
             else
-                _pierceFX.Stop();
+                PierceFX.Stop();
             return this;
         }
 
@@ -204,7 +199,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         public SurvivorBullet Fire()
         {
             //_rigidbody.AddForce(transform.right * _currentImpulse, ForceMode2D.Impulse);
-            _rigidbody.linearVelocity = transform.right * (_currentImpulse * _rigidbody.mass);
+            Rigidbody.linearVelocity = transform.right * (_currentImpulse * Rigidbody.mass);
             return this;
         }
     }

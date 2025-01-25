@@ -9,6 +9,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 	[Serializable]
 	public class SurvivorHeroConfig
 	{
+		public SurvivorAdvancedTrailFx TrailFx;
 #region Audio
 
 		public AudioClip[] HeroProjectileFiredSound;
