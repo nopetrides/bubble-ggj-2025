@@ -36,10 +36,10 @@ namespace P3T.Scripts.UI
 			AudioMgr.Instance.GlobalVolume = SliderMasterVolume.value;
 			AudioMgr.Instance.MusicVolume = SliderMusicVolume.value;
 			AudioMgr.Instance.SfxVolume = SliderSoundsVolume.value;
-            
-			SaveUtil.Save();
-
+			AudioMgr.Instance.UpdateVolumeFromSaveData();
 			UpdateAudioDisplay();
+			
+			SaveUtil.Save();
 		}
 
 		private void UpdateAudioDisplay()

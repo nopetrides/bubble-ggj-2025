@@ -97,6 +97,7 @@ namespace P3T.Scripts.Managers
 		private void Start()
 		{
 			SaveUtil.OnLoadCompleted += OnDataLoadComplete;
+			SaveUtil.OnSaveCompleted += UpdateVolumeFromSaveData;
 			SaveUtil.Load();
 		}
 
@@ -116,7 +117,7 @@ namespace P3T.Scripts.Managers
 		/// <summary>
 		///     Update the master, music, and sfx volumes from the saved values
 		/// </summary>
-		private void UpdateVolumeFromSaveData()
+		public void UpdateVolumeFromSaveData()
 		{
 			Mixer.SetFloat("MasterVol", GlobalVolume);
 			Mixer.SetFloat("MusicVol", MusicVolume);
