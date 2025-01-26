@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: DefaultVolumeProfile
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: components.Array.size
+    value: 19
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[0]'
+    value: 
+    objectReference: {fileID: 1247868777620691934, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[1]'
+    value: 
+    objectReference: {fileID: -277880470225475626, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[2]'
+    value: 
+    objectReference: {fileID: 2338690907228448291, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[3]'
+    value: 
+    objectReference: {fileID: 2335868966179733374, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[4]'
+    value: 
+    objectReference: {fileID: 3460444317416099510, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[5]'
+    value: 
+    objectReference: {fileID: 7933203426823181213, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[6]'
+    value: 
+    objectReference: {fileID: 5762530381802164056, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[7]'
+    value: 
+    objectReference: {fileID: -3386560400091697801, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[8]'
+    value: 
+    objectReference: {fileID: 156332030701414761, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[9]'
+    value: 
+    objectReference: {fileID: 9099548931283147545, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[10]'
+    value: 
+    objectReference: {fileID: -3757877592200609216, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[11]'
+    value: 
+    objectReference: {fileID: 2332282131777942337, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[12]'
+    value: 
+    objectReference: {fileID: -4210620904635426390, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[13]'
+    value: 
+    objectReference: {fileID: -6951754464447674219, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[14]'
+    value: 
+    objectReference: {fileID: 8549655192814258499, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[15]'
+    value: 
+    objectReference: {fileID: -7645455725216806467, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[16]'
+    value: 
+    objectReference: {fileID: -8186968272690591729, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[17]'
+    value: 
+    objectReference: {fileID: -3978695733392391637, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  - target: {fileID: 0}
+    propertyPath: 'components.Array.data[18]'
+    value: 
+    objectReference: {fileID: -1083910812058648046, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+  m_ExcludedProperties: []
+  m_CoupledType:
+    m_NativeTypeID: 0
+    m_ManagedTypePPtr: {fileID: 0}
+    m_ManagedTypeFallback: 
+  m_CoupledProperties: []

@@ -50,7 +50,8 @@ MonoBehaviour:
   Mixer: {fileID: 24100000, guid: b1f0b53627654480da5b0b3f03b98ae2, type: 2}
   MusicSource: {fileID: 4426838930180058826}
   SfxSource: {fileID: 2620518620291658676}
-  ReusableMusicClips: []
+  ReusableMusicClips:
+  - {fileID: 8300000, guid: 99938bbab3993ae47ac5982edb6e8228, type: 3}
   ReusableSoundClips: []
 --- !u!1 &2610556538652827344
 GameObject:

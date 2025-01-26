@@ -158,7 +158,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8071609373031173996}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &2633556930287993495
 GameObject:
@@ -313,7 +325,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 5395828044991598077}
   m_FillRect: {fileID: 7133025584764658257}
   m_HandleRect: {fileID: 5483732827943964893}
@@ -324,7 +336,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7759477483224727364}
+        m_TargetAssemblyTypeName: P3T.Scripts.UI.Settings, Assembly-CSharp
+        m_MethodName: SliderValueChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3238770381346140117
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,7 +594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.028755592, g: 0, b: 0.066037714, a: 0.98039216}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -645,7 +669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.028755592, g: 0, b: 0.066037714, a: 0.50980395}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -697,7 +721,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 60, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3278035403964728903
 CanvasRenderer:
@@ -748,7 +772,7 @@ GameObject:
   - component: {fileID: 8578364744544107802}
   - component: {fileID: 4577277909374147725}
   m_Layer: 5
-  m_Name: GameVolButton
+  m_Name: GameVolSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -933,7 +957,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 6271729512850947951}
   m_FillRect: {fileID: 6831086830386359385}
   m_HandleRect: {fileID: 4257541855068856258}
@@ -944,7 +968,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7759477483224727364}
+        m_TargetAssemblyTypeName: P3T.Scripts.UI.Settings, Assembly-CSharp
+        m_MethodName: SliderValueChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5838612800211675568
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,7 +1072,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4066981350062697119
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1288,7 +1324,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 60, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6425130373153911715
 CanvasRenderer:
@@ -1339,7 +1375,7 @@ GameObject:
   - component: {fileID: 1509847624708873605}
   - component: {fileID: 1184289191900912349}
   m_Layer: 5
-  m_Name: MasterVolButton
+  m_Name: MasterVolSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1445,7 +1481,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 60, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &807110384222201984
 CanvasRenderer:
@@ -1688,8 +1724,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Game Volume
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
-  m_sharedMaterial: {fileID: -4084125999795999210, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
+  m_sharedMaterial: {fileID: 3035741270501946574, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1719,7 +1755,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 8
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1768,7 +1804,7 @@ GameObject:
   - component: {fileID: 8408579376921397265}
   - component: {fileID: 2725702000302001548}
   m_Layer: 5
-  m_Name: MusicVolButton
+  m_Name: MusicVolSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1870,8 +1906,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Master Volume
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
-  m_sharedMaterial: {fileID: -4084125999795999210, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
+  m_sharedMaterial: {fileID: 3035741270501946574, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1901,7 +1937,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 8
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2006,8 +2042,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Music Volume
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
-  m_sharedMaterial: {fileID: -4084125999795999210, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
+  m_sharedMaterial: {fileID: 3035741270501946574, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2037,7 +2073,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 8
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2210,6 +2246,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BackButton: {fileID: 1148292494970102240}
+  SliderMasterVolume: {fileID: 1616204922056100267}
+  SliderMusicVolume: {fileID: 2956150512774716819}
+  SliderSoundsVolume: {fileID: 5220432572336385767}
 --- !u!1 &8620323320878982635
 GameObject:
   m_ObjectHideFlags: 0
@@ -2313,8 +2352,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Settings
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
-  m_sharedMaterial: {fileID: 3035741270501946574, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+  m_sharedMaterial: {fileID: -7325026083781946373, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2346,7 +2385,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2460,7 +2499,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 6197615575833562495}
   m_FillRect: {fileID: 2006926823309191567}
   m_HandleRect: {fileID: 3161384796509103790}
@@ -2471,7 +2510,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7759477483224727364}
+        m_TargetAssemblyTypeName: P3T.Scripts.UI.Settings, Assembly-CSharp
+        m_MethodName: SliderValueChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8923985411892183737
 GameObject:
   m_ObjectHideFlags: 0

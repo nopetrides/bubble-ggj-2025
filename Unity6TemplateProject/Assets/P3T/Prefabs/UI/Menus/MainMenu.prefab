@@ -65,17 +65,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Scrap n' Rescue
+  m_text: Suds' Up!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
-  m_sharedMaterial: {fileID: 3035741270501946574, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+  m_sharedMaterial: {fileID: -7325026083781946373, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -260,7 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.36258456, g: 0.6962267, b: 0.7924528, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -309,7 +309,7 @@ MonoBehaviour:
   fallbackSpriteSettings:
     Sprite: {fileID: 0}
     ColorMode: 1
-    PrimaryColor: {r: 0, g: 0, b: 0, a: 1}
+    PrimaryColor: {r: 0.36258456, g: 0.6962267, b: 0.7924528, a: 1}
     SecondaryColor: {r: 0, g: 0, b: 0, a: 0}
     screenConfigName: 
   customSpriteSettings:
@@ -431,7 +431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f155282e0d5f4b50810182b78c59d78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartButton: {fileID: 0}
+  StartButton: {fileID: 8170427670230646851}
 --- !u!225 &6365801590835862676
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -456,6 +456,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ButtonStart
       objectReference: {fileID: 0}
+    - target: {fileID: 4040492309618365065, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_Name
+      value: BubbleCursor
+      objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -474,11 +478,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: StartButton
+      value: ButtonStart
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: P3T.Scripts.UI.MainMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -569,14 +573,129 @@ PrefabInstance:
       value: Start
       objectReference: {fileID: 0}
     - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_fontStyle
       value: 8
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -7325026083781946373, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 1182737589609192429, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4040492309618365065, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6422617463000177765}
   m_SourcePrefab: {fileID: 100100000, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+--- !u!1 &767603787619560829 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4040492309618365065, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+  m_PrefabInstance: {fileID: 3654008963203006452}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6422617463000177765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 767603787619560829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a132ebb16d23354b841b6618f4fa0e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 710729683418647145, guid: a43552c9005270e4081c414f0596fb2b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  colorMode: 0
+  secondColor: {r: 1, g: 1, b: 1, a: 1}
+  materialProperties:
+    FloatProperties: []
+  materialType: Default
+  materialEffect: 0
+  materialProperty1: 0
+  materialProperty2: 0
+  materialProperty3: 0
+  keepBorderAspectRatio: 0
+  spriteBorderScaleFallback:
+    screenConfigName: 
+    OptimizedSize: {x: 1, y: 1}
+    MinSize: {x: 0, y: 0}
+    MaxSize: {x: 3, y: 3}
+    UseMinSize: 0
+    UseMaxSize: 0
+    ModX:
+      ExponentialScale: 1
+      SizeModifiers:
+      - Mode: 0
+        Impact: 1
+    ModY:
+      ExponentialScale: 1
+      SizeModifiers:
+      - Mode: 0
+        Impact: 1
+  customBorderScales:
+    items: []
+  fallbackSpriteSettings:
+    Sprite: {fileID: 710729683418647145, guid: a43552c9005270e4081c414f0596fb2b, type: 3}
+    ColorMode: 0
+    PrimaryColor: {r: 1, g: 1, b: 1, a: 1}
+    SecondaryColor: {r: 1, g: 1, b: 1, a: 1}
+    screenConfigName: 
+  customSpriteSettings:
+    items: []
+--- !u!114 &8170427670230646851 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+  m_PrefabInstance: {fileID: 3654008963203006452}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 266537010df2f7d42a0c51583f328c0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8537465886353830616 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4958056609607339308, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
@@ -593,6 +712,14 @@ PrefabInstance:
     - target: {fileID: 891463982941930220, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_Name
       value: ButtonQuit
+      objectReference: {fileID: 0}
+    - target: {fileID: 1182737589609192429, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 710729683418647145, guid: a43552c9005270e4081c414f0596fb2b, type: 3}
+    - target: {fileID: 4040492309618365065, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_Name
+      value: BubbleCursor
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -612,11 +739,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: QuitButton
+      value: ButtonQuit
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: P3T.Scripts.UI.MainMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -707,8 +834,36 @@ PrefabInstance:
       value: Quit
       objectReference: {fileID: 0}
     - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_fontStyle
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -7325026083781946373, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -732,6 +887,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: ButtonSettings
       objectReference: {fileID: 0}
+    - target: {fileID: 1182737589609192429, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 710729683418647145, guid: a43552c9005270e4081c414f0596fb2b, type: 3}
+    - target: {fileID: 4040492309618365065, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_Name
+      value: BubbleCursor
+      objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -750,11 +913,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SettingsButton
+      value: ButtonSettings
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: P3T.Scripts.UI.MainMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4888258718171414455, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -845,8 +1008,36 @@ PrefabInstance:
       value: settings
       objectReference: {fileID: 0}
     - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
       propertyPath: m_fontStyle
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -7325026083781946373, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062268850994271006, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

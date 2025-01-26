@@ -105,7 +105,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         public void ButtonRetry()
         {
-            SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.None);
+            SceneMgr.Instance.LoadScene(GameScenes.MainGame, GameMenus.None);
         }
 
         public void ButtonMenu()

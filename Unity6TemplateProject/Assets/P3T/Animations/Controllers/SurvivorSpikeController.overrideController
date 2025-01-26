@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SurvivorSpikeController
+  m_Controller: {fileID: 9100000, guid: 31d176e562e909c41a8c7ee9d9f4ff17, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: fb3aa32b6bcc025428f3dea8231d9c2f, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 6fada02ef71162149b340e49fa800a51, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: bf469e34ac3a61a45b7a2fdadd0fac2d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 814757d466beeb741bbfbd29a91a9e4f, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 6e8a60f4a62e61a42b04e0a09fec2bc4, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 1fa2d8a8bdc120c41b963acfcf916acd, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 0b55051e83805db4ca669cfb7e9c1eb0, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 7704046870d1d254593e0e2eb2fc585c, type: 3}

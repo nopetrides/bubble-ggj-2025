@@ -6,6 +6,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 	{
 		[SerializeField] private TrailRenderer[] TrailRenderers;
 		[SerializeField] private ParticleSystem[] ParticleSystems;
+		[SerializeField] private float TrailWidth;
 
 		private Rigidbody2D _rigidbody2D;
 
@@ -13,9 +14,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 		{
 			// Get the rigidbody that the fx is attached to
 			_rigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
-			var t = transform as RectTransform;
-			if (t != null) SetTrailStartWidth(t.rect.height); // height since the survivor style assets stay horizontal
-			else UnityEngine.Debug.LogError("Failed to set trail start width. Does the fx object have a RectTransform?");
+			SetTrailStartWidth(TrailWidth); // if it has a trail
 		}
 
 		private void OnEnable()

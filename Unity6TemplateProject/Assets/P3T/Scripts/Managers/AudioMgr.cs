@@ -109,6 +109,8 @@ namespace P3T.Scripts.Managers
 			SaveUtil.OnLoadCompleted -= OnDataLoadComplete;
 
 			UpdateVolumeFromSaveData();
+			
+			PlayMusic(MusicTypes.Login, 1f);
 		}
 
 		/// <summary>

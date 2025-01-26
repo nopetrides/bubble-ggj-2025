@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using P3T.Scripts.Gameplay.Survivor.Drivers;
+using P3T.Scripts.Gameplay.Survivor.ScriptableObjects;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace P3T.Scripts.Gameplay.Survivor
@@ -25,6 +28,9 @@ namespace P3T.Scripts.Gameplay.Survivor
         [HideInInspector] [SerializeField] 
         private Renderer PrimaryRenderer;
         
+        [HideInInspector] [SerializeField] 
+        private SurvivorAnimatedAsset SpawnedAsset;
+        
         private float _currentSpeed;
         private int _hitPoints;
         private OffScreenIndicator _indicator;
@@ -34,6 +40,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         public StreakAssist.Item PowerToSpawnOnDestroy { get; private set; }
 
         public bool DoesSpawnPickupOnDestroy { get; private set; }
+
 
         private void FixedUpdate()
         {
@@ -153,7 +160,11 @@ namespace P3T.Scripts.Gameplay.Survivor
             // Ignore bullet that just damaged us
             if (colliderToIgnore != null) IgnoreCollider(colliderToIgnore);
             _hitPoints--;
-            if (_hitPoints > 0) return false;
+            if (_hitPoints > 0)
+            {
+                SpawnedAsset.transform.DOShakeScale(.2f, Vector3.one * 2);
+                return false;
+            }
 
             if (Trail != null) Trail.Clear();
             
@@ -200,7 +211,8 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         public void Setup(SurvivorHazardConfig configurableAsset)
         {
-            PrimaryRenderer = HazardConfigAssetParent.GetComponentInChildren<Renderer>();
+            SpawnedAsset = Instantiate(Config.HazardPrefab, HazardConfigAssetParent);
+            PrimaryRenderer = SpawnedAsset.PrimaryRenderer;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using P3T.Scripts.Gameplay.Survivor.ScriptableObjects;
+using UnityEngine;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {

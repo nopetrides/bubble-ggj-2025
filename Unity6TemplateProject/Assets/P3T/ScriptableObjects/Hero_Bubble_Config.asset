@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08e64c992ad84077996a8d9430bf171c, type: 3}
+  m_Name: Hero_Bubble_Config
+  m_EditorClassIdentifier: 
+  SurvivorPrefab: {fileID: 350443914853510892, guid: 8174e295cdca1294a86a9275be5afa46, type: 3}
+  TrailFx: {fileID: 5727174498153106927, guid: e5708e513833a9742b5c09846d706bea, type: 3}
+  HeroProjectileFiredSound:
+  - {fileID: 8300000, guid: d0ac805cb9297d5469243906450f97fd, type: 3}
+  - {fileID: 8300000, guid: 7e7cbb63840dbd94e819a87b4a915f98, type: 3}
+  - {fileID: 8300000, guid: 7fad06bde0ab1954595b59a92dc8c0e4, type: 3}
+  - {fileID: 8300000, guid: 42ceb66cb59fb0742b569259b8a7739e, type: 3}
+  HeroShieldActivateSound:
+  - {fileID: 8300000, guid: 4a9eecfed38b89d4ab45f33fa968842e, type: 3}
+  HeroShieldHitSound:
+  - {fileID: 8300000, guid: de63e8489ce89da4a8dcf4dc8b8dd26b, type: 3}
+  HeroDamagedSound:
+  - {fileID: 8300000, guid: b3088acc1e923c7419f0adbd2bc3d90e, type: 3}
+  - {fileID: 8300000, guid: 0ee6fd34dd143e94fab032d45ac923bb, type: 3}
+  - {fileID: 8300000, guid: 6693bdb2ecc19c3429358dcced96ff62, type: 3}

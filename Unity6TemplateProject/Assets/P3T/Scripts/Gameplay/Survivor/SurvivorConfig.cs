@@ -1,4 +1,5 @@
 using System;
+using P3T.Scripts.Gameplay.Survivor.ScriptableObjects;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {

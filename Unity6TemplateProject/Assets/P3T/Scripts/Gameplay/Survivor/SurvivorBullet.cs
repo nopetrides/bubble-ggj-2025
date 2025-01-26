@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {
@@ -20,6 +21,8 @@ namespace P3T.Scripts.Gameplay.Survivor
             SurvivorBulletManager.BulletModifiers.None;
         private Rigidbody _target;
         private Collider2D _gameBounds;
+
+        private List<Collider> _ignoredColliders = new List<Collider>();
 
         /// <summary>
         ///     May need to find the most efficient way to do this
@@ -106,7 +109,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             if (col == null) return;
             var rb = col.attachedRigidbody; 
-            if (rb != null && _manager.LookupHazard(rb) && Vector3.Angle( transform.forward, rb.transform.position - transform.position) < 90)
+            if (rb != null && _manager.LookupHazard(rb) && Mathf.Abs(Vector3.Angle( transform.forward, rb.transform.position - transform.position)) < 90)
                 SetTarget(rb);
         }
         
@@ -174,6 +177,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             Physics.IgnoreCollision(colliderToIgnore, DamagingTrigger);
             Physics.IgnoreCollision(colliderToIgnore, TargetingTrigger);
+            _ignoredColliders.Add(colliderToIgnore);
             return this;
         }
 
@@ -184,6 +188,13 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <returns> </returns>
         public SurvivorBullet SetModifiers(SurvivorBulletManager.BulletModifiers bulletModifiers)
         {
+            // this *shouldn't* be necessary, but unity isn't correctly cleaning up the physics when the game object toggles
+            foreach (var col in _ignoredColliders)
+            {
+                Physics.IgnoreCollision(col,DamagingTrigger , false);
+                Physics.IgnoreCollision(col,TargetingTrigger , false);
+            }
+            _ignoredColliders.Clear();
             DamagingTrigger.enabled = true;
             _modifiers = bulletModifiers;
             if (_modifiers.HasFlag(SurvivorBulletManager.BulletModifiers.Pierce))

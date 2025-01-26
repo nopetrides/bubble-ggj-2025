@@ -333,8 +333,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
-  m_sharedMaterial: {fileID: -4084125999795999210, guid: 2197cd6eb8b0b4d099b71e9ebb77ef2f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
+  m_sharedMaterial: {fileID: -7325026083781946373, guid: f1e8b1124eb78074a88d427e710b57f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -364,7 +364,7 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 64
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -415,7 +415,7 @@ GameObject:
   - component: {fileID: 1182737589609192429}
   - component: {fileID: 6393655433154969002}
   m_Layer: 5
-  m_Name: ShipCursor
+  m_Name: BubbleCursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -468,7 +468,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7a1d164995f65404aa30036828213826, type: 3}
+  m_Sprite: {fileID: 710729683418647145, guid: a43552c9005270e4081c414f0596fb2b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using P3T.Scripts.Gameplay.Survivor.Drivers;
+using P3T.Scripts.Gameplay.Survivor.ScriptableObjects;
 using P3T.Scripts.Managers;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -62,13 +64,12 @@ namespace P3T.Scripts.Gameplay.Survivor
         private float _rapidShotTimer;
         private bool _setupDone;
         private bool _shooting; // start shooting after first input
-        private SurvivorAdvancedTrailFx _spawnedTrailFx;
         private float _spreadShotTimer;
         private Rigidbody _target;
         private TrailLocator _trailParent;
+        private SurvivorAnimatedAsset _spawnedAsset;
+        private SurvivorAdvancedTrailFx _spawnedTrailFx;
         private List<Renderer> _flickerRenderers = new();
-
-        public GameObject SpawnedArtAsset { get; private set; }
 
         private int HitPoints => LifeCounter.LivesRemaining;
 
@@ -129,10 +130,12 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         /// <summary>
         ///     Create the configurable asset from the config data and cache component references
+        ///     todo external setup
         /// </summary>
         /// <param name="gameConfigHeroConfig"></param>
         public void Setup(SurvivorHeroConfig gameConfigHeroConfig)
         {
+            _spawnedAsset = Instantiate(Config.SurvivorPrefab, HeroConfigAssetParent);
             _setupDone = false;
             // Results array should be fixed size
             _facingContacts = new Collider[50];
@@ -140,11 +143,10 @@ namespace P3T.Scripts.Gameplay.Survivor
             ShieldRenderer.enabled = false;
             //SpawnedArtAsset = Instantiate(Config.art, HeroConfigAssetParent);
 
-            if (SpawnedArtAsset)
+            if (_spawnedAsset)
             {
-                _heroCollider = SpawnedArtAsset.GetComponentInChildren<Collider>(); // should only have one
-                
-                _flickerRenderers.AddRange(SpawnedArtAsset.GetComponentsInChildren<Renderer>().Where(r => r.enabled));
+                _heroCollider = _spawnedAsset.GetComponentInChildren<Collider>(); // should only have one
+                _flickerRenderers.AddRange(_spawnedAsset.GetComponentsInChildren<Renderer>().Where(r => r.enabled));
             }
             else
             {
@@ -154,20 +156,26 @@ namespace P3T.Scripts.Gameplay.Survivor
             _setupDone = true;
         }
 
+        /// <summary>
+        ///     Sets the particle/line renderer trail effect for the character
+        ///     todo external setup
+        /// </summary>
+        /// <param name="trailFxInfo"></param>
         public void SetupTrail(SurvivorAdvancedTrailFx trailFxInfo)
         {
-            if (SpawnedArtAsset == null)
+
+            if (_spawnedAsset == null)
                 return;
-            
-            var trailParent = SpawnedArtAsset.GetComponentInChildren<TrailLocator>();
+
+            var trailParent = _spawnedAsset.TrailParent;
             if (trailParent == null)
             {
                 UnityEngine.Debug.LogError("Hero.SetupTrail failed to find TrailLocator in spawnedArtAsset");
                 return;
             }
-
-            _spawnedTrailFx = Instantiate(trailFxInfo, trailParent.transform);
-
+            
+            _spawnedTrailFx = Instantiate(Config.TrailFx, trailParent);
+            
             if (_spawnedTrailFx == null) UnityEngine.Debug.LogError($"Hero.AttachTrail failed to load");
         }
 

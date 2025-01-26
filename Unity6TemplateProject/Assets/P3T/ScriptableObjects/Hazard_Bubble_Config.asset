@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3808f10463604b73adac7c3ca22ed8ab, type: 3}
+  m_Name: Hazard_Bubble_Config
+  m_EditorClassIdentifier: 
+  HazardPrefab: {fileID: 350443914853510892, guid: 8174e295cdca1294a86a9275be5afa46, type: 3}
+  HazardDamagedSounds:
+  - {fileID: 8300000, guid: 7532bfe700a15414c8489709d3f41507, type: 3}
+  - {fileID: 8300000, guid: 7f4cc7316b0079e44b69d7ac0d6743fa, type: 3}
+  - {fileID: 8300000, guid: f84f9a1cac62a1c41b886e049062fce5, type: 3}
+  - {fileID: 8300000, guid: c93cc0029bfd470438f8e97d9831665e, type: 3}

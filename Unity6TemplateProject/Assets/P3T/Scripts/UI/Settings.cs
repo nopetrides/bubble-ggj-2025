@@ -4,19 +4,14 @@ using UnityEngine.UI;
 
 namespace P3T.Scripts.UI
 {
-    /// <summary>
-    /// Settings menu
-    /// Should include sliders and toggles for player preferences
-    /// Such as audio settings or accessibility settings
-    /// </summary>
-    public class Settings : MenuBase
+	public class Settings : MenuBase
 	{
 		[SerializeField] private Button BackButton;
 
-		private void OnEnable()
-		{
-			BackButton.Select();
-		}
+		[Header("Audio")] 
+		[SerializeField] private Slider SliderMasterVolume;
+		[SerializeField] private Slider SliderMusicVolume;
+		[SerializeField] private Slider SliderSoundsVolume;
 
 		public override GameMenus MenuType()
 		{
@@ -27,5 +22,32 @@ namespace P3T.Scripts.UI
 		{
 			UiMgr.Instance.HideMenu(GameMenus.SettingsMenu);
 		}
+
+		private void OnEnable()
+		{
+			BackButton.Select();
+			UpdateAudioDisplay();
+		}
+
+#region Audio
+
+		public void SliderValueChanged()
+		{
+			AudioMgr.Instance.GlobalVolume = SliderMasterVolume.value;
+			AudioMgr.Instance.MusicVolume = SliderMusicVolume.value;
+			AudioMgr.Instance.SfxVolume = SliderSoundsVolume.value;
+            
+			SaveUtil.Save();
+
+			UpdateAudioDisplay();
+		}
+
+		private void UpdateAudioDisplay()
+		{
+			SliderMasterVolume.SetValueWithoutNotify(SaveUtil.SavedValues.GlobalVolume);
+			SliderMusicVolume.SetValueWithoutNotify(SaveUtil.SavedValues.MusicVolume);
+			SliderSoundsVolume.SetValueWithoutNotify(SaveUtil.SavedValues.SfxVolume);
+		}
+#endregion
 	}
 }

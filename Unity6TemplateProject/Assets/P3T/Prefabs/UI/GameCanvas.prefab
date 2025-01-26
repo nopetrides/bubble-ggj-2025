@@ -121,10 +121,10 @@ MonoBehaviour:
   SortGap: 10
   ScreenFaderPrefab: {fileID: 5816890450284624309, guid: a8ef5501282dc4d099d05cb15187fe1f, type: 3}
   SplashMenuPrefab: {fileID: 7431612978833750563, guid: 969d1fcbbf44549789933a3215313428, type: 3}
-  MainMenuPrefab: {fileID: 0}
-  SettingsMenuPrefab: {fileID: 0}
+  MainMenuPrefab: {fileID: 3337753152252030631, guid: b460d693855274329aa2b4d92a36e07f, type: 3}
+  SettingsMenuPrefab: {fileID: 7759477483224727364, guid: acfd65e77be9c444196060bb458eee63, type: 3}
   InGameUIPrefab: {fileID: 0}
-  GameOverMenuPrefab: {fileID: 0}
+  GameOverMenuPrefab: {fileID: 4633760019947690283, guid: d566c6d6cd9636740aa1638fca58d5c9, type: 3}
 --- !u!1001 &5911991904489727633
 PrefabInstance:
   m_ObjectHideFlags: 0

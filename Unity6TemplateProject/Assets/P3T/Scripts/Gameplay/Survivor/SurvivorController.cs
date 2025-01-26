@@ -69,7 +69,6 @@ namespace P3T.Scripts.Gameplay.Survivor
             protected set
             {
                 _trueScore = value;
-                AnimateScoreChanged();
             }
         }
         
@@ -89,6 +88,8 @@ namespace P3T.Scripts.Gameplay.Survivor
         public bool CoreGameLoopRunning => _playing && _introComplete && !_gameIsCompleted && !_endSequence;
         public Vector3 HeroPosition => SurvivorHero.transform.position;
 
+        
+        
         private void Awake()
         {
             Init();
@@ -168,6 +169,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             var pointsEarned = Mathf.RoundToInt(GameConfig.PointsPerSecond*GameConfig.PointsUpdateInterval);
             _pointsTracker.SurvivalPoints += pointsEarned;
             ScoreEarned += pointsEarned;
+            ScoreCounter.Animate(pointsEarned);
         }
 
         /// <summary>
@@ -281,8 +283,10 @@ namespace P3T.Scripts.Gameplay.Survivor
             return HazardManager.GetActiveHazardRigidbodies();
         }
         
-        public void Init()
+        private void Init() // todo call from some kind of countdown ui?
         {
+            UnityEngine.Random.InitState((int)DateTime.Now.Ticks);
+            
             _gamePaused = false;
             _gameIsCompleted = false;
             _playing = false;
@@ -291,8 +295,8 @@ namespace P3T.Scripts.Gameplay.Survivor
             
             RunMiniGame();
         }
-        
-        protected virtual void RunMiniGame()
+
+        private void RunMiniGame()
         {
             PreloadAssets();
 
@@ -413,6 +417,8 @@ namespace P3T.Scripts.Gameplay.Survivor
 
             //Add to total
             ScoreEarned += points;
+            AnimateScoreChanged();
+            ScoreCounter.Animate(points);
         }
 
         /// <summary>
@@ -424,20 +430,6 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             _pointsTracker.HazardPoints += points;
             UpdatePoints(points, position);
-        }
-
-        /// <summary>
-        ///     Bonus score for overall survival time
-        /// </summary>
-        [Obsolete]
-        private void AddSurvivalPoints()
-        {
-            var totalIntervals =
-                Mathf.FloorToInt(_pointsTimer / GameConfig.PointsUpdateInterval); // Calculate intervals passed
-            var survivalPoints = totalIntervals * GameConfig.PointsPerSecond;
-            _pointsTracker.SurvivalPoints = survivalPoints;
-            // Don't animate a bubble
-            ScoreEarned += totalIntervals * GameConfig.PointsPerSecond;
         }
 
         /// <summary>
@@ -454,7 +446,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// Default score changed animator
         /// Calls a basic "you earned these many points" quick popup
         /// </summary>
-        public void AnimateScoreChanged()
+        private void AnimateScoreChanged()
         {
             // Scale bounce for the actual score label TODO do we still want this?
             var root = ScoreCounter.transform;

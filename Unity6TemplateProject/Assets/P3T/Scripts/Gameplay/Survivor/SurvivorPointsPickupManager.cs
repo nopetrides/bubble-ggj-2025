@@ -1,4 +1,5 @@
-﻿using P3T.Scripts.Managers;
+﻿using P3T.Scripts.Gameplay.Survivor.ScriptableObjects;
+using P3T.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Pool;
 
