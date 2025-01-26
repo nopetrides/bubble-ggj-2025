@@ -373,8 +373,11 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         private void PlayLargeDestroySound()
         {
-            var sound = SurvivorHazardPrefab.Config.HazardDamagedSounds[Random.Range(0, SurvivorHazardPrefab.Config.HazardDamagedSounds.Length)];
-            AudioMgr.Instance.PlaySound(sound);
+            if (SurvivorHazardPrefab.Config != null && SurvivorHazardPrefab.Config.HazardDamagedSounds is { Length: > 0 })
+            {
+                var sound = SurvivorHazardPrefab.Config.HazardDamagedSounds[Random.Range(0, SurvivorHazardPrefab.Config.HazardDamagedSounds.Length)];
+                AudioMgr.Instance.PlaySound(sound);
+            }
         }
 
         /// <summary>

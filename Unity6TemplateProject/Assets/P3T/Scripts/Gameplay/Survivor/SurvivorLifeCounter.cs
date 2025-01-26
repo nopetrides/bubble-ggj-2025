@@ -53,6 +53,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 lifeObj.SetActive(true);
             }
             _currentLifeIndex = Lives.Count - 1;
+            LastLifeWarningOverlay.alpha = Lives.Count > 1 ? 0f : 1f;
         }
 
         private void ProcessLifeLost()

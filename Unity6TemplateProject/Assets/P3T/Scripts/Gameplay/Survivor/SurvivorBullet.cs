@@ -88,7 +88,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     Bullet hit something, check if we can damage it
         /// </summary>
         /// <param name="col"></param>
-        private void OnDamageTriggerEnter(Collider col)
+        public void OnDamageTriggerEnter(Collider col)
         {
             bool removeBullet = false;
             //if (col == _gameBounds) removeBullet = true;
@@ -117,7 +117,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     Find and sets target with a trigger collider
         /// </summary>
         /// <param name="col"> </param>
-        private void OnTargetTriggerEnter(Collider col)
+        public void OnTargetTriggerEnter(Collider col)
         {
             if (col == null) return;
             var rb = col.attachedRigidbody; 
