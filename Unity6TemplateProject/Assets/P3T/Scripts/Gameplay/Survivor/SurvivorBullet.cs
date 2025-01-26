@@ -195,8 +195,9 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         public void AimAndFireAtTarget()
         {
-            var dir = _target.transform.position - transform.position;
-            transform.forward = dir;
+            // prevent bullets turning sharply if the target is not in the moving direction
+            if (Vector3.Angle( transform.forward, _target.transform.position - transform.position) < 90);
+                transform.LookAt(_target.transform);
             Fire();
         }
 
