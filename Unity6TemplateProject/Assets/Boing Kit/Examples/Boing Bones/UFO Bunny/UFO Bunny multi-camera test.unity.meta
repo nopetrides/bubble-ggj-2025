@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 048ad0d2f32b96f44898e10609069e6c
+timeCreated: 1565845749
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Bones/UFO Bunny/UFO Bunny multi-camera
+    test.unity
+  uploadId: 665776

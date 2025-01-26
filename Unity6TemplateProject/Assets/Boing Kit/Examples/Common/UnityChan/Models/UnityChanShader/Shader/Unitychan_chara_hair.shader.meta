@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: fe3954a9664afb042a2af588b53680b0
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Common/UnityChan/Models/UnityChanShader/Shader/Unitychan_chara_hair.shader
+  uploadId: 665776

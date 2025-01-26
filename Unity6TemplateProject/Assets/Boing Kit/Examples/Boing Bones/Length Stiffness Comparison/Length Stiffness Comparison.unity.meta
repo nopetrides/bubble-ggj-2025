@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 814b6d09e16299f43a4666d262cf6359
+timeCreated: 1562824998
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Bones/Length Stiffness Comparison/Length
+    Stiffness Comparison.unity
+  uploadId: 665776

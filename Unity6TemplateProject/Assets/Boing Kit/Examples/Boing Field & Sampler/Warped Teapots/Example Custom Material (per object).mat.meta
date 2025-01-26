@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 071b8a58841948f4390e7a01d41e18af
+timeCreated: 1545373480
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Field & Sampler/Warped Teapots/Example
+    Custom Material (per object).mat
+  uploadId: 665776

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 999b625816fcf1943b26ca7a6e6b4ac2
+timeCreated: 1576452387
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Effector & Reactor/Bush Field/README.txt
+  uploadId: 665776

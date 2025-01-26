@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 19e327d1226b1a24dac2c8e1f1c9aaaa
+timeCreated: 1557550408
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Field Propagation/Wind/Wind.unity
+  uploadId: 665776

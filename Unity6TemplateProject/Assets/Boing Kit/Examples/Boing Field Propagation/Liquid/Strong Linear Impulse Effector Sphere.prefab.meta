@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: bb14731707da2bb41bca5cd90a566d69
+timeCreated: 1557467973
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: -1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Field Propagation/Liquid/Strong Linear
+    Impulse Effector Sphere.prefab
+  uploadId: 665776

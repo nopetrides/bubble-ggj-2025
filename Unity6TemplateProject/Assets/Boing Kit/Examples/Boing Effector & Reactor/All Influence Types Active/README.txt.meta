@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 7e1559a287f9171428c72e778b51e6c0
+timeCreated: 1576453624
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Effector & Reactor/All Influence Types
+    Active/README.txt
+  uploadId: 665776

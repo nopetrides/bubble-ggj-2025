@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 38b9178768988fb44a1602b97f93a2c5
+timeCreated: 1543905406
+licenseType: Store
+ComputeShaderImporter:
+  currentAPIMask: 4
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Script/Resources/Boing Kit/BoingReactorFieldCompute.compute
+  uploadId: 665776

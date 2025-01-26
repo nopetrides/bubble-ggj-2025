@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: a41f0317e02ab0f43a9ffa310678d70c
+timeCreated: 1544069831
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Common/Prefab/Boing Reactor Field CPU Sampler
+    Blossom.prefab
+  uploadId: 665776

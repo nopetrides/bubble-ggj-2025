@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ac43f7ab46c0b5442a6d139f58a4bddc
+timeCreated: 1544508214
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Shader/BoingKitStandardShadow.cginc
+  uploadId: 665776

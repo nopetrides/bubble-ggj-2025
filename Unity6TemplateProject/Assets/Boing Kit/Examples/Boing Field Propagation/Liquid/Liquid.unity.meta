@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e4f005e6e14b4d8408a96d66b8d8b846
+timeCreated: 1557466366
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Field Propagation/Liquid/Liquid.unity
+  uploadId: 665776

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 59a12676bec17c644bb0880a49960af5
+timeCreated: 1563943123
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Common/UFO Bunny/Materials/No Name.mat
+  uploadId: 665776

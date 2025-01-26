@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8f839a147e430b84498f67833ff43b80
+timeCreated: 1544171200
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Shader/Internal/SpringFloat4.cginc
+  uploadId: 665776

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 8dd3a6039b4d5d047aa80527e4aab908
+timeCreated: 1563773891
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Bones/UFO Bunny/ColliderSpinner.cs
+  uploadId: 665776

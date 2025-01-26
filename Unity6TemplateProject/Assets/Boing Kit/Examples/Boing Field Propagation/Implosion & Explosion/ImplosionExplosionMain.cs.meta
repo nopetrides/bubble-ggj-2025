@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: fc77de07286b0a9438f147971848ebd0
+timeCreated: 1557640009
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Field Propagation/Implosion & Explosion/ImplosionExplosionMain.cs
+  uploadId: 665776

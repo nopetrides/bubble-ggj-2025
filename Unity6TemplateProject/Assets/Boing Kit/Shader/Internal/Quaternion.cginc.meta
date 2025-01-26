@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 84c8028badb9f6242b0483940acb6787
+timeCreated: 1543905439
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Shader/Internal/Quaternion.cginc
+  uploadId: 665776

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 062b34fa6e786494ea626f31f3649f1a
+timeCreated: 1543731385
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Effector & Reactor/Platformer Collectibles/Platformer
+    Collectibles.unity
+  uploadId: 665776

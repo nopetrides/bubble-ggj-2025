@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: fb6e186ea8a88054f82be7b4e702f7ce
+timeCreated: 1557206978
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Field Propagation/Liquid/Liquid Surface.shader
+  uploadId: 665776

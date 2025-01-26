@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: fcbb3d0aa4888984a9826e48b16b8025
+timeCreated: 1588466972
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: -10000
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Script/BoingManagerPreUpdatePump.cs
+  uploadId: 665776

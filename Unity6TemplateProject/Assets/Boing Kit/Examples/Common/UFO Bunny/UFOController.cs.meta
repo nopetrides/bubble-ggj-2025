@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 63988d96e99d3014dae411b95e953b0a
+timeCreated: 1562994887
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Common/UFO Bunny/UFOController.cs
+  uploadId: 665776

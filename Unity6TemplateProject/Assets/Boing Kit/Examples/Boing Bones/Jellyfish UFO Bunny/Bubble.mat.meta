@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 57f59ecde118f98498de098557593186
+timeCreated: 1564037626
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Bones/Jellyfish UFO Bunny/Bubble.mat
+  uploadId: 665776

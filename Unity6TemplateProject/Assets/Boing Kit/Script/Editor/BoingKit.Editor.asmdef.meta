@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 556739fd7e4208444b3e639a0e78fa83
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Script/Editor/BoingKit.Editor.asmdef
+  uploadId: 665776

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: bef012cd96de7ca4ebc0ea8660659b01
+timeCreated: 1557641551
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: -1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Field Propagation/Implosion & Explosion/Boing
+    Diamond.prefab
+  uploadId: 665776

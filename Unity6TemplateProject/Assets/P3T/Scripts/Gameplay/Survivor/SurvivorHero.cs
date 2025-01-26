@@ -50,6 +50,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         [SerializeField] private SurvivorLifeCounter LifeCounter;
         [SerializeField] private SurvivorBombPower BombPower;
         [SerializeField] private Collider PrimaryTargetingTrigger;
+        [SerializeField] private Transform ProjectileLocator;
 
         private float _bulletTimer;
         private Collider[] _facingContacts;
@@ -278,7 +279,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         private void ShootBullet()
         {
             var modifiers = GetBulletModifiers();
-            var bulletOrigin = transform;
+            var bulletOrigin = ProjectileLocator;
             var position = bulletOrigin.position;
             var aimingDirection = bulletOrigin.forward;
             

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 57ae9588e16032546a6b9bb1af057aac
+timeCreated: 1576455128
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Boing Bones/Bouncy Hair/README.txt
+  uploadId: 665776

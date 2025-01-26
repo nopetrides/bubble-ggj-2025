@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 611e64c346306544eafbfc6cbf62dcfa
+timeCreated: 1543989120
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Script/Editor/BoingReactorFieldEditor.cs
+  uploadId: 665776

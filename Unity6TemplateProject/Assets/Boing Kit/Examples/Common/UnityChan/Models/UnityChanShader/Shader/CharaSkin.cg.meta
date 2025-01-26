@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: fe01eae1ec1d1c24b99530833c8c8241
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 135594
+  packageName: 'Boing Kit: Dynamic Bouncy Bones, Grass, and More'
+  packageVersion: 1.2.45
+  assetPath: Assets/Boing Kit/Examples/Common/UnityChan/Models/UnityChanShader/Shader/CharaSkin.cg
+  uploadId: 665776
