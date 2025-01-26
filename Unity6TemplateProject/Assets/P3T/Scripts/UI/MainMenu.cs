@@ -24,7 +24,7 @@ namespace P3T.Scripts.UI
 
 		public void ButtonStart()
 		{
-			SceneMgr.Instance.LoadScene(GameScenes.MainGame, GameMenus.InGameUI);
+			SceneMgr.Instance.LoadScene(GameScenes.MainGame, GameMenus.None);
 		}
 
 		public void ButtonSettings()
