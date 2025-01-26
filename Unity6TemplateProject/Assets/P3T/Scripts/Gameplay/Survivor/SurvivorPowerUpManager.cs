@@ -155,11 +155,11 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <summary>
         ///     Get an indicator for an offscreen hazard
         /// </summary>
-        /// <param name="shootableTransform"> </param>
+        /// <param name="hazardTransform"> </param>
         /// <returns> </returns>
-        public OffScreenIndicator IndicateOffscreen(Transform shootableTransform)
+        public OffScreenIndicator IndicateOffscreen(Transform hazardTransform)
         {
-            return _offScreenIndicatorManager.ShowPowerIndicator(shootableTransform);
+            return _offScreenIndicatorManager.ShowPowerIndicator(hazardTransform);
         }
 
         /// <summary>
