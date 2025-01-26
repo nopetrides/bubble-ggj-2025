@@ -86,7 +86,12 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         public float TimeScaling => TimeScalingMultiplier;
         public bool CoreGameLoopRunning => _playing && _introComplete && !_gameIsCompleted && !_endSequence;
-        public Vector2 HeroPosition => SurvivorHero.transform.position;
+        public Vector3 HeroPosition => SurvivorHero.transform.position;
+
+        private void Awake()
+        {
+            Init();
+        }
 
         /// <summary>
         ///     Game logic on Fixed Update, especially physics related
@@ -231,9 +236,10 @@ namespace P3T.Scripts.Gameplay.Survivor
             var minY = -1 * bounds.extents.y + BaseSpriteSize;
             var maxY = bounds.extents.y - BaseSpriteSize;
             var x = Mathf.Clamp(position.x, minX, maxX);
-            var y = Mathf.Clamp(position.y, minY, maxY);
+            var z = Mathf.Clamp(position.z, minY, maxY);
             position.x = x;
-            position.y = y;
+            position.y = 0;
+            position.z = z;
             return position;
         }
 
@@ -354,7 +360,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             var cameraSize = new Vector2(Math.Abs(cameraMin.x) + Math.Abs(cameraMax.x),
                 Math.Abs(cameraMin.y) + Math.Abs(cameraMax.y));
 
-            BulletManager.Setup(this, SurvivorHero.SpawnedArtAsset, PlayerBounds.PlayerMovementBounds);
+            BulletManager.Setup(this, SurvivorHero.gameObject, PlayerBounds.PlayerMovementBounds);
             HazardManager.Setup(this, PlayerBounds, OffscreenIndicatorManager);
 
             // prototype controls

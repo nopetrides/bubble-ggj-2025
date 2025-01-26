@@ -20,7 +20,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         private SurvivorBullet _arcadeSurvivorBulletToSpawn;
         private SurvivorController _controller;
         private ObjectPool<SurvivorBullet> _pool;
-        private Collider _gameBounds;
+        private Collider2D _gameBounds;
 
         private void ReadyPool(GameObject firingCharacter)
         {
@@ -35,7 +35,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                         .SetImpulse(BulletImpulse)
                         .SetBoundsCollider(_gameBounds);
 
-                    pooledObject.transform.localScale = Vector2.one;
+                    pooledObject.transform.localScale = Vector3.one;
                     pooledObject.name = _arcadeSurvivorBulletToSpawn.name + _pool.CountAll;
 
                     return pooledObject;
@@ -51,27 +51,27 @@ namespace P3T.Scripts.Gameplay.Survivor
                 {
                     pooledObject.gameObject.SetActive(false);
                     // clean the object back up so anyone who messed with it will have it reset for next time
-                    pooledObject.transform.localScale = Vector2.one;
+                    pooledObject.transform.localScale = Vector3.one;
                 },
                 pooledObject => Destroy(pooledObject.gameObject)
             );
         }
 
-        public void Setup(SurvivorController gameController, GameObject hero, Collider gameBounds)
+        public void Setup(SurvivorController gameController, GameObject hero, Collider2D gameBounds)
         {
             _controller = gameController;
             _gameBounds = gameBounds;
             ReadyPool(hero);
         }
 
-        public void FireBullet(Vector3 originPosition, Vector3 rightVector,
+        public void FireBullet(Vector3 originPosition, Vector3 forwardVector,
             BulletModifiers modifiers, Rigidbody target = null)
         {
             var nextBullet = _pool.Get();
             var bulletTransform = nextBullet.transform;
-            var pos = new Vector3(originPosition.x, originPosition.y, transform.position.z);
+            var pos = originPosition;
             bulletTransform.position = pos;
-            bulletTransform.right = rightVector;
+            bulletTransform.forward = forwardVector;
 
             nextBullet.SetModifiers(modifiers)
                 .SetTarget(target);

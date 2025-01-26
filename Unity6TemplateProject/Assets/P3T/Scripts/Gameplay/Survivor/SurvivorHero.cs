@@ -135,15 +135,20 @@ namespace P3T.Scripts.Gameplay.Survivor
             //SpawnedArtAsset = Instantiate(Config.art, HeroConfigAssetParent);
 
             if (SpawnedArtAsset)
+            {
                 _heroCollider = SpawnedArtAsset.GetComponentInChildren<Collider>(); // should only have one
-            
-            _flickerRenderers.AddRange(SpawnedArtAsset.GetComponentsInChildren<Renderer>().Where(r => r.enabled));
+                
+                _flickerRenderers.AddRange(SpawnedArtAsset.GetComponentsInChildren<Renderer>().Where(r => r.enabled));
+            }
 
             _setupDone = true;
         }
 
         public void SetupTrail(SurvivorAdvancedTrailFx trailFxInfo)
         {
+            if (SpawnedArtAsset == null)
+                return;
+            
             var trailParent = SpawnedArtAsset.GetComponentInChildren<TrailLocator>();
             if (trailParent == null)
             {
@@ -153,7 +158,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 
             _spawnedTrailFx = Instantiate(trailFxInfo, trailParent.transform);
 
-            if (_spawnedTrailFx == false) UnityEngine.Debug.LogError($"Hero.AttachTrail failed to load");
+            if (_spawnedTrailFx == null) UnityEngine.Debug.LogError($"Hero.AttachTrail failed to load");
         }
 
         /// <summary>
@@ -233,13 +238,13 @@ namespace P3T.Scripts.Gameplay.Survivor
             {
                 _shooting = true;
                 var heroTransform = transform;
-                var heroRightAxis = heroTransform.right;
 
-                transform.right =
-                    Vector3.Slerp(heroRightAxis, inputVector, Time.fixedDeltaTime * RotationSpeed);
+                Vector3 xyPlane = new Vector3(inputVector.x, 0, inputVector.y);
+                transform.forward =
+                    Vector3.Slerp(heroTransform.forward, xyPlane, Time.fixedDeltaTime * RotationSpeed);
 
                 // Move to position
-                Rigidbody.linearVelocity = inputVector * (ThrustSpeed / Time.fixedDeltaTime);
+                Rigidbody.linearVelocity = xyPlane * (ThrustSpeed / Time.fixedDeltaTime);
             }
             else
             {
@@ -266,19 +271,22 @@ namespace P3T.Scripts.Gameplay.Survivor
             var modifiers = GetBulletModifiers();
             var bulletOrigin = transform;
             var position = bulletOrigin.position;
-            var aimingDirection = bulletOrigin.right;
+            var aimingDirection = bulletOrigin.forward;
             
             if (_target != null)
             {
                 var dir = _target.position - position;
-                aimingDirection = new Vector3(dir.x, dir.y, bulletOrigin.right.z);
+                aimingDirection = dir;  //new Vector3(dir.x, dir.y, bulletOrigin.forward.z);
             }
 
             BulletPool.FireBullet(position, aimingDirection, modifiers, _target);
             _target = null;
 
-            AudioClip sfx = Config.HeroProjectileFiredSound[Random.Range(0, Config.HeroProjectileFiredSound.Length)];
-            AudioMgr.Instance.PlaySound(sfx);
+            if (Config.HeroProjectileFiredSound is { Length: > 0 })
+            {
+                AudioClip sfx = Config.HeroProjectileFiredSound[Random.Range(0, Config.HeroProjectileFiredSound.Length)];
+                AudioMgr.Instance.PlaySound(sfx);
+            }
 
             if (_spreadShotTimer > 0f)
             {
@@ -288,8 +296,8 @@ namespace P3T.Scripts.Gameplay.Survivor
                 var leftCosTheta = Mathf.Cos(leftRadians);
                 var leftSpread = new Vector3(
                     leftCosTheta * aimingDirection.x - leftSinTheta * aimingDirection.y,
-                    leftSinTheta * aimingDirection.x + leftCosTheta * aimingDirection.y,
-                    aimingDirection.z
+                    aimingDirection.z,
+                    leftSinTheta * aimingDirection.x + leftCosTheta * aimingDirection.y
                 );
                 
                 var rightRadians = Mathf.Deg2Rad * SpreadShotAngle;
@@ -297,8 +305,8 @@ namespace P3T.Scripts.Gameplay.Survivor
                 var rightCosTheta = Mathf.Cos(rightRadians);
                 var rightSpread = new Vector3(
                     rightCosTheta * aimingDirection.x - rightSinTheta * aimingDirection.y,
-                    rightSinTheta * aimingDirection.x + rightCosTheta * aimingDirection.y,
-                    aimingDirection.z
+                    aimingDirection.z,
+                    rightSinTheta * aimingDirection.x + rightCosTheta * aimingDirection.y
                 );
 
                 BulletPool.FireBullet(position, leftSpread, modifiers);

@@ -187,17 +187,17 @@ namespace P3T.Scripts.Gameplay.Survivor
             {
                 _currentSpeed += _speedOverLifetimeIncrease * Time.fixedDeltaTime;
                 Vector3 targetPosition = Manager.GetPlayerPosition();
-                targetPosition.z = transform.position.z;
+                targetPosition.y = transform.position.y;
                 // Rotate towards the player's position
                 var moveVector = targetPosition - transform.position;
-                transform.right = moveVector;
+                transform.forward = moveVector;
                 // Move towards the player's position
                 moveVector.Normalize();
                 Rigidbody.linearVelocity = moveVector * (_currentSpeed / Time.fixedDeltaTime);
             }
             else
             {
-                Rigidbody.linearVelocity = Vector2.zero;
+                Rigidbody.linearVelocity = Vector3.zero;
             }
         }
 

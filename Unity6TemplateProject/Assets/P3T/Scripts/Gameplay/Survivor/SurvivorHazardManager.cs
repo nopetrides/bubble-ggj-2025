@@ -197,13 +197,13 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             if (_setupDone == false) return;
 
-            var nextShootable = _pool.Get();
+            var nextHazard = _pool.Get();
 
-            var shootableTransform = nextShootable.transform;
+            var hazardTransform = nextHazard.transform;
 
             // Spawn them off the screen edges and launch them towards the player
             var edge = Random.Range(0, 4); // non-inclusive 4
-            var offscreenSpawn = new Vector2(Random.value, Random.value);
+            Vector3 offscreenSpawn = new Vector3(Random.value, Random.value, gameCamera.transform.position.y);
             var offset = Vector3.zero;
             switch (edge)
             {
@@ -217,20 +217,21 @@ namespace P3T.Scripts.Gameplay.Survivor
                     break;
                 case (int)WrapDirection.Top:
                     offscreenSpawn.y = 1;
-                    offset.y = _playerBounds.SpawnOffset;
+                    offset.z = _playerBounds.SpawnOffset;
                     break;
                 case (int)WrapDirection.Bottom:
                     offscreenSpawn.y = 0;
-                    offset.y = -_playerBounds.SpawnOffset;
+                    offset.z = -_playerBounds.SpawnOffset;
                     break;
             }
 
+            // viewport always takes normalize 0-1 for x and y. the z coord is distance from camera.
             var spawnPoint = gameCamera.ViewportToWorldPoint(offscreenSpawn);
-            spawnPoint = new Vector3(spawnPoint.x, spawnPoint.y, HazardParent.position.z);
+            spawnPoint = new Vector3(spawnPoint.x, 0, spawnPoint.z);
             spawnPoint += offset;
 
-            shootableTransform.position = spawnPoint;
-            nextShootable.SetSpeed(_currentSpeed)
+            hazardTransform.position = spawnPoint;
+            nextHazard.SetSpeed(_currentSpeed)
                 .SetPowerToSpawnOnDestroy(spawnsPickup, powerToSpawnOnDestroy)
                 .SetHitPoints(HitsToDestroy)
                 .Spawn();
@@ -240,18 +241,18 @@ namespace P3T.Scripts.Gameplay.Survivor
             StreakAssist.Item powerToSpawnOnDestroy = null)
         {
             if (_setupDone == false) return;
-            var bottomLeft = gameCamera.ViewportToWorldPoint(Vector2.zero);
-            var topLeft = gameCamera.ViewportToWorldPoint(Vector2.up);
+            var bottomLeft = gameCamera.ViewportToWorldPoint(new Vector3(0,0,gameCamera.transform.position.y));
+            var topLeft = gameCamera.ViewportToWorldPoint(new Vector3(1,1,gameCamera.transform.position.y));
             var diameter = Vector3.Distance(topLeft, bottomLeft);
             
             var flip = (hazardInWaveIndex % 2) == 0;
             var separationAngle = 10f;
             var angle = waveAngle + separationAngle * (flip ? 1f : -1f) * hazardInWaveIndex;
             
-            Vector2 offset = Quaternion.Euler(0, 0, angle) * Vector3.up * (diameter / 2f);
+            Vector3 offset = Quaternion.Euler(0, angle, 0) * Vector3.forward * (diameter / 2f);
             offset += _controller.HeroPosition;
-            
-            Vector3 spawnPoint = new Vector3(offset.x, offset.y, HazardParent.position.z);
+
+            Vector3 spawnPoint = offset;// new Vector3(offset.x, offset.y, HazardParent.position.z);
             StartCoroutine(WarnIncomingSpawn(spawnPoint, spawnsPickup, powerToSpawnOnDestroy));
         }
 
