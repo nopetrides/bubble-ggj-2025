@@ -15,17 +15,17 @@ TagManager:
   - 
   - 
   - 
+  - Ground
+  - Hero
+  - PlayerBullets
+  - Hazards
+  - Pickups
   - 
   - 
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - FX
   - 
   - 
   - 

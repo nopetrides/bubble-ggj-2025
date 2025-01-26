@@ -47,19 +47,19 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <param name="collision"> </param>
         protected override void OnTriggerEnter(Collider collision)
         {
+            if (collision.isTrigger) return;
             // ReSharper disable once UnusedVariable
-            if (collision.attachedRigidbody.TryGetComponent(out SurvivorHero hero))
-            {
-                base.OnTriggerEnter(collision);
-                Collider.enabled = false;
+            if (!collision.attachedRigidbody.TryGetComponent(out SurvivorHero hero)) return;
 
-                if (Animator != null)
-                    Animator.SetBool(Collected, true);
-                else
-                    CollectionDone();
-            }
+            base.OnTriggerEnter(collision);
+            Collider.enabled = false;
+
+            if (Animator != null)
+                Animator.SetBool(Collected, true);
+            else
+                CollectionDone();
         }
-        
+
         private void CollectionDone()
         {
             base.OnCollectionDone();

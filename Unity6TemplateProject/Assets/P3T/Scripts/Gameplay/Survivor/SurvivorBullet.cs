@@ -106,7 +106,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             if (col == null) return;
             var rb = col.attachedRigidbody; 
-            if (rb != null && _manager.LookupHazard(rb))
+            if (rb != null && _manager.LookupHazard(rb) && Vector3.Angle( transform.forward, rb.transform.position - transform.position) < 90)
                 SetTarget(rb);
         }
         

@@ -26,6 +26,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <param name="collision"> </param>
         protected void OnTriggerEnter(Collider collision)
         {
+            if (collision.isTrigger) return;
             // ReSharper disable once UnusedVariable
             if (!collision.attachedRigidbody.TryGetComponent(out SurvivorHero hero)) return;
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {
@@ -7,7 +8,7 @@ namespace P3T.Scripts.Gameplay.Survivor
     /// </summary>
     public class OffScreenIndicator : MonoBehaviour
     {
-        [SerializeField] private Renderer Renderer;
+        [SerializeField] private Graphic Renderer;
         private Camera _gameCamera;
 
         private Bounds _indicatorBounds;
@@ -60,7 +61,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <param name="color"> </param>
         public void SetColor(Color color)
         {
-            Renderer.material.color = color;
+            Renderer.color = color;
         }
 
         public void Reset()
@@ -78,8 +79,12 @@ namespace P3T.Scripts.Gameplay.Survivor
             UpdateBounds();
             var objectPosition = _targetTransform != null ? _targetTransform.position : _targetPosition;
             var boundsPoint = _indicatorBounds.ClosestPoint(objectPosition);
-            transform.position = boundsPoint;
-            transform.LookAt(objectPosition);
+            var screenPoint = _gameCamera.WorldToScreenPoint(boundsPoint);
+            transform.position = screenPoint;
+
+            var vectorToTarget = _gameCamera.WorldToScreenPoint(objectPosition) - _gameCamera.ViewportToScreenPoint(new Vector3(0.5f, 0.5f, screenPoint.z));
+            var rotToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, rotToTarget);
         }
     }
 }
