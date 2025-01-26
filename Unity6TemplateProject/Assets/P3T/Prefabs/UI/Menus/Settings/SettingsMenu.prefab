@@ -330,10 +330,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 7133025584764658257}
   m_HandleRect: {fileID: 5483732827943964893}
   m_Direction: 0
-  m_MinValue: -80
+  m_MinValue: -60
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: -25
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -772,7 +772,7 @@ GameObject:
   - component: {fileID: 8578364744544107802}
   - component: {fileID: 4577277909374147725}
   m_Layer: 5
-  m_Name: GameVolSlider
+  m_Name: MusicVolSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -962,10 +962,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 6831086830386359385}
   m_HandleRect: {fileID: 4257541855068856258}
   m_Direction: 0
-  m_MinValue: -80
+  m_MinValue: -60
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: -25
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -1722,7 +1722,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Game Volume
+  m_text: Music Volume
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
   m_sharedMaterial: {fileID: 3035741270501946574, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
@@ -1804,7 +1804,7 @@ GameObject:
   - component: {fileID: 8408579376921397265}
   - component: {fileID: 2725702000302001548}
   m_Layer: 5
-  m_Name: MusicVolSlider
+  m_Name: GameVolSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2040,7 +2040,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Music Volume
+  m_text: Game Volume
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
   m_sharedMaterial: {fileID: 3035741270501946574, guid: 7eca015ae0a6f4e7e9aae75bca04234f, type: 2}
@@ -2504,10 +2504,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 2006926823309191567}
   m_HandleRect: {fileID: 3161384796509103790}
   m_Direction: 0
-  m_MinValue: -80
+  m_MinValue: -60
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: -25
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
