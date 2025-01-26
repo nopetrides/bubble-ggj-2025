@@ -1,25 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {
     /// <summary>
-    ///     A unique config for a specific hero
-    /// </summary>
-    [Serializable]
-    public class SurvivorHazardConfig : MonoBehaviour
-    {
-        #region Audio
-
-        public AudioClip[] HazardDamagedSounds;
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     The class representing a shootable hazard in the ArcadeSurvivor minigame
+    ///     The class representing a  hazard in the Survivor game
     ///     These hazards Can split into smaller versions of themselves
     ///     Pooling and spawning logic is handled in the <see cref="SurvivorHazardManager" />
     /// </summary>
@@ -37,6 +22,9 @@ namespace P3T.Scripts.Gameplay.Survivor
         [HideInInspector] [SerializeField]
         private TrailRenderer Trail;
 
+        [HideInInspector] [SerializeField] 
+        private Renderer PrimaryRenderer;
+        
         private float _currentSpeed;
         private int _hitPoints;
         private OffScreenIndicator _indicator;
@@ -50,9 +38,22 @@ namespace P3T.Scripts.Gameplay.Survivor
         private void FixedUpdate()
         {
             MoveToPlayer();
-            //CheckIndicator();
+            CheckIndicator();
         }
-
+        
+        private void CheckIndicator()
+        {
+            if (PrimaryRenderer.isVisible && _indicator != null)
+            {
+                Manager.NoLongerOffscreen(_indicator);
+                _indicator = null;
+            }
+            else if (PrimaryRenderer.isVisible == false && _indicator == null)
+            {
+                _indicator = Manager.IndicateOffscreen(transform);
+            }
+        }
+        
         /// <summary>
         ///     Sets <inheritdoc cref="Manager" />
         /// </summary>
@@ -119,7 +120,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         }
 
         /// <summary>
-        ///     Fire off the bullet in it's facing direction
+        ///     Fire off hazard in it's facing direction
         /// </summary>
         /// <returns> </returns>
         public SurvivorHazard Spawn()
@@ -165,10 +166,9 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             _hitPoints = 0;
             if (Trail != null) Trail.Clear();
-            //ClearIndicator();
+            ClearIndicator();
         }
-
-        [Obsolete]
+        
         private void ClearIndicator()
         {
             if (_indicator != null)
@@ -187,13 +187,10 @@ namespace P3T.Scripts.Gameplay.Survivor
             {
                 _currentSpeed += _speedOverLifetimeIncrease * Time.fixedDeltaTime;
                 Vector3 targetPosition = Manager.GetPlayerPosition();
-                targetPosition.y = transform.position.y;
                 // Rotate towards the player's position
-                var moveVector = targetPosition - transform.position;
-                transform.forward = moveVector;
+                transform.LookAt(targetPosition);
                 // Move towards the player's position
-                moveVector.Normalize();
-                Rigidbody.linearVelocity = moveVector * (_currentSpeed / Time.fixedDeltaTime);
+                Rigidbody.linearVelocity = transform.forward * (_currentSpeed * Time.fixedDeltaTime);
             }
             else
             {
@@ -203,7 +200,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         public void Setup(SurvivorHazardConfig configurableAsset)
         {
-            // ProcessConfig
+            PrimaryRenderer = HazardConfigAssetParent.GetComponentInChildren<Renderer>();
         }
     }
 }

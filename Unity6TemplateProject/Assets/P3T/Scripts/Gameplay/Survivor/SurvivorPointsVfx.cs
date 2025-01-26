@@ -16,7 +16,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         [SerializeField] private Image _outline;
         [SerializeField] private float _animationDistance = 100;
     
-        private Vector2 _worldPosition;
+        private Vector3 _worldPosition;
         private Camera _gameCamera;
     
         /// <summary>

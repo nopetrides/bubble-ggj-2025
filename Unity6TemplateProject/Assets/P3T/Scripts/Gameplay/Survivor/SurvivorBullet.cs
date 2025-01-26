@@ -21,21 +21,6 @@ namespace P3T.Scripts.Gameplay.Survivor
         private Rigidbody _target;
         private Collider2D _gameBounds;
 
-        private void Start()
-        {
-            // TODO split OnDamageTriggerEnter and OnTargetTriggerEnter callbacks
-            /*
-            _damagingTrigger.OnTriggerEnter2DAsObservable()
-                .TakeUntilDestroy(this)
-                .Subscribe(OnDamageTriggerEnter);
-            
-            _targetingTrigger.OnTriggerEnter2DAsObservable()
-                .TakeUntilDestroy(this)
-                .SkipWhile(_ => _target != null)
-                .Subscribe(OnTargetTriggerEnter);
-            */
-        }
-        
         /// <summary>
         ///     May need to find the most efficient way to do this
         /// </summary>
@@ -188,6 +173,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         public SurvivorBullet IgnoreCollider(Collider colliderToIgnore)
         {
             Physics.IgnoreCollision(colliderToIgnore, DamagingTrigger);
+            Physics.IgnoreCollision(colliderToIgnore, TargetingTrigger);
             return this;
         }
 

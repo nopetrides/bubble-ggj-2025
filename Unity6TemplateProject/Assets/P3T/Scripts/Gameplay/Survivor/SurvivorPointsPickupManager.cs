@@ -68,7 +68,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         {
             var points = _pool.Get();
             // ReSharper disable once Unity.InefficientPropertyAccess
-            points.transform.position = new Vector3(spawnPoint.x, spawnPoint.y, points.transform.position.z);
+            points.transform.position = spawnPoint;
         }
 
         public void PointsCollected(SurvivorPointsPickup pickup)
@@ -82,8 +82,11 @@ namespace P3T.Scripts.Gameplay.Survivor
             _controller.AddPointsPickupPoints(position);
             // Sound loaded from prefab config
 
-            var sound = Random.Range(0, PointsPrefab.Config.CollectedSounds.Length);
-            AudioMgr.Instance.PlaySound(PointsPrefab.Config.CollectedSounds[sound]);
+            if (PointsPrefab.Config != null && PointsPrefab.Config.CollectedSounds is { Length: > 0 })
+            {
+                var sound = Random.Range(0, PointsPrefab.Config.CollectedSounds.Length);
+                AudioMgr.Instance.PlaySound(PointsPrefab.Config.CollectedSounds[sound]);
+            }
         }
 
         public void Release(SurvivorPointsPickup pickup)

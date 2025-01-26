@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using DG.Tweening;
+using P3T.Scripts.Gameplay.Survivor.Pooled;
 using P3T.Scripts.Managers;
 using UnityEngine;
 
@@ -117,31 +118,31 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <exception cref="ArgumentOutOfRangeException"> </exception>
         public void ProcessPowerUp(MonoTriggeredGamePower triggeredPowerUp)
         {
-            var powerUp = triggeredPowerUp as ShooterPickup;
+            var powerUp = triggeredPowerUp as SurvivorPowerUp;
             if (powerUp == null)
             {
-                UnityEngine.Debug.LogError("MG_ArcadeSurvivor ProcessPowerUp expected a ShooterPickup type");
+                UnityEngine.Debug.LogError("MG_ArcadeSurvivor ProcessPowerUp expected a SurvivorPowerUp type");
                 return;
             }
 
-            switch (powerUp.Power)
+            switch (powerUp.SurvivorPower)
             {
-                case ShooterPickup.PowerUpType.FireRateUp:
+                case SurvivorPowerUpType.FireRateUp:
                     SurvivorHero.ActivateRapidShot();
                     break;
-                case ShooterPickup.PowerUpType.Shield:
+                case SurvivorPowerUpType.Shield:
                     SurvivorHero.ActivateShield();
                     break;
-                case ShooterPickup.PowerUpType.SpreadShot:
+                case SurvivorPowerUpType.SpreadShot:
                     SurvivorHero.ActivateSpreadShot();
                     break;
-                case ShooterPickup.PowerUpType.PierceShot:
+                case SurvivorPowerUpType.PierceShot:
                     SurvivorHero.ActivatePierceShot();
                     break;
-                case ShooterPickup.PowerUpType.RegainHealth:
+                case SurvivorPowerUpType.RegainHealth:
                     SurvivorHero.RegainHealth();
                     break;
-                case ShooterPickup.PowerUpType.Bomb:
+                case SurvivorPowerUpType.Bomb:
                     SurvivorHero.ActivateBomb();
                     break;
                 default:
@@ -212,16 +213,16 @@ namespace P3T.Scripts.Gameplay.Survivor
             }
         }
 
-        public void OnShootableDestroyed(Vector3 position, bool spawnsPickupOnDestroy,
+        public void OnHazardDestroyed(Vector3 position, bool spawnsPickupOnDestroy,
             StreakAssist.Item streakItem = null)
         {
             position = ClampPositionWithinLevelBounds(position);
-            AddShootablePoints(GameConfig.PointsOnHazardDestroy, position);
+            AddHazardPoints(GameConfig.PointsOnHazardDestroy, position);
 
             if (spawnsPickupOnDestroy == false) return;
             // spawn the power or points that the shootable drops
             if (streakItem != null)
-                // if this shootable has predetermined power up, spawn it
+                // if this hazard has predetermined power up, spawn it
                 PowerUpManager.SpawnPowerUp(position, streakItem);
             else
                 // otherwise just spawn a points pickup
@@ -400,7 +401,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         /// <param name="points"> </param>
         /// <param name="position"> </param>
-        private void UpdatePoints(int points, Vector2 position)
+        private void UpdatePoints(int points, Vector3 position)
         {
             //Visual
             if (points != 0)
@@ -419,7 +420,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         /// <param name="points"> </param>
         /// <param name="position"> </param>
-        private void AddShootablePoints(int points, Vector3 position)
+        private void AddHazardPoints(int points, Vector3 position)
         {
             _pointsTracker.HazardPoints += points;
             UpdatePoints(points, position);

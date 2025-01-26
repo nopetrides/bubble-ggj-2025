@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-namespace P3T.Scripts.Gameplay.Survivor
+namespace P3T.Scripts.Gameplay.Survivor.Pooled
 {
 	public class MonoTriggeredGamePower : MonoBehaviour, IGamePower
 	{
 		private IProcessPowerUp _controller;
 
-		protected virtual void OnTriggerEnter2D(Collider2D col)
+		protected virtual void OnTriggerEnter(Collider col)
 		{
 			_controller.ProcessPowerUp(this);
 		}

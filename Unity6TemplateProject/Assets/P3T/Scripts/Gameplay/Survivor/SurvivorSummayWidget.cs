@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using P3T.Scripts.Managers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace P3T.Scripts.Gameplay.Survivor
@@ -101,5 +103,14 @@ namespace P3T.Scripts.Gameplay.Survivor
                 .SetEase(Ease.OutBack));
         }
 
+        public void ButtonRetry()
+        {
+            SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.None);
+        }
+
+        public void ButtonMenu()
+        {
+            SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu);
+        }
     }
 }

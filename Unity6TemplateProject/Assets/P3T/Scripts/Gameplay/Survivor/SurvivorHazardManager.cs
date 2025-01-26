@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using P3T.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {
@@ -14,8 +16,7 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         [SerializeField] private SurvivorHazard SurvivorHazardPrefab;
 
-        [FormerlySerializedAs("ObstacleSpawnInterval")] [SerializeField]
-        private float ObstacleSpawnInterval = 1.5f;
+        [SerializeField] private float ObstacleSpawnInterval = 1.5f;
 
         /// <summary>
         ///     The exponential rate at which hazards increase in spawn speed.
@@ -26,8 +27,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     after 109 hazards, spawn rate is 1 hazard every 0.5s
         ///     after 144 hazards, spawn rate is 1 hazard every 0.3s
         /// </summary>
-        [FormerlySerializedAs("SpeedIncreaseMultiplier")] [SerializeField]
-        private float SpawnIncreaseMultiplier = 0.01f;
+        [SerializeField] private float SpawnIncreaseMultiplier = 0.01f;
 
         /// <summary>
         ///     The Hit Points of a freshly spawned hazard
@@ -36,16 +36,19 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         [SerializeField] private float SpawnRateLimit = 0.02f; // no more than 1 per frame
 
-        [SerializeField] private float ShootableStartSpeed = 2f;
+        [FormerlySerializedAs("ShootableStartSpeed")] 
+        [SerializeField] private float HazardStartSpeed = 2f;
 
         [SerializeField] private float SpeedIncreasePerFixedUpdate = 0.03f;
 
-        [SerializeField] private int ShootableSpawnLimit = 50;
+        [FormerlySerializedAs("ShootableSpawnLimit")] 
+        [SerializeField] private int HazardSpawnLimit = 50;
 
-        [SerializeField] private SurvivorHazardDestroyParticle _defaultExplosionParticlePrefab;
+        [FormerlySerializedAs("_defaultExplosionParticlePrefab")] 
+        [SerializeField] private SurvivorHazardDestroyParticle DefaultExplosionParticlePrefab;
 
         // A dictionary of all the active shootables and their colliders for quick lookup
-        private readonly Dictionary<Rigidbody, SurvivorHazard> _activeShootablesLookup = new();
+        private readonly Dictionary<Rigidbody, SurvivorHazard> _activeHazardsLookup = new();
         private SurvivorController _controller;
         private float _currentSpeed;
         private SurvivorHazardDestroyParticle _explosionParticlePrefab;
@@ -61,11 +64,11 @@ namespace P3T.Scripts.Gameplay.Survivor
 
         private void ReadyPools()
         {
-            _currentSpeed = ShootableStartSpeed;
+            _currentSpeed = HazardStartSpeed;
             // See if this asset has a unique explosions particle attached
             _explosionParticlePrefab =
                 SurvivorHazardPrefab.GetComponentInChildren<SurvivorHazardDestroyParticle>() ??
-                _defaultExplosionParticlePrefab;
+                DefaultExplosionParticlePrefab;
 
             _pool = new ObjectPool<SurvivorHazard>
             (
@@ -84,13 +87,13 @@ namespace P3T.Scripts.Gameplay.Survivor
                     pooledObject.gameObject.SetActive(true);
                     //pooledObject.IgnoreCollider(_playerBounds.PlayerMovementBounds);
 
-                    _activeShootablesLookup.Add(pooledObject.Rigidbody, pooledObject);
+                    _activeHazardsLookup.Add(pooledObject.Rigidbody, pooledObject);
                 },
                 pooledObject =>
                 {
                     pooledObject.gameObject.SetActive(false);
 
-                    _activeShootablesLookup.Remove(pooledObject.Rigidbody);
+                    _activeHazardsLookup.Remove(pooledObject.Rigidbody);
                 },
                 pooledObject => Destroy(pooledObject.gameObject)
             );
@@ -114,12 +117,12 @@ namespace P3T.Scripts.Gameplay.Survivor
         public bool IsRigidbodyActiveHazard(Rigidbody rb)
         {
             if (rb == null) return false;
-            return _activeShootablesLookup.TryGetValue(rb, out var _);
+            return _activeHazardsLookup.TryGetValue(rb, out _);
         }
 
         public Rigidbody[] GetActiveHazardRigidbodies()
         {
-            return _activeShootablesLookup.Keys.ToArray();
+            return _activeHazardsLookup.Keys.ToArray();
         }
 
         public void Setup(SurvivorController gameController, PlayerBounds playerBounds,
@@ -152,6 +155,8 @@ namespace P3T.Scripts.Gameplay.Survivor
         private int _waveAngle = 0; // TODO make start angle random
         private readonly int _angleIncrement = 45;
         private float _waveSpawnTimer;
+        private readonly List<Vector3> _nextSpawnLocations = new();
+        
         private void SpawnAsWavesFixedUpdate()
         {
             _waveSpawnTimer += Time.fixedDeltaTime;
@@ -161,6 +166,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             if (_perWave != _startingWaveSize && !(_waveSpawnTimer > ObstacleSpawnInterval * _perWave)) return;
             
             _waveSpawnTimer = 0f;
+            _nextSpawnLocations.Clear();
             _controller.SpawnHazardWave(_perWave,_waveAngle);
             if (_perWave < _maxWaveSize) _perWave++;
             _waveAngle += _angleIncrement;
@@ -178,9 +184,10 @@ namespace P3T.Scripts.Gameplay.Survivor
             //_obstacleSpawnInterval = Mathf.Max(_obstacleSpawnInterval * multiplier, _spawnRateLimit);
 
             if (!(_obstacleSpawnTimer > ObstacleSpawnInterval) ||
-                _activeShootablesLookup.Count >= ShootableSpawnLimit) return;
+                _activeHazardsLookup.Count >= HazardSpawnLimit) return;
             
             _obstacleSpawnTimer = 0f;
+            _nextSpawnLocations.Clear();
             _controller.SpawnHazard(); // ask the controller to give us the necessary data
             _spawnCount++;
             UnityEngine.Debug.Log($"Spawned # {_spawnCount}, interval {ObstacleSpawnInterval}");
@@ -235,6 +242,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 .SetPowerToSpawnOnDestroy(spawnsPickup, powerToSpawnOnDestroy)
                 .SetHitPoints(HitsToDestroy)
                 .Spawn();
+            _nextSpawnLocations.Add(spawnPoint);
         }
 
         public void SpawnWaveBasedHazard(int waveAngle, int hazardInWaveIndex, Camera gameCamera, bool spawnsPickup,
@@ -252,7 +260,8 @@ namespace P3T.Scripts.Gameplay.Survivor
             Vector3 offset = Quaternion.Euler(0, angle, 0) * Vector3.forward * (diameter / 2f);
             offset += _controller.HeroPosition;
 
-            Vector3 spawnPoint = offset;// new Vector3(offset.x, offset.y, HazardParent.position.z);
+            Vector3 spawnPoint = offset; // new Vector3(offset.x, offset.y, HazardParent.position.z);
+            _nextSpawnLocations.Add(spawnPoint);
             StartCoroutine(WarnIncomingSpawn(spawnPoint, spawnsPickup, powerToSpawnOnDestroy));
         }
 
@@ -290,13 +299,13 @@ namespace P3T.Scripts.Gameplay.Survivor
         public void DamageHazard(Rigidbody hazardRigidbody,
             Collider damagingCollider = null)
         {
-            var arcadeSurvivorHazard = _activeShootablesLookup[hazardRigidbody];
+            var arcadeSurvivorHazard = _activeHazardsLookup[hazardRigidbody];
             var destroyed = arcadeSurvivorHazard.DealtDamage(damagingCollider);
             if (destroyed)
             {
                 var spawnsPickup = arcadeSurvivorHazard.DoesSpawnPickupOnDestroy;
                 var powerToSpawnOnDestroy = arcadeSurvivorHazard.PowerToSpawnOnDestroy;
-                _controller.OnShootableDestroyed(arcadeSurvivorHazard.transform.position, spawnsPickup,
+                _controller.OnHazardDestroyed(arcadeSurvivorHazard.transform.position, spawnsPickup,
                     powerToSpawnOnDestroy);
                 PlayLargeDestroySound();
                 Release(arcadeSurvivorHazard);
@@ -309,10 +318,10 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <param name="hazardRigidbody"></param>
         public void EliminateHazard(Rigidbody hazardRigidbody)
         {
-            var arcadeSurvivorHazard = _activeShootablesLookup[hazardRigidbody];
+            var arcadeSurvivorHazard = _activeHazardsLookup[hazardRigidbody];
             arcadeSurvivorHazard.Eliminate();
             
-            _controller.OnShootableDestroyed(arcadeSurvivorHazard.transform.position, false);
+            _controller.OnHazardDestroyed(arcadeSurvivorHazard.transform.position, false);
             PlayLargeDestroySound();
             Release(arcadeSurvivorHazard);
         }
@@ -383,11 +392,11 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// <summary>
         ///     Get an indicator for an offscreen hazard
         /// </summary>
-        /// <param name="shootableTransform"> </param>
+        /// <param name="hazardTransform"> </param>
         /// <returns> </returns>
-        public OffScreenIndicator IndicateOffscreen(Transform shootableTransform)
+        public OffScreenIndicator IndicateOffscreen(Transform hazardTransform)
         {
-            return _offScreenIndicatorManager.ShowHazardIndicator(shootableTransform);
+            return _offScreenIndicatorManager.ShowHazardIndicator(hazardTransform);
         }
 
         /// <summary>
@@ -404,9 +413,24 @@ namespace P3T.Scripts.Gameplay.Survivor
             return _controller.CoreGameLoopRunning;
         }
 
-        public Vector2 GetPlayerPosition()
+        public Vector3 GetPlayerPosition()
         {
             return _controller.HeroPosition;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!Application.isPlaying)
+                return;
+
+            if (_nextSpawnLocations is { Count: > 0 })
+            {
+                foreach (var v in _nextSpawnLocations)
+                {
+                    Gizmos.DrawWireSphere(v, 1);
+                }
+            }
+            
         }
     }
 }

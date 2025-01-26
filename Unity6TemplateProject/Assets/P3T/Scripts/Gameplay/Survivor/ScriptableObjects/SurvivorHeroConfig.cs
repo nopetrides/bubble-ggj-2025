@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace P3T.Scripts.Gameplay.Survivor
@@ -6,8 +5,8 @@ namespace P3T.Scripts.Gameplay.Survivor
 	/// <summary>
 	///     A unique config for a specific hero
 	/// </summary>
-	[Serializable]
-	public class SurvivorHeroConfig
+	[CreateAssetMenu(fileName = "NewHeroConfig", menuName = "P3T/Survivor/HeroConfig", order = 1)]
+	public class SurvivorHeroConfig : ScriptableObject
 	{
 		public SurvivorAdvancedTrailFx TrailFx;
 #region Audio

@@ -31,12 +31,11 @@ namespace P3T.Scripts.Gameplay.Survivor
 		public void SetParent(Transform parentTransform)
 		{
 			transform.SetParent(parentTransform);
-			transform.localPosition = Vector3.zero;
 		}
 
 		public void SetPosition(Vector3 position)
 		{
-			transform.position = new Vector3(position.x, position.y, transform.position.z);
+			transform.position = position;
 		}
 
 		public void Play()

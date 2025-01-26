@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using P3T.Scripts.Gameplay.Survivor.Pooled;
 using P3T.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -29,7 +30,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         private SurvivorController _controller;
         private ObjectPool<SurvivorPowerCollectedParticle> _fxPool;
         private OffScreenIndicatorManager _offScreenIndicatorManager;
-        private Dictionary<ShooterPickup.PowerUpType, ObjectPool<ShooterPickup>> _poolDictionary;
+        private Dictionary<SurvivorPowerUpType, ObjectPool<SurvivorPowerUp>> _poolDictionary;
 
         private float _powerSpawnTimer;
 
@@ -39,12 +40,12 @@ namespace P3T.Scripts.Gameplay.Survivor
             _controller = controller;
             _offScreenIndicatorManager = offScreenIndicatorManager;
             StreakAssist.SetUp(RandomPowers, 50, 20);
-            _poolDictionary = new Dictionary<ShooterPickup.PowerUpType, ObjectPool<ShooterPickup>>();
+            _poolDictionary = new Dictionary<SurvivorPowerUpType, ObjectPool<SurvivorPowerUp>>();
 
             foreach (var pickup in RandomPowers)
             {
-                var power = pickup.GameItem.GetComponent<ShooterPickup>();
-                var pool = new ObjectPool<ShooterPickup>(
+                var power = pickup.GameItem.GetComponent<SurvivorPowerUp>();
+                var pool = new ObjectPool<SurvivorPowerUp>(
                     () =>
                     {
                         var pooledObject = Instantiate(power);
@@ -52,7 +53,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                         pooledObject.SetParent(PowerUpParent)
                             .SetManager(this);
 
-                        pooledObject.name = pickup.GameItem.name + _poolDictionary[power.Power]?.CountAll;
+                        pooledObject.name = pickup.GameItem.name + _poolDictionary[power.SurvivorPower]?.CountAll;
                         return pooledObject;
                     },
                     pooledObject => { pooledObject.gameObject.SetActive(true); },
@@ -60,7 +61,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                     pooledObject => Destroy(pooledObject.gameObject)
                 );
 
-                _poolDictionary.Add(power.Power, pool);
+                _poolDictionary.Add(power.SurvivorPower, pool);
             }
 
             _fxPool = new ObjectPool<SurvivorPowerCollectedParticle>(
@@ -118,23 +119,23 @@ namespace P3T.Scripts.Gameplay.Survivor
             // Get the game object connected to the streak item
             var shooterPickup = power.GameItem;
             // todo, replace with spacial sound
-            if (shooterPickup.TryGetComponent(out ShooterPickup pickup))
+            if (shooterPickup.TryGetComponent(out SurvivorPowerUp pickup))
                 AudioMgr.Instance.PlaySound(pickup.AppearSound);
             else
                 UnityEngine.Debug.LogError("ArcadeSurvivorPowerUpManager failed to instantiate ShooterPickup from StreakAssist");
 
             // Get an instance of it from the pool spawned into the world
-            _poolDictionary[pickup.Power].Get(out var nextShootable);
-            if (nextShootable == null) return;
+            _poolDictionary[pickup.SurvivorPower].Get(out var nextPowerUp);
+            if (nextPowerUp == null) return;
 
-            var pickupTransform = nextShootable.transform;
+            var pickupTransform = nextPowerUp.transform;
 
             pickupTransform.position = spawnPoint;
         }
 
         public void OnPowerUpProcessed(MonoTriggeredGamePower triggeredPowerUp)
         {
-            if (triggeredPowerUp.TryGetComponent(out ShooterPickup pickup))
+            if (triggeredPowerUp.TryGetComponent(out SurvivorPowerUp pickup))
                 AudioMgr.Instance.PlaySound(pickup.CollectedSound);
 
             var particle = _fxPool.Get();
@@ -142,9 +143,9 @@ namespace P3T.Scripts.Gameplay.Survivor
             particle.Play();
         }
 
-        public void Release(ShooterPickup pickup)
+        public void Release(SurvivorPowerUp pickup)
         {
-            _poolDictionary[pickup.Power].Release(pickup);
+            _poolDictionary[pickup.SurvivorPower].Release(pickup);
         }
 
         public void Release(SurvivorPowerCollectedParticle particle)

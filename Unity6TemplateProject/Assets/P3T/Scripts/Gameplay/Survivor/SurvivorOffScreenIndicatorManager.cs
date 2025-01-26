@@ -34,7 +34,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                 {
                     var pooledObject = Instantiate(IndicatorPrefab, transform);
 
-                    pooledObject.transform.localScale = Vector2.one;
+                    pooledObject.transform.localScale = Vector3.one;
                     pooledObject.name = IndicatorPrefab.name + _pool.CountAll;
                     pooledObject.SetCamera(_gameCamera);
                     return pooledObject;

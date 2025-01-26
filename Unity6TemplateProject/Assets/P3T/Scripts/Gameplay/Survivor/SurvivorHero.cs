@@ -50,7 +50,6 @@ namespace P3T.Scripts.Gameplay.Survivor
         [SerializeField] private SurvivorLifeCounter LifeCounter;
         [SerializeField] private SurvivorBombPower BombPower;
         [SerializeField] private Collider PrimaryTargetingTrigger;
-        [SerializeField] private Collider SecondaryTargetingTrigger;
 
         private float _bulletTimer;
         private Collider[] _facingContacts;
@@ -100,15 +99,21 @@ namespace P3T.Scripts.Gameplay.Survivor
             if (ShieldRenderer.enabled)
             {
                 ShieldRenderer.enabled = false;
-                AudioClip sfx = Config.HeroShieldHitSound[Random.Range(0, Config.HeroShieldHitSound.Length)];
-                AudioMgr.Instance.PlaySound(sfx);
+                if (Config != null && Config.HeroShieldHitSound != null && Config.HeroShieldHitSound.Length > 0)
+                {
+                    AudioClip sfx = Config.HeroShieldHitSound[Random.Range(0, Config.HeroShieldHitSound.Length)];
+                    AudioMgr.Instance.PlaySound(sfx);
+                }
             }
             else
             {
                 LifeCounter.LivesRemaining--;
-                
-                AudioClip sfx = Config.HeroDamagedSound[Random.Range(0, Config.HeroDamagedSound.Length)];
-                AudioMgr.Instance.PlaySound(sfx);
+                if (Config != null && Config.HeroDamagedSound != null && Config.HeroDamagedSound.Length > 0)
+                {
+                    AudioClip sfx = Config.HeroDamagedSound[Random.Range(0, Config.HeroDamagedSound.Length)];
+                    AudioMgr.Instance.PlaySound(sfx);
+                }
+
                 if (HitPoints <= 0) Controller.OnPlayerLose();
             }
 
@@ -139,6 +144,10 @@ namespace P3T.Scripts.Gameplay.Survivor
                 _heroCollider = SpawnedArtAsset.GetComponentInChildren<Collider>(); // should only have one
                 
                 _flickerRenderers.AddRange(SpawnedArtAsset.GetComponentsInChildren<Renderer>().Where(r => r.enabled));
+            }
+            else
+            {
+                _heroCollider = HeroConfigAssetParent.GetComponentInChildren<Collider>();
             }
 
             _setupDone = true;
@@ -244,7 +253,7 @@ namespace P3T.Scripts.Gameplay.Survivor
                     Vector3.Slerp(heroTransform.forward, xyPlane, Time.fixedDeltaTime * RotationSpeed);
 
                 // Move to position
-                Rigidbody.linearVelocity = xyPlane * (ThrustSpeed / Time.fixedDeltaTime);
+                Rigidbody.linearVelocity = xyPlane * (ThrustSpeed * Time.fixedDeltaTime);
             }
             else
             {
@@ -391,8 +400,11 @@ namespace P3T.Scripts.Gameplay.Survivor
             if (ShieldRenderer.enabled) return;
 
             ShieldRenderer.enabled = true;
-            AudioClip sfx = Config.HeroShieldActivateSound[Random.Range(0,Config.HeroShieldActivateSound.Length)];
-            AudioMgr.Instance.PlaySound(sfx);
+            if (Config != null && Config.HeroShieldActivateSound != null && Config.HeroShieldActivateSound.Length > 0)
+            {
+                AudioClip sfx = Config.HeroShieldActivateSound[Random.Range(0, Config.HeroShieldActivateSound.Length)];
+                AudioMgr.Instance.PlaySound(sfx);
+            }
         }
 
         /// <summary>

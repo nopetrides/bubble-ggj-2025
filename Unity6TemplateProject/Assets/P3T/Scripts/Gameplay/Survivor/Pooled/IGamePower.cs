@@ -1,4 +1,6 @@
-﻿namespace P3T.Scripts.Gameplay.Survivor
+﻿using P3T.Scripts.Gameplay.Survivor.Pooled;
+
+namespace P3T.Scripts.Gameplay.Survivor
 {
 	/// <summary>
 	/// Generic Game Power

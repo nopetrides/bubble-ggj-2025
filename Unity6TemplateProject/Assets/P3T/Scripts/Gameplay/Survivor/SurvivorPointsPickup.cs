@@ -24,7 +24,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         ///     Check that collision is only with the player hero
         /// </summary>
         /// <param name="collision"> </param>
-        protected void OnTriggerEnter2D(Collider2D collision)
+        protected void OnTriggerEnter(Collider collision)
         {
             // ReSharper disable once UnusedVariable
             if (!collision.attachedRigidbody.TryGetComponent(out SurvivorHero hero)) return;

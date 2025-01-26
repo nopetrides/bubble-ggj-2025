@@ -25,9 +25,10 @@ namespace P3T.Scripts.Gameplay.Survivor
         /// </summary>
         private void UpdateBounds()
         {
-            _indicatorBounds.center = _gameCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 1));
-            _indicatorBounds.min = _gameCamera.ViewportToWorldPoint(new Vector3(0.04f, 0.04f, 1));
-            _indicatorBounds.max = _gameCamera.ViewportToWorldPoint(new Vector3(0.96f, 0.96f, 1));
+            var camHeight = _gameCamera.transform.position.y;
+            _indicatorBounds.center = _gameCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, camHeight));
+            _indicatorBounds.min = _gameCamera.ViewportToWorldPoint(new Vector3(0.04f, 0.04f, camHeight));
+            _indicatorBounds.max = _gameCamera.ViewportToWorldPoint(new Vector3(0.96f, 0.96f, camHeight));
         }
 
         public void SetCamera(Camera gameCamera)
@@ -78,9 +79,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             var objectPosition = _targetTransform != null ? _targetTransform.position : _targetPosition;
             var boundsPoint = _indicatorBounds.ClosestPoint(objectPosition);
             transform.position = boundsPoint;
-            var vectorToTarget = objectPosition - boundsPoint;
-            var rotToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
-            transform.rotation = Quaternion.LookRotation(Vector3.forward, rotToTarget);
+            transform.LookAt(objectPosition);
         }
     }
 }
