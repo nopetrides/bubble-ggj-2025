@@ -2,7 +2,6 @@
 using P3T.Scripts.Gameplay.Survivor.Drivers;
 using P3T.Scripts.Gameplay.Survivor.ScriptableObjects;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace P3T.Scripts.Gameplay.Survivor
 {
@@ -162,7 +161,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             _hitPoints--;
             if (_hitPoints > 0)
             {
-                SpawnedAsset.Visuals.DOShakeScale(.2f, Vector3.one * 2);
+                SpawnedAsset.Visuals.DOShakeScale(.2f, Vector3.up, 1, 0, true, ShakeRandomnessMode.Harmonic);
                 return false;
             }
 
