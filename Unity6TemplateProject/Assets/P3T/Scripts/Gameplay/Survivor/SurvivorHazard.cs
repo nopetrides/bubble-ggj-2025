@@ -162,7 +162,7 @@ namespace P3T.Scripts.Gameplay.Survivor
             _hitPoints--;
             if (_hitPoints > 0)
             {
-                SpawnedAsset.transform.DOShakeScale(.2f, Vector3.one * 2);
+                SpawnedAsset.Visuals.DOShakeScale(.2f, Vector3.one * 2);
                 return false;
             }
 

@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using P3T.Scripts.Util;
 using UnityEngine;
 
 namespace P3T.Scripts.Gameplay.Survivor.Drivers
@@ -9,6 +10,7 @@ namespace P3T.Scripts.Gameplay.Survivor.Drivers
 		private static readonly int Dead = Animator.StringToHash("Dead");
 
 		[SerializeField] private Renderer RendererParent;
+		[SerializeField] private Transform VisualsParent; // may not be the same as the renderer
 
 		// Addressable assets have colliders on them but not the rigidbody.
 		// We need to wait to get rigidbody to get attached to the collider when the object is instantiated
@@ -16,8 +18,10 @@ namespace P3T.Scripts.Gameplay.Survivor.Drivers
 		[SerializeField] private Animator MovementAnimator;
 
 		[SerializeField] private TrailLocator TrailLocator;
+		[SerializeField] private SquashAndStretchVelocity SquashAndStretch;
 
 		public Renderer PrimaryRenderer => RendererParent;
+		public Transform Visuals => VisualsParent;
 		public Transform TrailParent => TrailLocator.TrailParent;
 		private Rigidbody _drivingRigidBody;
 
@@ -25,9 +29,10 @@ namespace P3T.Scripts.Gameplay.Survivor.Drivers
 		{
 			_drivingRigidBody = ObjectCollider.attachedRigidbody;
 			if (MovementAnimator != null) MovementAnimator.SetBool(Dead, false);
-			Vector3 originalScale = RendererParent.transform.localScale;
-			transform.localScale = Vector3.zero;
-			transform.DOScale(originalScale, 1f);
+			if (SquashAndStretch != null) SquashAndStretch.SetRigidBody(_drivingRigidBody);
+			Vector3 originalScale = VisualsParent.localScale;
+			VisualsParent.localScale = Vector3.zero;
+			VisualsParent.DOScale(originalScale, 1f);
 		}
 
 		private void FixedUpdate()
@@ -45,7 +50,7 @@ namespace P3T.Scripts.Gameplay.Survivor.Drivers
 
 		public void OnDisable()
 		{
-			transform.DOKill(true);
+			VisualsParent.DOKill(true);
 		}
 	}
 }

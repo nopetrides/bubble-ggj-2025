@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace P3T.Scripts.Util
@@ -15,6 +14,11 @@ namespace P3T.Scripts.Util
         private void Start()
         {
             _originalScale = transform.localScale;
+        }
+
+        public void SetRigidBody(Rigidbody drivingRigidBody)
+        {
+            Rb = drivingRigidBody;
         }
 
         private void FixedUpdate()

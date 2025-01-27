@@ -5,7 +5,6 @@ using DG.Tweening;
 using P3T.Scripts.Managers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace P3T.Scripts.Gameplay.Survivor

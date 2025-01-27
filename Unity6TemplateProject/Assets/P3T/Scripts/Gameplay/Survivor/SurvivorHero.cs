@@ -313,18 +313,18 @@ namespace P3T.Scripts.Gameplay.Survivor
                 var leftSinTheta = Mathf.Sin(leftRadians);
                 var leftCosTheta = Mathf.Cos(leftRadians);
                 var leftSpread = new Vector3(
-                    leftCosTheta * aimingDirection.x - leftSinTheta * aimingDirection.y,
-                    aimingDirection.z,
-                    leftSinTheta * aimingDirection.x + leftCosTheta * aimingDirection.y
+                    leftCosTheta * aimingDirection.x - leftSinTheta * aimingDirection.z,
+                    aimingDirection.y,
+                    leftSinTheta * aimingDirection.x + leftCosTheta * aimingDirection.z
                 );
                 
                 var rightRadians = Mathf.Deg2Rad * SpreadShotAngle;
                 var rightSinTheta = Mathf.Sin(rightRadians);
                 var rightCosTheta = Mathf.Cos(rightRadians);
                 var rightSpread = new Vector3(
-                    rightCosTheta * aimingDirection.x - rightSinTheta * aimingDirection.y,
-                    aimingDirection.z,
-                    rightSinTheta * aimingDirection.x + rightCosTheta * aimingDirection.y
+                    rightCosTheta * aimingDirection.x - rightSinTheta * aimingDirection.z,
+                    aimingDirection.y,
+                    rightSinTheta * aimingDirection.x + rightCosTheta * aimingDirection.z
                 );
 
                 BulletPool.FireBullet(position, leftSpread, modifiers);

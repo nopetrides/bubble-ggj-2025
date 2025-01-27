@@ -87,11 +87,10 @@ namespace P3T.Scripts.Gameplay.Survivor
         public float TimeScaling => TimeScalingMultiplier;
         public bool CoreGameLoopRunning => _playing && _introComplete && !_gameIsCompleted && !_endSequence;
         public Vector3 HeroPosition => SurvivorHero.transform.position;
-
-        
         
         private void Awake()
         {
+            Application.targetFrameRate = 60;
             Init();
         }
 
@@ -241,7 +240,6 @@ namespace P3T.Scripts.Gameplay.Survivor
             var x = Mathf.Clamp(position.x, minX, maxX);
             var z = Mathf.Clamp(position.z, minY, maxY);
             position.x = x;
-            position.y = 0;
             position.z = z;
             return position;
         }
