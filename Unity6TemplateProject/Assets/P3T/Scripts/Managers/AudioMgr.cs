@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 namespace P3T.Scripts.Managers
 {
@@ -110,8 +111,10 @@ namespace P3T.Scripts.Managers
 			SaveUtil.OnLoadCompleted -= OnDataLoadComplete;
 
 			UpdateVolumeFromSaveData();
-			
-			PlayMusic(MusicTypes.Login, 1f);
+			if (SceneManager.GetActiveScene().name == GameScenes.MainGame.ToString())
+				PlayMusic(MusicTypes.Gameplay);
+			else
+				PlayMusic(MusicTypes.Login);
 		}
 
 		/// <summary>
@@ -130,10 +133,10 @@ namespace P3T.Scripts.Managers
 		/// <param name="music"></param>
 		/// <param name="volumeMod"></param>
 		[UsedImplicitly] // Use when appropriate
-		public void PlayMusic(MusicTypes music, float volumeMod)
+		public void PlayMusic(MusicTypes music, float volumeMod = 1f)
 		{
 			var index = (int)music;
-			if (ReusableMusicClips.Length < index)
+			if (ReusableMusicClips.Length <= index)
 			{
 				UnityEngine.Debug.LogWarning($"Music type {music.ToString()} not found in music clips");
 				return;

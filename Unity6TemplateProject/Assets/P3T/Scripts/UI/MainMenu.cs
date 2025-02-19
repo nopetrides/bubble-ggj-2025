@@ -15,6 +15,7 @@ namespace P3T.Scripts.UI
 		private void OnEnable()
 		{
 			StartButton.Select();
+			AudioMgr.Instance.PlayMusic(AudioMgr.MusicTypes.MainMenu);
 		}
 
 		public override GameMenus MenuType()

@@ -13,7 +13,7 @@ public class GameOver : MenuBase
 
 	public void ButtonRetry()
 	{
-		SceneMgr.Instance.LoadScene(GameScenes.MainGame, GameMenus.InGameUI);
+		SceneMgr.Instance.LoadScene(GameScenes.MainGame, GameMenus.None);
 	}
 
 	public void ButtonMainMenu()

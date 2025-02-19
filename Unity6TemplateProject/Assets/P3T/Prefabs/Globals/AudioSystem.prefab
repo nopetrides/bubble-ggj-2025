@@ -52,7 +52,8 @@ MonoBehaviour:
   SfxSource: {fileID: 2620518620291658676}
   ReusableMusicClips:
   - {fileID: 8300000, guid: 00c3c59fd60ce7c47a955a65571444b0, type: 3}
-  - {fileID: 8300000, guid: 99938bbab3993ae47ac5982edb6e8228, type: 3}
+  - {fileID: 8300000, guid: 00c3c59fd60ce7c47a955a65571444b0, type: 3}
+  - {fileID: 8300000, guid: 316df3da5065fc74485f408309f1f849, type: 3}
   ReusableSoundClips: []
 --- !u!1 &2610556538652827344
 GameObject:

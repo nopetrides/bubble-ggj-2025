@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
 
 #pragma warning disable 0618 // disable "never assigned" warnings
 
@@ -232,8 +234,6 @@ namespace TheraBytes.BetterUi
 
 		private static void RegisterCallbacks()
 		{
-			unityVersion = InternalEditorUtility.GetUnityVersion();
-
 			isDirty = true;
 
 			EditorApplication.update += Update;

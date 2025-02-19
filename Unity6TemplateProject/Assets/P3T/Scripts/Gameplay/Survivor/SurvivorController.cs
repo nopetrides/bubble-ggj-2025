@@ -284,6 +284,7 @@ namespace P3T.Scripts.Gameplay.Survivor
         private void Init() // todo call from some kind of countdown ui?
         {
             UnityEngine.Random.InitState((int)DateTime.Now.Ticks);
+            AudioMgr.Instance.PlayMusic(AudioMgr.MusicTypes.Gameplay);
             
             _gamePaused = false;
             _gameIsCompleted = false;

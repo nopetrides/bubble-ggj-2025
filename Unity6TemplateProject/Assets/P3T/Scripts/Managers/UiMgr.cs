@@ -181,6 +181,8 @@ namespace P3T.Scripts.Managers
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         private MenuBase GetMenuPrefabFromType(GameMenus menuType)
 		{
+			if (menuType == GameMenus.None)
+				return null;
 			MenuBase menu;
 			switch (menuType)
 			{
